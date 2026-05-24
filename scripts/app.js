@@ -4,53 +4,17 @@ import { navigate, showApp } from "./router.js";
 import { bindCartRemoval, renderAccount, renderAll, renderCart, renderListings, renderSettings } from "./render/index.js";
 import { setListingFilter } from "./render/listings.js";
 import { renderProducts, setCategoryFilter } from "./render/products.js";
-import { addCartItem, authenticate, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
+import { bindLoginPage } from "./render/login.js";
+import { addCartItem, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
 import {
   addRemoteCartItem,
   createRemoteProduct,
   getCurrentUserWithProfile,
   getProducts,
   saveRemoteSettings,
-  signInWithSupabase,
   updateRemoteProfile
 } from "./supabaseDatabase.js";
 import { showToast } from "./ui.js";
-
-// ── AUTH ─────────────────────────────────────────────────────────────────────
-
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const data = new FormData(elements.loginForm);
-  const email = String(data.get("email")).trim().toLowerCase();
-  const password = String(data.get("password"));
-
-  let user;
-  let supabaseError;
-
-  try {
-    user = await signInWithSupabase(email, password);
-  } catch (error) {
-    supabaseError = error;
-  }
-
-  // Jika Supabase berhasil, coba ambil profile lengkap; fallback ke local auth
-  if (user) {
-    user = await getCurrentUserWithProfile() ?? user;
-  } else {
-    user = authenticate(email, password);
-  }
-
-  if (!user) {
-    elements.formMessage.textContent =
-      supabaseError?.message ?? "Email atau password belum cocok.";
-    return;
-  }
-
-  setSession(user);
-  elements.formMessage.textContent = "";
-  await showApp("home", renderAll);
-}
 
 // ── ROUTING ──────────────────────────────────────────────────────────────────
 
@@ -225,8 +189,7 @@ function bindUtilityActions() {
 // ── BOOT ─────────────────────────────────────────────────────────────────────
 
 async function boot() {
-  elements.loginForm.addEventListener("submit", handleLogin);
-
+  bindLoginPage();
   bindRouting();
   bindListingFilters();
   bindCategoryFilters();

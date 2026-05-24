@@ -22,10 +22,21 @@
     </section>
 
     <section class="login-panel" aria-labelledby="login-title">
-      <form class="login-card">
+      <form class="login-card" data-login-form>
         <a class="panel-logo" href="#">ReHome</a>
+        
+        <div style="display:flex; gap:10px; margin-bottom: 24px;">
+          <button type="button" data-tab="login" class="active ghost-button" style="flex:1">Sign In</button>
+          <button type="button" data-tab="register" class="ghost-button" style="flex:1">Register</button>
+        </div>
+
         <h2 id="login-title">Welcome Back</h2>
-        <p class="muted">Sign in to continue your journey of mindful luxury.</p>
+        <p class="muted">Continue your journey of mindful luxury.</p>
+
+        <label data-name-field style="display: none;">
+          <span>Full Name</span>
+          <input name="name" type="text" placeholder="Vivian">
+        </label>
 
         <label>
           <span>Email Address</span>
@@ -38,7 +49,7 @@
         </label>
 
         <button class="primary-button" type="submit">Sign In</button>
-        <p class="form-message" aria-live="polite"></p>
+        <p class="form-message" aria-live="polite" data-form-message></p>
 
         <div class="divider"><span>OR CONTINUE WITH</span></div>
 
@@ -224,7 +235,7 @@
       </div>
     </section>
 
-    <section class="view" data-view="curated">
+    <section class="view" data-view="curated" id="curated-container">
       <div class="page-shell product-detail">
         <div class="gallery-stack">
           <img class="main-product-image" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated oak lounge chair">
