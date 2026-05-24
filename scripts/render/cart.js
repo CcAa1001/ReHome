@@ -1,16 +1,35 @@
+// scripts/render/cart.js
 import { elements } from "../dom.js";
 import { loadDatabase, removeCartItem } from "../storage.js";
-import { getRemoteCart, removeRemoteCartItem } from "../supabaseDatabase.js?v=20260524-database4";
+import { getRemoteCart, removeRemoteCartItem } from "../supabaseDatabase.js";
+import { showToast } from "../ui.js";
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 
 function formatMoney(value) {
-  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${Number(value).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
 }
 
+function showCartLoading() {
+  elements.cartList.innerHTML = `
+    <article class="skeleton-card">
+      <div class="skeleton skeleton-image"></div>
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-text"></div>
+    </article>
+  `;
+}
+
+// ── SUMMARY ───────────────────────────────────────────────────────────────────
+
 function renderCartSummary(cart) {
-  const subtotal = cart.reduce((sum, item) => sum + Number(item.amount ?? 0), 0);
+  const subtotal     = cart.reduce((sum, item) => sum + Number(item.amount ?? 0), 0);
   const carbonOffset = cart.reduce((sum, item) => sum + Number(item.carbonOffset ?? 0), 0);
   const offsetCredit = cart.length ? 4.5 : 0;
-  const total = subtotal + offsetCredit;
+  const total        = subtotal + offsetCredit;
 
   elements.cartSummary.innerHTML = `
     <div><dt>Subtotal</dt><dd>${formatMoney(subtotal)}</dd></div>
@@ -21,9 +40,22 @@ function renderCartSummary(cart) {
   `;
 }
 
+// ── RENDER ────────────────────────────────────────────────────────────────────
+
 export async function renderCart() {
-  const database = loadDatabase();
-  const cart = await getRemoteCart() ?? database.cart;
+  showCartLoading();
+
+  let cart;
+  try {
+    const database = loadDatabase();
+    cart = await getRemoteCart() ?? database.cart;
+  } catch (error) {
+    showToast("Could not load your cart. Please try again.");
+    elements.cartList.innerHTML = "<p>Failed to load cart.</p>";
+    return;
+  }
+
+  // Update badge angka keranjang di header
   elements.cartCount.textContent = cart.length;
   renderCartSummary(cart);
 
@@ -46,7 +78,11 @@ export async function renderCart() {
         <span class="eyebrow">${item.label}</span>
         <h3>${item.title}</h3>
         <p>${item.meta}</p>
-        <button type="button" data-remove-cart="${index}" ${item.remoteCartId ? `data-remote-cart-id="${item.remoteCartId}"` : ""}>Remove</button>
+        <button
+          type="button"
+          data-remove-cart="${index}"
+          ${item.remoteCartId ? `data-remote-cart-id="${item.remoteCartId}"` : ""}
+        >Remove</button>
       </div>
       <strong>${item.price}</strong>
     `;
@@ -54,19 +90,28 @@ export async function renderCart() {
   }));
 }
 
+// ── REMOVAL ───────────────────────────────────────────────────────────────────
+
 export function bindCartRemoval(onChange) {
   elements.cartList.addEventListener("click", async (event) => {
     const removeButton = event.target.closest("[data-remove-cart]");
-    if (!removeButton) {
-      return;
-    }
+    if (!removeButton) return;
 
-    if (removeButton.dataset.remoteCartId) {
-      await removeRemoteCartItem(removeButton.dataset.remoteCartId);
-    } else {
-      removeCartItem(Number(removeButton.dataset.removeCart));
-    }
+    // Nonaktifkan tombol sementara agar tidak double-click
+    removeButton.disabled = true;
 
-    await onChange();
+    try {
+      if (removeButton.dataset.remoteCartId) {
+        await removeRemoteCartItem(removeButton.dataset.remoteCartId);
+      } else {
+        removeCartItem(Number(removeButton.dataset.removeCart));
+        // state.publish('cartUpdated') sudah dipanggil di dalam removeCartItem
+      }
+
+      await onChange(); // → memanggil renderCart() + renderSettings() dari app.js
+    } catch (error) {
+      showToast("Could not remove item. Please try again.");
+      removeButton.disabled = false;
+    }
   });
 }
