@@ -1,77 +1,60 @@
 // scripts/router.js
-import { supabase } from './supabaseClient.js';
-import state from './state.js';
+import { elements } from "./dom.js";
+import { getSession } from "./storage.js";
+import { showToast } from "./ui.js";
 
-// Tandai rute mana saja yang membutuhkan autentikasi
-const routes = {
-    '':           { script: 'render/index.js',    auth: false },
-    '#products':  { script: 'render/products.js', auth: false },
-    '#login':     { script: 'render/login.js',    auth: false },
-    '#cart':      { script: 'render/cart.js',     auth: true  },
-    '#account':   { script: 'render/account.js',  auth: true  },
-    '#listings':  { script: 'render/listings.js', auth: true  },
-    '#history':   { script: 'render/history.js',  auth: true  },
-    '#settings':  { script: 'render/settings.js', auth: true  },
+const roleRoutes = {
+  seller: ["new-listing", "sales-history", "seller-support"],
+  admin: ["admin"]
 };
 
-async function loadRoute() {
-    let hash = window.location.hash;
-    const route = routes[hash] ?? routes[''];
+// ── ROUTE PARAMS ──────────────────────────────────────────────────────────────
 
-    const mainContent = document.getElementById('main-content');
+let _currentParams = {};
 
-    // ── ROUTE GUARD ──────────────────────────────────────────────
-    if (route.auth) {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session) {
-            // Simpan halaman yang ingin dituju agar bisa redirect setelah login
-            sessionStorage.setItem('redirectAfterLogin', hash);
-            window.location.hash = '#login';
-            return; // Hentikan eksekusi, biarkan hashchange menangani sisanya
-        }
-    }
-    // ─────────────────────────────────────────────────────────────
-
-    // Skeleton loader saat menunggu modul dimuat
-    mainContent.innerHTML = `
-        <div class="skeleton-wrapper">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text short"></div>
-        </div>
-    `;
-
-    try {
-        const module = await import(`../scripts/${route.script}`);
-        if (module.render) {
-            module.render(mainContent);
-        }
-    } catch (error) {
-        console.error('Gagal memuat route:', error);
-        mainContent.innerHTML = '<h2>404 - Halaman Tidak Ditemukan</h2>';
-    }
+/** Ambil params dari navigate() terakhir, misal: { productId: "123" } */
+export function getRouteParams() {
+  return _currentParams;
 }
 
-// Dengarkan perubahan status autentikasi dari Supabase
-// dan update Global State secara otomatis
-supabase.auth.onAuthStateChange((event, session) => {
-    state.publish('authChanged', session?.user ?? null);
+// ── GUARD ─────────────────────────────────────────────────────────────────────
 
-    // Jika user baru saja login, redirect ke halaman tujuan semula
-    if (event === 'SIGNED_IN') {
-        const redirect = sessionStorage.getItem('redirectAfterLogin');
-        if (redirect) {
-            sessionStorage.removeItem('redirectAfterLogin');
-            window.location.hash = redirect;
-        }
-    }
+function canAccess(route) {
+  const role = getSession()?.role ?? "buyer";
+  if (role === "admin") return true;
+  if (roleRoutes.admin.includes(route)) return false;
+  if (roleRoutes.seller.includes(route)) return role === "seller";
+  return true;
+}
 
-    // Jika user logout, paksa kembali ke beranda
-    if (event === 'SIGNED_OUT') {
-        window.location.hash = '';
-    }
-});
+// ── NAVIGATE ──────────────────────────────────────────────────────────────────
 
-window.addEventListener('hashchange', loadRoute);
-window.addEventListener('load', loadRoute);
+/**
+ * @param {string} route   - Nama view, misal: "curated"
+ * @param {object} [params] - Data opsional, misal: { productId: "abc" }
+ */
+export function navigate(route, params = {}) {
+  if (!canAccess(route)) {
+    showToast("Switch to a seller or admin demo role to open that area.");
+    route = "settings";
+  }
+
+  _currentParams = params; // simpan sebelum render
+
+  elements.views.forEach((view) => {
+    view.classList.toggle("is-active", view.dataset.view === route);
+  });
+
+  elements.navButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.route === route);
+  });
+
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+export async function showApp(route = "home", renderAll) {
+  elements.login.hidden = true;
+  elements.app.hidden = false;
+  await renderAll();
+  navigate(route);
+}

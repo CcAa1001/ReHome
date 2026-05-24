@@ -323,3 +323,17 @@
   color: #8a3324;
   border-color: rgba(138, 51, 36, 0.28);
 }
+
+
+/* Skeleton untuk product & cart cards */
+.skeleton-card {
+  border: 1px solid rgba(197, 200, 188, 0.35);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.skeleton-image {
+  height: 220px;
+  border-radius: 0;
+}

@@ -40,7 +40,7 @@ function createProductCard(product, compact = false) {
     `;
   }
 
-  card.addEventListener("click", () => navigate("curated"));
+  card.addEventListener("click", () => navigate("curated", { productId: product.id }));
   return card;
 }
 
