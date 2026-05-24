@@ -1,10 +1,17 @@
 // scripts/app.js
 import { elements } from "./dom.js";
 import { navigate, showApp } from "./router.js";
-import { bindCartRemoval, renderAccount, renderAll, renderCart, renderListings, renderSettings } from "./render/index.js";
-import { setListingFilter } from "./render/listings.js";
+
+// ── IMPORT YANG SUDAH DIPERBAIKI JALURNYA ────────────────────────────────────
+import { renderAll } from "./render/index.js";
+import { bindCartRemoval, renderCart } from "./render/cart.js";
+import { renderAccount } from "./render/account.js";
+import { renderListings, setListingFilter } from "./render/listings.js";
+import { renderSettings } from "./render/settings.js";
 import { renderProducts, setCategoryFilter } from "./render/products.js";
 import { bindLoginPage } from "./render/login.js";
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { addCartItem, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
 import {
   addRemoteCartItem,
