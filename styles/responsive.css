@@ -1,0 +1,117 @@
+@media (max-width: 1020px) {
+  .login-screen,
+  .feature-grid,
+  .impact-card,
+  .split-page,
+  .valuation-layout,
+  .product-detail,
+  .cart-layout,
+  .checkout-layout,
+  .confirmation-layout,
+  .profile-layout,
+  .settings-grid,
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid,
+  .catalog-grid,
+  .curated-grid,
+  .service-grid,
+  .journey-grid,
+  .seller-metrics,
+  .action-grid,
+  .listing-grid,
+  .approach-grid,
+  .admin-grid,
+  .support-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .login-visual {
+    min-height: 50vh;
+  }
+
+  .login-panel {
+    min-height: auto;
+    padding: 48px 24px 96px;
+  }
+
+  .filter-panel,
+  .summary-card {
+    position: static;
+  }
+
+  .search-field {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .nav-shell {
+    height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px 20px;
+  }
+
+  .nav-links,
+  .nav-actions {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .page-shell {
+    padding: 36px 20px 72px;
+  }
+
+  .greeting h1,
+  .section-heading h1,
+  .hero-copy h1,
+  .cart-layout h1,
+  .thanks-panel h1,
+  .profile-card h1,
+  .login-tagline h1 {
+    font-size: 34px;
+  }
+
+  .login-card h2,
+  .section-heading h2 {
+    font-size: 30px;
+  }
+
+  .product-grid,
+  .catalog-grid,
+  .curated-grid,
+  .service-grid,
+  .journey-grid,
+  .seller-metrics,
+  .action-grid,
+  .listing-grid,
+  .approach-grid,
+  .social-grid,
+  .form-pair,
+  .stats,
+  .card-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .image-frame {
+    height: 380px;
+  }
+
+  .cart-item {
+    grid-template-columns: 88px 1fr;
+  }
+
+  .cart-item strong {
+    grid-column: 1 / -1;
+  }
+
+  .section-heading,
+  .dashboard-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReHome</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="login" class="login-screen">
+    <section class="login-visual">
+      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="Sunlit interior with plants and a wood side table">
+      <div class="visual-overlay"></div>
+      <a class="brand-mark" href="#">ReHome</a>
+      <div class="login-tagline">
+        <h1>Give Things a<br>Second Life</h1>
+        <p>Join our community of conscious curators. Discover pre-loved treasures that tell a story.</p>
+      </div>
+    </section>
+
+    <section class="login-panel" aria-labelledby="login-title">
+      <form class="login-card">
+        <a class="panel-logo" href="#">ReHome</a>
+        <h2 id="login-title">Welcome Back</h2>
+        <p class="muted">Sign in to continue your journey of mindful luxury.</p>
+
+        <label>
+          <span>Email Address</span>
+          <input name="email" type="email" placeholder="name@example.com" autocomplete="email" value="vivian@rehome.test" required>
+        </label>
+
+        <label>
+          <span class="label-row">Password <a href="#">Forgot?</a></span>
+          <input name="password" type="password" placeholder="........" autocomplete="current-password" value="rehome123" required>
+        </label>
+
+        <button class="primary-button" type="submit">Sign In</button>
+        <p class="form-message" aria-live="polite"></p>
+
+        <div class="divider"><span>OR CONTINUE WITH</span></div>
+
+        <div class="social-grid">
+          <button type="button" class="social-button">Google</button>
+          <button type="button" class="social-button">Apple</button>
+        </div>
+
+        <p class="join-text">Don't have an account? <a href="#">Join the movement</a></p>
+      </form>
+
+      <div class="trust-row" aria-label="ReHome trust badges">
+        <span>Eco-conscious</span>
+        <span>Certified sellers</span>
+      </div>
+    </section>
+  </main>
+
+  <main id="app" class="app-shell" hidden>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Main navigation">
+        <button class="logo" type="button" data-route="home">ReHome</button>
+        <div class="nav-links">
+          <button type="button" data-route="shop">Shop</button>
+          <button type="button" data-route="sustain">Sustain</button>
+          <button type="button" data-route="curated">Curated</button>
+          <button type="button" data-route="seller">Sell</button>
+        </div>
+        <div class="nav-actions">
+          <label class="search-field">
+            <span class="sr-only">Search treasures</span>
+            <input type="search" placeholder="Search treasures ...">
+          </label>
+          <button type="button" data-route="cart" class="cart-button" aria-label="Open cart"><span data-cart-count>3</span></button>
+          <button type="button" data-route="profile" class="profile-button">Profile</button>
+          <button type="button" data-route="admin" class="admin-button">Admin</button>
+          <button type="button" data-route="settings" class="settings-button">Settings</button>
+          <span class="role-badge" data-role-badge>Buyer</span>
+        </div>
+      </nav>
+    </header>
+
+    <section class="view is-active" data-view="home">
+      <div class="page-shell">
+        <section class="greeting">
+          <h1>Welcome back, <span data-user-name>Vivian</span>.</h1>
+          <p>Your conscious curation journey continues.</p>
+        </section>
+
+        <section class="feature-grid">
+          <article class="feature-card price-card">
+            <div class="card-top">
+              <span class="round-icon">AI</span>
+              <span class="pill">New Feature</span>
+            </div>
+            <h2>AI Price Checker</h2>
+            <p>Scan any pre-owned luxury item to instantly determine its fair market value based on real-time data.</p>
+            <button class="primary-button" type="button" data-route="sustain">Try the Scanner</button>
+          </article>
+
+          <article class="feature-card impact-card">
+            <div class="impact-copy">
+              <span class="eyebrow">Impact Report</span>
+              <h2>Your Sustainability Impact</h2>
+              <div class="stats">
+                <div><strong>142kg</strong><span>Carbon Offset</span></div>
+                <div><strong>12</strong><span>Items ReHomed</span></div>
+              </div>
+            </div>
+            <img src="assets/impact.png" alt="Sustainability impact figure">
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <div>
+            <h2>Smart Recommendations</h2>
+            <p>Curated for your Scandinavian aesthetic.</p>
+          </div>
+          <button type="button" class="text-link" data-route="shop">View Gallery</button>
+        </section>
+
+        <section class="product-grid" aria-label="Smart recommendations" data-home-products></section>
+
+        <section class="curated-band">
+          <div class="section-heading">
+            <div>
+              <h2>Curated Treasures</h2>
+              <p>Editorial collections for slower, better interiors.</p>
+            </div>
+          </div>
+          <div class="curated-grid">
+            <article style="--img: url('assets/interior.jpg')">
+              <span>Editorial</span>
+              <h3>The Kinfolk Edit</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+            <article style="--img: url('assets/design.jpg')">
+              <span>Curation</span>
+              <h3>Tactile Textures</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+            <article style="--img: url('assets/luxury.jpg')">
+              <span>Limited</span>
+              <h3>Midnight Serenity</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="shop">
+      <div class="page-shell split-page">
+        <aside class="filter-panel">
+          <h2>Category</h2>
+          <button class="active" type="button" data-category="all">All Furniture</button>
+          <button type="button" data-category="seating">Seating</button>
+          <button type="button" data-category="storage">Storage &amp; Tables</button>
+          <button type="button" data-category="textiles">Textiles</button>
+          <button type="button" data-category="decor">Decor</button>
+          <h2>Price Range</h2>
+          <div class="range-row"><span>$0</span><span>$5000+</span></div>
+          <h2>Condition</h2>
+          <div class="chip-row"><span>Like New</span><span>Excellent</span><span>Good</span><span>Fair</span></div>
+          <article class="eco-card">
+            <span>Eco Choice</span>
+            <p>Shop preloved to reduce carbon footprint by up to 82% per item.</p>
+          </article>
+        </aside>
+        <section class="catalog-content">
+          <div class="section-heading compact">
+            <div>
+              <h1>Curated Findings</h1>
+              <p>Discover 124 preloved architectural gems.</p>
+            </div>
+          </div>
+          <div class="catalog-grid" data-catalog-products></div>
+          <button class="outline-wide" type="button" data-action="load-more">Load More Treasures</button>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="sustain">
+      <div class="page-shell">
+        <section class="hero-copy">
+          <span class="eyebrow">Artificial Intelligence</span>
+          <h1>AI Price Checker</h1>
+          <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate, fair-market valuation for your pre-loved luxury goods.</p>
+        </section>
+        <section class="valuation-layout">
+          <article class="upload-panel">
+            <div class="tabs"><span class="active">Analyze Item</span><span>Valuation Result</span></div>
+            <div class="drop-zone">
+              <strong>Upload or drag photos</strong>
+              <p>AI works best with clear, high-resolution shots from multiple angles.</p>
+              <button type="button" data-action="select-files">Select Files</button>
+            </div>
+            <label>Item Category<input value="Scandinavian Mid-Century Furniture"></label>
+            <div class="form-pair">
+              <label>Item Condition<input value="Pristine (Like New)"></label>
+              <label>Original Price (Optional)<input value="$0.00"></label>
+            </div>
+            <button class="primary-button" type="button" data-action="valuation">Get AI Valuation</button>
+          </article>
+          <article class="result-panel">
+            <span class="eyebrow">Estimated Fair Price</span>
+            <h2>$1,240 USD</h2>
+            <strong>Excellent Fair Price</strong>
+            <p>Within 3% of market average.</p>
+            <div class="insight-grid">
+              <div><span>Market Sentiment</span><strong>Strong Demand</strong></div>
+              <div><span>Appreciating Value</span><strong>+12% vs last year</strong></div>
+              <div><span>Fast Turnover</span><strong>Avg. 4 days to sell</strong></div>
+            </div>
+            <p class="eco-score">Eco-Check Score: 98/100. Reselling this item offsets 4kg of CO2.</p>
+          </article>
+        </section>
+        <section class="approach-grid">
+          <article><h3>Visual Triage</h3><p>Identifies designers, manufacturing periods, and material quality through computer vision.</p></article>
+          <article><h3>Global Indexing</h3><p>Cross-referenced against historical auction data and real-time marketplace trends globally.</p></article>
+          <article><h3>Sustainable Value</h3><p>Calculates Earth Credit, adding value based on longevity and low environmental impact.</p></article>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="curated">
+      <div class="page-shell product-detail">
+        <div class="gallery-stack">
+          <img class="main-product-image" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated oak lounge chair">
+          <div class="thumb-row">
+            <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" alt="">
+            <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg" alt="">
+            <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png" alt="">
+          </div>
+        </div>
+        <article class="detail-copy">
+          <nav class="crumbs">Shop / Living Room / Curated Oak Lounge Chair</nav>
+          <span class="eyebrow">Sustainably Sourced</span>
+          <h1>Curated Oak Lounge Chair</h1>
+          <strong class="detail-price">$1,240.00</strong>
+          <div class="condition-row"><span>Condition</span><strong>Excellent (Pre-owned)</strong><em>Refurbished</em></div>
+          <p>A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
+          <div class="purchase-row"><input type="number" value="1" min="1"><span>Only 2 in stock</span></div>
+          <button class="primary-button" type="button" data-add-cart>Add to Cart</button>
+          <button class="ghost-button" type="button" data-action="make-offer">Make an Offer</button>
+          <div class="seller-card"><strong>Elena Studio</strong><span>4.9 (124 reviews)</span><button type="button" data-route="seller-profile">View Shop</button></div>
+        </article>
+      </div>
+      <div class="page-shell service-grid">
+        <article><h3>Conscious Shipping</h3><p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p></article>
+        <article><h3>Authenticity Verified</h3><p>Our experts manually inspect every item to ensure historical accuracy and quality.</p></article>
+        <article><h3>Traceable Origin</h3><p>This piece was originally curated from a design studio in Copenhagen in 2019.</p></article>
+      </div>
+    </section>
+
+    <section class="view" data-view="cart">
+      <div class="page-shell cart-layout">
+        <section>
+          <h1>Your Conscious Selection</h1>
+          <p class="muted">3 treasures curated for a more sustainable home.</p>
+          <div class="cart-list" data-cart-list></div>
+        </section>
+        <aside class="summary-card">
+          <h2>Summary</h2>
+          <dl data-cart-summary>
+            <div><dt>Subtotal</dt><dd>$0.00</dd></div>
+            <div><dt>Conscious Shipping</dt><dd>Free</dd></div>
+            <div><dt>Est. Carbon Offset</dt><dd>$0.00</dd></div>
+            <div class="total"><dt>Total</dt><dd>$0.00</dd></div>
+          </dl>
+          <button class="primary-button" type="button" data-route="checkout">Proceed to Checkout</button>
+          <p>Your order will be 100% carbon neutral.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" data-view="checkout">
+      <div class="page-shell checkout-layout">
+        <section class="checkout-main">
+          <div class="steps"><span class="active">1 Shipping</span><span>2 Payment</span><span>3 Confirmation</span></div>
+          <article class="address-card">
+            <div><h2>Shipping Information</h2><button type="button" data-action="edit-shipping">Edit</button></div>
+            <p>Arya Saloka<br>Jl. Senopati No. 42, Kebayoran Baru<br>Jakarta Selatan, DKI Jakarta 12190<br>+62 812 3456 7890</p>
+          </article>
+          <h2>Choose Payment Method</h2>
+          <div class="payment-list">
+            <label><input type="radio" name="payment" checked> Bank Transfer (Virtual Account)</label>
+            <div class="payment-options"><span>BCA Virtual Account</span><span>Mandiri Bill Payment</span></div>
+            <label><input type="radio" name="payment"> Digital Wallets &amp; QRIS</label>
+            <div class="payment-options"><span>QRIS</span><span>OVO</span><span>GoPay</span></div>
+            <label><input type="radio" name="payment"> Credit or Debit Card</label>
+            <div class="card-fields"><input placeholder="Card Number"><input placeholder="MM/YY"><input placeholder="CVV"></div>
+            <label><input type="radio" name="payment"> Cash on Delivery (COD)</label>
+          </div>
+          <button class="primary-button" type="button" data-route="confirmation">Place Order Securely</button>
+        </section>
+        <aside class="summary-card">
+          <h2>Order Summary</h2>
+          <div class="mini-line"><span>Nordic Oak Chair</span><strong>Rp 1.450.000</strong></div>
+          <div class="mini-line"><span>Linen Throw</span><strong>Rp 320.000</strong></div>
+          <dl>
+            <div><dt>Subtotal</dt><dd>Rp 1.770.000</dd></div>
+            <div><dt>Shipping</dt><dd>Rp 45.000</dd></div>
+            <div><dt>Eco-impact Credit</dt><dd>- Rp 20.000</dd></div>
+            <div class="total"><dt>Total</dt><dd>Rp 1.795.000</dd></div>
+          </dl>
+          <p>Carbon neutral delivery offsets 2.4kg of CO2.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" data-view="confirmation">
+      <div class="page-shell confirmation-layout">
+        <section class="thanks-panel">
+          <h1>Thank you for ReHoming</h1>
+          <p>Your item is on its way to a new home. By choosing pre-owned, you've saved 12.5kg of carbon emissions today.</p>
+          <button class="primary-button" type="button" data-route="profile">Track Your Journey</button>
+        </section>
+        <aside class="summary-card">
+          <span class="eyebrow">Order #RH-28941</span>
+          <img src="assets/figma-export/f5cbf3fb56c10e5beb58746a074d87055699d04c.jpg" alt="Artisan rattan chair">
+          <h2>Artisan Rattan Chair</h2>
+          <p>Gently used - Mid-Century</p>
+          <dl>
+            <div><dt>Subtotal</dt><dd>$340.00</dd></div>
+            <div><dt>Eco-Delivery</dt><dd>Free</dd></div>
+            <div class="total"><dt>Total Paid</dt><dd>$340.00</dd></div>
+          </dl>
+        </aside>
+      </div>
+      <div class="page-shell journey-grid">
+        <article><h3>Carefully Packed</h3><p>100% plastic-free, compostable materials.</p></article>
+        <article><h3>Low-Impact Transit</h3><p>Optimized routes to minimize fuel consumption.</p></article>
+        <article><h3>New Life</h3><p>Arriving at its destination to be loved again.</p></article>
+      </div>
+    </section>
+
+    <section class="view" data-view="profile">
+      <div class="page-shell profile-layout">
+        <aside class="profile-card">
+          <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Vivian profile avatar">
+          <span class="eyebrow">Member since 2021</span>
+          <h1>Vivian</h1>
+          <p>Curator &amp; Sustainability Advocate - Copenhagen, DK</p>
+          <button class="primary-button" type="button" data-route="edit-profile">Edit Profile</button>
+          <div class="impact-score"><strong>2,450</strong><span>Impact Score</span></div>
+        </aside>
+        <section class="history-panel">
+          <h2>Purchase History</h2>
+          <div class="history-list" data-history-list></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="seller">
+      <div class="page-shell">
+        <section class="section-heading">
+          <div>
+            <h1>Seller Dashboard</h1>
+            <p>Manage your conscious listings and track your environmental impact.</p>
+          </div>
+          <button class="ghost-button" type="button" data-action="download-report">Download Report</button>
+        </section>
+        <section class="seller-metrics">
+          <article><span>Sales Performance</span><strong>$1,850</strong><p>Current month</p></article>
+          <article><span>Sustainable Impact</span><strong>450kg</strong><p>Waste diverted from landfills this month.</p></article>
+          <article><span>Yearly Goal</span><strong>82%</strong><p>Week 4 target reached.</p></article>
+        </section>
+        <section class="action-grid">
+          <button type="button" data-route="new-listing"><span>+</span><strong>Upload Item</strong><small>List a new curated piece</small></button>
+          <button type="button" data-route="sales-history"><span>$</span><strong>Sales History</strong><small>View all past transactions</small></button>
+          <button type="button" data-route="seller-support"><span>?</span><strong>Seller Support</strong><small>Get help with shipping &amp; returns</small></button>
+        </section>
+        <section class="dashboard-head">
+          <div><h2>Active Listings</h2></div>
+          <div class="segment-control">
+            <button class="active" type="button" data-filter="all">All</button>
+            <button type="button" data-filter="active">Drafts</button>
+            <button type="button" data-filter="sold">Sold</button>
+          </div>
+        </section>
+        <div class="listing-grid" data-listings></div>
+      </div>
+    </section>
+
+    <section class="view" data-view="settings">
+      <div class="page-shell settings-layout">
+        <section>
+          <span class="eyebrow">Workspace</span>
+          <h1>Settings &amp; Database</h1>
+          <p class="muted">Tune your ReHome experience and manage the local demo database that powers this static app.</p>
+        </section>
+
+        <section class="settings-grid">
+          <form class="settings-card" data-settings-form>
+            <h2>Preferences</h2>
+            <label>
+              <span>Currency</span>
+              <select name="currency">
+                <option value="USD">USD</option>
+                <option value="IDR">IDR</option>
+              </select>
+            </label>
+            <label>
+              <span>Theme</span>
+              <select name="theme">
+                <option value="light">Light</option>
+                <option value="soft">Soft</option>
+                <option value="contrast">Contrast</option>
+              </select>
+            </label>
+            <label class="toggle-row">
+              <span>Email notifications</span>
+              <input name="emailNotifications" type="checkbox">
+            </label>
+            <label class="toggle-row">
+              <span>Carbon tracking</span>
+              <input name="carbonTracking" type="checkbox">
+            </label>
+            <button class="primary-button" type="submit">Save Settings</button>
+          </form>
+
+          <article class="settings-card">
+            <h2>Local Database</h2>
+            <div class="database-stats" data-database-stats></div>
+            <div class="database-actions">
+              <button class="ghost-button" type="button" data-export-database>Export JSON</button>
+              <button class="ghost-button danger-button" type="button" data-reset-database>Reset Demo Data</button>
+            </div>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="admin">
+      <div class="page-shell admin-layout">
+        <section class="section-heading">
+          <div>
+            <span class="eyebrow">Admin Console</span>
+            <h1>Marketplace Operations</h1>
+            <p>Monitor listings, orders, user roles, and the health of the ReHome marketplace.</p>
+          </div>
+        </section>
+        <section class="admin-grid">
+          <article><span>Users</span><strong>3</strong><p>Buyer, seller, and admin roles configured.</p></article>
+          <article><span>Pending Reviews</span><strong>7</strong><p>Listings awaiting authenticity review.</p></article>
+          <article><span>Open Orders</span><strong>12</strong><p>Orders in packing, transit, or verification.</p></article>
+          <article><span>Carbon Saved</span><strong>450kg</strong><p>Reported circular-commerce impact this month.</p></article>
+        </section>
+      </div>
+    </section>
+
+    <section class="view" data-view="new-listing">
+      <div class="page-shell form-page">
+        <section>
+          <span class="eyebrow">Seller Tools</span>
+          <h1>Create New Listing</h1>
+          <p class="muted">Add a curated piece for review before it appears in the marketplace.</p>
+        </section>
+        <form class="settings-card" data-new-listing-form>
+          <label><span>Item title</span><input name="title" value="Scandinavian Oak Sideboard" required></label>
+          <label><span>Maker or studio</span><input name="maker" value="Independent Seller"></label>
+          <label><span>Category</span><input name="category" value="Storage & Tables" required></label>
+          <label><span>Condition</span><input name="condition" value="Excellent" required></label>
+          <label><span>Price</span><input name="price" value="$980" required></label>
+          <label><span>Carbon saved (kg)</span><input name="carbonOffset" type="number" min="0" step="0.1" value="2.4"></label>
+          <label><span>Image URL</span><input name="imageUrl" value="assets/figma-export/2c599988de934055ead448b9abf9204292e752e2.png"></label>
+          <label><span>Upload image</span><input name="imageFile" type="file" accept="image/*"></label>
+          <label><span>Description</span><input name="description" value="Restored oak sideboard with traceable studio origin."></label>
+          <button class="primary-button" type="submit" data-action="submit-listing">Submit for Review</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="view" data-view="sales-history">
+      <div class="page-shell">
+        <section class="section-heading"><div><span class="eyebrow">Seller Tools</span><h1>Sales History</h1><p>Review completed sales, payouts, and buyer activity.</p></div></section>
+        <div class="history-list">
+          <article class="history-card"><div><header><time>May 14, 2026</time><span>Paid out</span></header><h3>Artisan Clay Vase</h3><p>Sold to a verified buyer in Jakarta.</p></div><strong>$85</strong></article>
+          <article class="history-card"><div><header><time>May 09, 2026</time><span>Delivered</span></header><h3>Eames Style Lounge</h3><p>Carbon-neutral courier completed delivery.</p></div><strong>$1,200</strong></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" data-view="seller-support">
+      <div class="page-shell support-page">
+        <section><span class="eyebrow">Seller Support</span><h1>How can we help?</h1><p class="muted">Shipping, listing review, payouts, authenticity checks, and buyer questions.</p></section>
+        <div class="support-grid">
+          <article><h3>Listing Review</h3><p>Typical verification takes 24-48 hours after photos and provenance notes are submitted.</p></article>
+          <article><h3>Payouts</h3><p>Payouts are released after delivery confirmation and buyer acceptance.</p></article>
+          <article><h3>Shipping</h3><p>Use ReHome labels for insured, carbon-neutral delivery.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" data-view="seller-profile">
+      <div class="page-shell profile-layout">
+        <aside class="profile-card"><img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Elena Studio avatar"><span class="eyebrow">Certified Seller</span><h1>Elena Studio</h1><p>4.9 rating from 124 reviews. Curating Scandinavian pieces since 2019.</p><button class="primary-button" type="button" data-route="shop">Shop Listings</button></aside>
+        <section class="history-panel"><h2>Seller Notes</h2><div class="history-list"><article class="history-card"><div><header><time>Verified</time><span>Trusted</span></header><h3>Authenticity Partner</h3><p>Every listing includes provenance notes and quality inspection.</p></div></article></div></section>
+      </div>
+    </section>
+
+    <section class="view" data-view="edit-profile">
+      <div class="page-shell form-page">
+        <section><span class="eyebrow">Profile</span><h1>Edit Profile</h1><p class="muted">Update account details, role, and buyer preferences for this demo.</p></section>
+        <form class="settings-card" data-profile-form>
+          <label><span>Display name</span><input name="name" value="Vivian"></label>
+          <label><span>Location</span><input name="location" value="Copenhagen, DK"></label>
+          <label><span>Demo role</span><select name="role"><option value="buyer">Buyer</option><option value="seller">Seller</option><option value="admin">Admin</option></select></label>
+          <button class="primary-button" type="submit">Save Profile</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="view" data-view="shipping">
+      <div class="page-shell support-page"><section><span class="eyebrow">Support</span><h1>Shipping</h1><p class="muted">Carbon-neutral delivery, recycled packaging, tracking, and insured handoff.</p></section><div class="support-grid"><article><h3>Standard</h3><p>3-5 business days for most verified pieces.</p></article><article><h3>Fragile Items</h3><p>Special crating is available for ceramics, glass, and lighting.</p></article><article><h3>Tracking</h3><p>Order tracking appears in your profile after checkout.</p></article></div></div>
+    </section>
+
+    <section class="view" data-view="returns">
+      <div class="page-shell support-page"><section><span class="eyebrow">Support</span><h1>Returns</h1><p class="muted">Return windows vary by seller, item condition, and authenticity review status.</p></section><div class="support-grid"><article><h3>48-hour Review</h3><p>Inspect your item after arrival and report any issue quickly.</p></article><article><h3>Authenticity</h3><p>Verified authenticity issues are covered by ReHome protection.</p></article><article><h3>Packaging</h3><p>Keep original circular packaging for safe returns.</p></article></div></div>
+    </section>
+
+    <section class="view" data-view="terms">
+      <div class="page-shell support-page"><section><span class="eyebrow">Legal</span><h1>Terms &amp; Trust</h1><p class="muted">Demo terms for marketplace safety, payments, seller obligations, and buyer protection.</p></section><div class="support-grid"><article><h3>Marketplace</h3><p>Sellers are responsible for accurate condition and provenance details.</p></article><article><h3>Payments</h3><p>Payments are held until order milestones are completed.</p></article><article><h3>Privacy</h3><p>Only necessary account and order data is stored.</p></article></div></div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <h2>ReHome</h2>
+          <p>Redefining the secondary market with intentionality, luxury, and care for the planet.</p>
+          <strong>&copy; 2024 ReHome. Conscious Luxury Marketplace.</strong>
+        </div>
+        <div><h3>Marketplace</h3><button data-route="shop">Shop All</button><button data-route="sustain">Sustain</button><button data-route="seller">Sell an Item</button><button data-route="admin">Admin</button></div>
+        <div><h3>Support</h3><button data-route="shipping">Shipping</button><button data-route="returns">Returns</button><button data-route="terms">Terms</button></div>
+        <div>
+          <h3>Newsletter</h3>
+          <form class="newsletter"><input type="email" placeholder="Email address"><button type="submit" aria-label="Subscribe">-></button></form>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+
+  <script type="module" src="script.js?v=20260524-database5"></script>
+</body>
+</html>
