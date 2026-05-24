@@ -1,9 +1,9 @@
-import { elements } from "./dom.js?v=20260524-database4";
+// scripts/app.js
+import { elements } from "./dom.js";
 import { navigate, showApp } from "./router.js";
-import { bindCartRemoval, renderAccount, renderAll, renderCart, renderListings, renderSettings } from "./render/index.js?v=20260524-database4";
+import { bindCartRemoval, renderAccount, renderAll, renderCart, renderListings, renderSettings } from "./render/index.js";
 import { setListingFilter } from "./render/listings.js";
-import { renderProducts } from "./render/products.js?v=20260524-database4";
-import { setCategoryFilter } from "./render/products.js?v=20260524-database4";
+import { renderProducts, setCategoryFilter } from "./render/products.js";
 import { addCartItem, authenticate, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
 import {
   addRemoteCartItem,
@@ -13,8 +13,10 @@ import {
   saveRemoteSettings,
   signInWithSupabase,
   updateRemoteProfile
-} from "./supabaseDatabase.js?v=20260524-database4";
+} from "./supabaseDatabase.js";
 import { showToast } from "./ui.js";
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
 
 async function handleLogin(event) {
   event.preventDefault();
@@ -22,6 +24,7 @@ async function handleLogin(event) {
   const data = new FormData(elements.loginForm);
   const email = String(data.get("email")).trim().toLowerCase();
   const password = String(data.get("password"));
+
   let user;
   let supabaseError;
 
@@ -31,6 +34,7 @@ async function handleLogin(event) {
     supabaseError = error;
   }
 
+  // Jika Supabase berhasil, coba ambil profile lengkap; fallback ke local auth
   if (user) {
     user = await getCurrentUserWithProfile() ?? user;
   } else {
@@ -38,7 +42,8 @@ async function handleLogin(event) {
   }
 
   if (!user) {
-    elements.formMessage.textContent = supabaseError?.message ?? "Email atau password belum cocok.";
+    elements.formMessage.textContent =
+      supabaseError?.message ?? "Email atau password belum cocok.";
     return;
   }
 
@@ -47,11 +52,15 @@ async function handleLogin(event) {
   await showApp("home", renderAll);
 }
 
+// ── ROUTING ──────────────────────────────────────────────────────────────────
+
 function bindRouting() {
   elements.routeButtons.forEach((button) => {
     button.addEventListener("click", () => navigate(button.dataset.route));
   });
 }
+
+// ── FILTERS ──────────────────────────────────────────────────────────────────
 
 function bindListingFilters() {
   elements.filterButtons.forEach((button) => {
@@ -75,21 +84,25 @@ function bindCategoryFilters() {
   });
 }
 
+// ── CART ─────────────────────────────────────────────────────────────────────
+
 function bindCartActions() {
   elements.addCartButton.addEventListener("click", async () => {
     const products = await getProducts();
-    const featuredProduct = products.find((product) => product.title === "Curated Oak Lounge Chair")
-      ?? products.find((product) => product.title.includes("Oak"))
-      ?? {
-      title: "Curated Oak Lounge Chair",
-      label: "Sustainably Sourced",
-      meta: "Excellent pre-owned condition",
-      price: "$1,240.00",
-      amount: 1240,
-      carbonOffset: 4,
-      image: "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png"
-    };
 
+    const featuredProduct =
+      products.find((p) => p.title === "Curated Oak Lounge Chair") ??
+      products.find((p) => p.title.includes("Oak")) ?? {
+        title: "Curated Oak Lounge Chair",
+        label: "Sustainably Sourced",
+        meta: "Excellent pre-owned condition",
+        price: "$1,240.00",
+        amount: 1240,
+        carbonOffset: 4,
+        image: "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png"
+      };
+
+    // Coba simpan ke Supabase dulu; fallback ke local storage
     const remoteAdded = await addRemoteCartItem(featuredProduct);
     if (!remoteAdded) {
       addCartItem(featuredProduct);
@@ -107,16 +120,21 @@ function bindCartActions() {
   });
 }
 
+// ── FORMS PASIF ──────────────────────────────────────────────────────────────
+
 function bindPassiveForms() {
   elements.newsletters.forEach((newsletter) => {
     newsletter.addEventListener("submit", (event) => event.preventDefault());
   });
 }
 
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+
 function bindSettings() {
   elements.settingsForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = new FormData(elements.settingsForm);
+
     const settings = {
       currency: String(form.get("currency")),
       theme: String(form.get("theme")),
@@ -131,11 +149,9 @@ function bindSettings() {
   });
 
   elements.exportDatabaseButton.addEventListener("click", () => {
-    const databaseJson = exportDatabase();
-    const blob = new Blob([databaseJson], { type: "application/json" });
+    const blob = new Blob([exportDatabase()], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-
     link.href = url;
     link.download = "rehome-database.json";
     link.click();
@@ -150,10 +166,13 @@ function bindSettings() {
   });
 }
 
+// ── PROFILE ──────────────────────────────────────────────────────────────────
+
 function bindProfile() {
   elements.profileForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = new FormData(elements.profileForm);
+
     const session = updateSession({
       name: String(form.get("name")).trim() || "Vivian",
       location: String(form.get("location")).trim() || "Copenhagen, DK",
@@ -166,24 +185,26 @@ function bindProfile() {
   });
 }
 
+// ── UTILITY ACTIONS ───────────────────────────────────────────────────────────
+
+const ACTION_MESSAGES = {
+  "load-more":       "More treasures are queued for the next catalog page.",
+  "select-files":    "Image upload will connect to Supabase Storage next.",
+  valuation:         "AI valuation demo complete: fair price remains $1,240.",
+  "make-offer":      "Offer draft created. Checkout messaging can be added next.",
+  "edit-shipping":   "Shipping editor will open when checkout forms are wired.",
+  "download-report": "Seller performance report prepared for export."
+};
+
 function bindUtilityActions() {
   elements.actionButtons.forEach((button) => {
     button.addEventListener("click", async () => {
       const action = button.dataset.action;
-      if (action === "submit-listing") {
-        return;
-      }
 
-      const messages = {
-        "load-more": "More treasures are queued for the next catalog page.",
-        "select-files": "Image upload will connect to Supabase Storage next.",
-        valuation: "AI valuation demo complete: fair price remains $1,240.",
-        "make-offer": "Offer draft created. Checkout messaging can be added next.",
-        "edit-shipping": "Shipping editor will open when checkout forms are wired.",
-        "download-report": "Seller performance report prepared for export."
-      };
+      // submit-listing ditangani oleh newListingForm di bawah
+      if (action === "submit-listing") return;
 
-      showToast(messages[action] ?? "Action acknowledged.");
+      showToast(ACTION_MESSAGES[action] ?? "Action acknowledged.");
     });
   });
 
@@ -201,8 +222,11 @@ function bindUtilityActions() {
   });
 }
 
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+
 async function boot() {
   elements.loginForm.addEventListener("submit", handleLogin);
+
   bindRouting();
   bindListingFilters();
   bindCategoryFilters();
@@ -212,6 +236,7 @@ async function boot() {
   bindProfile();
   bindUtilityActions();
 
+  // Cek session Supabase; jika ada, langsung masuk ke app
   const supabaseUser = await getCurrentUserWithProfile();
   if (supabaseUser) {
     setSession(supabaseUser);
