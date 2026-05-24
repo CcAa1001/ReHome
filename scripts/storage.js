@@ -1,11 +1,13 @@
+// scripts/storage.js
 import { sessionKey } from "./config.js";
 import { loadDatabase, updateDatabase } from "./database.js";
+import state from "./state.js"; // ← tambahkan ini
 
 export { loadDatabase, resetDatabase, exportDatabase, getDatabaseStats } from "./database.js";
 
 export function authenticate(email, password) {
   const database = loadDatabase();
-  return database.users.find((user) => user.email === email && user.password === password);
+  return database.users.find((u) => u.email === email && u.password === password);
 }
 
 export function setSession(user) {
@@ -28,21 +30,23 @@ export function getSession() {
 
 export function updateSession(updates) {
   const session = getSession() ?? {};
-  const nextSession = { ...session, ...updates };
-  localStorage.setItem(sessionKey, JSON.stringify(nextSession));
-  return nextSession;
+  const next = { ...session, ...updates };
+  localStorage.setItem(sessionKey, JSON.stringify(next));
+  return next;
 }
 
 export function addCartItem(item) {
-  updateDatabase((database) => {
-    database.cart.push(item);
-  });
+  updateDatabase((db) => { db.cart.push(item); });
+
+  // ← Beritahu seluruh app bahwa cart berubah
+  state.publish("cartUpdated", loadDatabase().cart);
 }
 
 export function removeCartItem(index) {
-  updateDatabase((database) => {
-    database.cart.splice(index, 1);
-  });
+  updateDatabase((db) => { db.cart.splice(index, 1); });
+
+  // ← Beritahu seluruh app bahwa cart berubah
+  state.publish("cartUpdated", loadDatabase().cart);
 }
 
 export function getSettings() {
@@ -50,10 +54,7 @@ export function getSettings() {
 }
 
 export function saveSettings(settings) {
-  updateDatabase((database) => {
-    database.settings = {
-      ...database.settings,
-      ...settings
-    };
+  updateDatabase((db) => {
+    db.settings = { ...db.settings, ...settings };
   });
 }

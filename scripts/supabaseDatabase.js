@@ -1,6 +1,34 @@
 import { products as fallbackProducts } from "./data.js";
 import { getSupabaseClient, isSupabaseConfigured } from "./supabaseClient.js";
 
+function resolveCategory(raw = "") {
+  const c = String(raw).toLowerCase();
+  if (c.includes("decor"))   return "decor";
+  if (c.includes("storage")) return "storage";
+  if (c.includes("textile")) return "textiles";
+  return "seating";
+}
+
+export function formatProduct(row) {
+  const price = Number(row.price ?? 0);
+
+  return {
+    id:          row.id,
+    title:       row.title,
+    maker:       row.maker ?? "ReHome",
+    category:    resolveCategory(row.category),       // ← bersih
+    meta:        `${row.condition ?? "Excellent"} - ${row.category ?? "Furniture"}`,
+    price:       `$${price.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
+    rrp:         row.is_featured ? "Curated Selection" : "Authenticated",
+    condition:   row.condition ?? "Excellent",
+    image:       row.image_url || "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png",
+    alt:         row.title,
+    amount:      price,
+    carbonOffset: Number(row.carbon_offset ?? 0)
+  };
+}
+
+
 export function formatProduct(row) {
   const price = Number(row.price ?? 0);
 
@@ -8,13 +36,9 @@ export function formatProduct(row) {
     id: row.id,
     title: row.title,
     maker: row.maker ?? "ReHome",
-    category: String(row.category ?? "furniture").toLowerCase().includes("decor")
-      ? "decor"
-      : String(row.category ?? "furniture").toLowerCase().includes("storage")
-        ? "storage"
-        : String(row.category ?? "furniture").toLowerCase().includes("textile")
-          ? "textiles"
-          : "seating",
+
+    category: resolveCategory(row.category),
+
     meta: `${row.condition ?? "Excellent"} - ${row.category ?? "Furniture"}`,
     price: `$${price.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
     rrp: row.is_featured ? "Curated Selection" : "Authenticated",
