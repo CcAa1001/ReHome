@@ -1,17 +1,18 @@
 // scripts/app.js
 import { elements } from "./dom.js";
 import { navigate, showApp } from "./router.js";
-
-// ── IMPORT YANG SUDAH DIPERBAIKI JALURNYA ────────────────────────────────────
-import { renderAll } from "./render/index.js";
-import { bindCartRemoval, renderCart } from "./render/cart.js";
-import { renderAccount } from "./render/account.js";
-import { renderListings, setListingFilter } from "./render/listings.js";
-import { renderSettings } from "./render/settings.js";
-import { renderProducts, setCategoryFilter } from "./render/products.js";
 import { bindLoginPage } from "./render/login.js";
-// ─────────────────────────────────────────────────────────────────────────────
-
+import { 
+  renderAll, 
+  renderAccount, 
+  renderCart, 
+  renderListings, 
+  renderProducts, 
+  renderSettings 
+} from "./render/index.js";
+import { bindCartRemoval } from "./render/cart.js";
+import { setListingFilter } from "./render/listings.js";
+import { setCategoryFilter } from "./render/products.js";
 import { addCartItem, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
 import {
   addRemoteCartItem,
@@ -23,177 +24,7 @@ import {
 } from "./supabaseDatabase.js";
 import { showToast } from "./ui.js";
 
-// ── ROUTING ──────────────────────────────────────────────────────────────────
-
-function bindRouting() {
-  elements.routeButtons.forEach((button) => {
-    button.addEventListener("click", () => navigate(button.dataset.route));
-  });
-}
-
-// ── FILTERS ──────────────────────────────────────────────────────────────────
-
-function bindListingFilters() {
-  elements.filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      elements.filterButtons.forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      setListingFilter(button.dataset.filter);
-      renderListings();
-    });
-  });
-}
-
-function bindCategoryFilters() {
-  elements.categoryButtons.forEach((button) => {
-    button.addEventListener("click", async () => {
-      elements.categoryButtons.forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-      setCategoryFilter(button.dataset.category);
-      await renderProducts();
-    });
-  });
-}
-
-// ── CART ─────────────────────────────────────────────────────────────────────
-
-function bindCartActions() {
-  elements.addCartButton.addEventListener("click", async () => {
-    const products = await getProducts();
-
-    const featuredProduct =
-      products.find((p) => p.title === "Curated Oak Lounge Chair") ??
-      products.find((p) => p.title.includes("Oak")) ?? {
-        title: "Curated Oak Lounge Chair",
-        label: "Sustainably Sourced",
-        meta: "Excellent pre-owned condition",
-        price: "$1,240.00",
-        amount: 1240,
-        carbonOffset: 4,
-        image: "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png"
-      };
-
-    // Coba simpan ke Supabase dulu; fallback ke local storage
-    const remoteAdded = await addRemoteCartItem(featuredProduct);
-    if (!remoteAdded) {
-      addCartItem(featuredProduct);
-    }
-
-    await renderCart();
-    showToast(`Added ${featuredProduct.title} to your selection.`);
-    navigate("cart");
-  });
-
-  bindCartRemoval(async () => {
-    await renderCart();
-    await renderSettings();
-    showToast("Item removed from your selection.");
-  });
-}
-
-// ── FORMS PASIF ──────────────────────────────────────────────────────────────
-
-function bindPassiveForms() {
-  elements.newsletters.forEach((newsletter) => {
-    newsletter.addEventListener("submit", (event) => event.preventDefault());
-  });
-}
-
-// ── SETTINGS ─────────────────────────────────────────────────────────────────
-
-function bindSettings() {
-  elements.settingsForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = new FormData(elements.settingsForm);
-
-    const settings = {
-      currency: String(form.get("currency")),
-      theme: String(form.get("theme")),
-      emailNotifications: form.has("emailNotifications"),
-      carbonTracking: form.has("carbonTracking")
-    };
-
-    saveSettings(settings);
-    await saveRemoteSettings(settings);
-    await renderSettings();
-    showToast("Settings saved.");
-  });
-
-  elements.exportDatabaseButton.addEventListener("click", () => {
-    const blob = new Blob([exportDatabase()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "rehome-database.json";
-    link.click();
-    URL.revokeObjectURL(url);
-    showToast("Database JSON export started.");
-  });
-
-  elements.resetDatabaseButton.addEventListener("click", async () => {
-    resetDatabase();
-    await renderAll();
-    showToast("Demo database reset.");
-  });
-}
-
-// ── PROFILE ──────────────────────────────────────────────────────────────────
-
-function bindProfile() {
-  elements.profileForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = new FormData(elements.profileForm);
-
-    const session = updateSession({
-      name: String(form.get("name")).trim() || "Vivian",
-      location: String(form.get("location")).trim() || "Copenhagen, DK",
-      role: String(form.get("role"))
-    });
-
-    await updateRemoteProfile(session);
-    renderAccount();
-    showToast(`Profile saved. Current demo role: ${session.role}.`);
-  });
-}
-
-// ── UTILITY ACTIONS ───────────────────────────────────────────────────────────
-
-const ACTION_MESSAGES = {
-  "load-more":       "More treasures are queued for the next catalog page.",
-  "select-files":    "Image upload will connect to Supabase Storage next.",
-  valuation:         "AI valuation demo complete: fair price remains $1,240.",
-  "make-offer":      "Offer draft created. Checkout messaging can be added next.",
-  "edit-shipping":   "Shipping editor will open when checkout forms are wired.",
-  "download-report": "Seller performance report prepared for export."
-};
-
-function bindUtilityActions() {
-  elements.actionButtons.forEach((button) => {
-    button.addEventListener("click", async () => {
-      const action = button.dataset.action;
-
-      // submit-listing ditangani oleh newListingForm di bawah
-      if (action === "submit-listing") return;
-
-      showToast(ACTION_MESSAGES[action] ?? "Action acknowledged.");
-    });
-  });
-
-  elements.newListingForm?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    try {
-      const product = await createRemoteProduct(new FormData(elements.newListingForm));
-      await renderProducts();
-      showToast(`${product.title} was inserted into Supabase products.`);
-      navigate("shop");
-    } catch (error) {
-      showToast(error.message ?? "Listing could not be saved yet.");
-    }
-  });
-}
-
-// ── BOOT ─────────────────────────────────────────────────────────────────────
+// ── BOOT (Hanya panggil bind saat elemen tersedia) ──────────────────────────
 
 async function boot() {
   bindLoginPage();
@@ -206,15 +37,109 @@ async function boot() {
   bindProfile();
   bindUtilityActions();
 
-  // Cek session Supabase; jika ada, langsung masuk ke app
-  const supabaseUser = await getCurrentUserWithProfile();
-  if (supabaseUser) {
-    setSession(supabaseUser);
+  // Cek session
+  try {
+    const supabaseUser = await getCurrentUserWithProfile();
+    if (supabaseUser) setSession(supabaseUser);
+    
+    if (supabaseUser || hasSession()) {
+      await showApp("home", renderAll);
+    }
+  } catch (e) {
+    console.error("Boot error:", e);
+    if (hasSession()) await showApp("home", renderAll);
+  }
+}
+
+// ── BINDING FUNCTIONS ──────────────────────────────────────────────────────
+
+function bindRouting() {
+  elements.routeButtons.forEach((button) => {
+    button.addEventListener("click", () => navigate(button.dataset.route));
+  });
+}
+
+function bindListingFilters() {
+  elements.filterButtons?.forEach((button) => {
+    button.addEventListener("click", () => {
+      elements.filterButtons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      setListingFilter(button.dataset.filter);
+      renderListings();
+    });
+  });
+}
+
+function bindCategoryFilters() {
+  elements.categoryButtons?.forEach((button) => {
+    button.addEventListener("click", async () => {
+      elements.categoryButtons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      setCategoryFilter(button.dataset.category);
+      await renderProducts();
+    });
+  });
+}
+
+function bindCartActions() {
+  if (elements.addCartButton) {
+    elements.addCartButton.addEventListener("click", async () => {
+      const products = await getProducts();
+      const featured = products[0]; // Ambil produk pertama sebagai contoh
+      
+      const remoteAdded = await addRemoteCartItem(featured);
+      if (!remoteAdded) addCartItem(featured);
+
+      await renderCart();
+      showToast(`Added to selection.`);
+      navigate("cart");
+    });
   }
 
-  if (supabaseUser || hasSession()) {
-    await showApp("home", renderAll);
-  }
+  bindCartRemoval(async () => {
+    await renderCart();
+    await renderSettings();
+    showToast("Item removed.");
+  });
+}
+
+function bindPassiveForms() {
+  elements.newsletters?.forEach((f) => f.addEventListener("submit", (e) => e.preventDefault()));
+}
+
+function bindSettings() {
+  elements.settingsForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = new FormData(elements.settingsForm);
+    const settings = { currency: data.get("currency"), theme: data.get("theme") };
+    saveSettings(settings);
+    await saveRemoteSettings(settings);
+    await renderSettings();
+    showToast("Settings saved.");
+  });
+}
+
+function bindProfile() {
+  elements.profileForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = new FormData(elements.profileForm);
+    const session = updateSession({ name: data.get("name"), role: data.get("role") });
+    await updateRemoteProfile(session);
+    renderAccount();
+    showToast("Profile saved.");
+  });
+}
+
+function bindUtilityActions() {
+  elements.newListingForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await createRemoteProduct(new FormData(elements.newListingForm));
+      await renderProducts();
+      showToast("Listing created!");
+      navigate("shop");
+    } catch (err) { showToast("Error saving listing."); }
+  });
 }
 
 boot();

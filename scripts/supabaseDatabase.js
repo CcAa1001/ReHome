@@ -29,27 +29,6 @@ export function formatProduct(row) {
 }
 
 
-export function formatProduct(row) {
-  const price = Number(row.price ?? 0);
-
-  return {
-    id: row.id,
-    title: row.title,
-    maker: row.maker ?? "ReHome",
-
-    category: resolveCategory(row.category),
-
-    meta: `${row.condition ?? "Excellent"} - ${row.category ?? "Furniture"}`,
-    price: `$${price.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-    rrp: row.is_featured ? "Curated Selection" : "Authenticated",
-    condition: row.condition ?? "Excellent",
-    image: row.image_url || "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png",
-    alt: row.title,
-    amount: price,
-    carbonOffset: Number(row.carbon_offset ?? 0)
-  };
-}
-
 function formatCartItem(row) {
   const product = formatProduct(row.products ?? row.product ?? row);
 
