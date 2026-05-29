@@ -1,16 +1,12 @@
 // scripts/render/login.js
-import { navigate } from "../router.js";
-import { loginUser, registerUser } from "../auth.js";
-import { authenticate, setSession, hasSession } from "../storage.js";
-import { showToast } from "../ui.js";
-import { getCurrentUserWithProfile } from "../supabaseDatabase.js";
-import { applyRoleUI } from "../roles.js";
+import { navigate }                    from "../router.js";
+import { loginUser, registerUser }     from "../auth.js";
+import { authenticate, setSession, createLocalDemoUser } from "../storage.js"; // ← tambah createLocalDemoUser
+import { showToast }                   from "../ui.js";
+import { getCurrentUserWithProfile }   from "../supabaseDatabase.js";
+import { applyRoleUI }                 from "../roles.js";
 
-// ── STATE LOKAL ───────────────────────────────────────────────────────────────
-
-let activeTab = "login"; // "login" | "register"
-
-// ── BIND ──────────────────────────────────────────────────────────────────────
+let activeTab = "login";
 
 export function bindLoginPage() {
   const form        = document.querySelector("[data-login-form]");
@@ -19,27 +15,26 @@ export function bindLoginPage() {
   const message     = document.querySelector("[data-form-message]");
   const nameField   = document.querySelector("[data-name-field]");
 
-  if (!form) return; // view belum ada di DOM
+  if (!form) return;
 
-  // Ganti tab Login ↔ Register
-  tabLogin?.addEventListener("click", () => switchTab("login", nameField, tabLogin, tabRegister));
+  tabLogin?.addEventListener("click",    () => switchTab("login",    nameField, tabLogin, tabRegister));
   tabRegister?.addEventListener("click", () => switchTab("register", nameField, tabLogin, tabRegister));
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     message.textContent = "";
 
-    const data     = new FormData(form);
-    const email    = String(data.get("email")).trim().toLowerCase();
-    const password = String(data.get("password"));
-    const name     = String(data.get("name") ?? "").trim();
-
+    const data      = new FormData(form);
+    const email     = String(data.get("email")).trim().toLowerCase();
+    const password  = String(data.get("password"));
+    const name      = String(data.get("name") ?? "").trim();
     const submitBtn = form.querySelector("[type='submit']");
+
     submitBtn.disabled = true;
 
     try {
       if (activeTab === "login") {
-        await handleLogin(email, password);
+        await handleLogin(email, password, message);
       } else {
         await handleRegister(email, password, name, message);
       }
@@ -53,31 +48,44 @@ export function bindLoginPage() {
 
 // ── HANDLERS ─────────────────────────────────────────────────────────────────
 
-async function handleLogin(email, password) {
+async function handleLogin(email, password, messageEl) {
   let user;
+  let isDemo = false;
 
   try {
-    user = await loginUser(email, password);          // coba Supabase dulu
+    // Jalur 1: Supabase auth
+    user = await loginUser(email, password);
   } catch {
-    user = authenticate(email, password);             // fallback local demo
-    if (!user) throw new Error("Email atau password tidak cocok.");
+    // Jalur 2: Local demo database
+    user = authenticate(email, password);
+
+    if (!user) {
+      // Jalur 3: Auto-register sebagai demo user (frictionless testing)
+      user    = createLocalDemoUser(email, password);
+      isDemo  = true;
+    }
+
     setSession(user);
   }
 
   // Jika Supabase berhasil, ambil profile lengkap
-  if (user?.id || user?.userId) {
+  if (user?.id && !isDemo) {
     const full = await getCurrentUserWithProfile();
     if (full) setSession(full);
   }
 
   applyRoleUI();
 
-  showToast(`Welcome back, ${user.name ?? user.email}!`);
+  const greeting = isDemo
+    ? `Welcome, ${user.name}! (Demo mode — data is local only)`
+    : `Welcome back, ${user.name ?? user.email}!`;
+
+  showToast(greeting);
   await navigateAfterAuth();
 }
 
 async function handleRegister(email, password, name, messageEl) {
-  if (!name) throw new Error("Please enter your name.");
+  if (!name)              throw new Error("Please enter your name.");
   if (password.length < 8) throw new Error("Password must be at least 8 characters.");
 
   try {
@@ -85,7 +93,6 @@ async function handleRegister(email, password, name, messageEl) {
     showToast("Account created! Welcome to ReHome.");
     await navigateAfterAuth();
   } catch (error) {
-    // Email konfirmasi required
     if (error.message.includes("Check your email")) {
       messageEl.textContent = "📬 Check your email to confirm your account.";
       return;
@@ -95,22 +102,19 @@ async function handleRegister(email, password, name, messageEl) {
 }
 
 async function navigateAfterAuth() {
-  // Lazy import agar tidak ada circular dependency
   const { renderAll } = await import("./index.js");
   const { showApp }   = await import("../router.js");
   await showApp("home", renderAll);
   applyRoleUI();
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-
 function switchTab(tab, nameField, tabLogin, tabRegister) {
   activeTab = tab;
   const isRegister = tab === "register";
 
   if (nameField) nameField.style.display = isRegister ? "block" : "none";
-  tabLogin?.classList.toggle("active", !isRegister);
-  tabRegister?.classList.toggle("active", isRegister);
+  tabLogin?.classList.toggle("active",    !isRegister);
+  tabRegister?.classList.toggle("active",  isRegister);
 
   const submitBtn = document.querySelector("[data-login-form] [type='submit']");
   if (submitBtn) submitBtn.textContent = isRegister ? "Create Account" : "Sign In";

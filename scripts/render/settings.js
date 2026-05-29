@@ -1,6 +1,6 @@
 import { elements } from "../dom.js";
 import { getDatabaseStats, getSettings, saveSettings } from "../storage.js";
-import { getRemoteSettings } from "../supabaseDatabase.js?v=20260524-database4";
+import { getRemoteSettings } from "../supabaseDatabase.js";
 
 export async function renderSettings() {
   const remoteSettings = await getRemoteSettings();
