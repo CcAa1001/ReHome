@@ -12,44 +12,39 @@
 <body>
   <main id="login" class="login-screen">
     <section class="login-visual">
-      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="ReHome Interior">
+      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="Sunlit interior with plants and a wood side table">
       <div class="visual-overlay"></div>
-      <span class="brand-mark">ReHome</span>
+      <a class="brand-mark" href="#">ReHome</a>
       <div class="login-tagline">
         <h1>Give Things a<br>Second Life</h1>
         <p>Join our community of conscious curators. Discover pre-loved treasures that tell a story.</p>
       </div>
     </section>
 
-    <section class="login-panel">
-      <form class="login-card" data-login-form autocomplete="off">
-        <span class="panel-logo">ReHome</span>
+    <section class="login-panel" aria-labelledby="login-title">
+      <form class="login-card" data-login-form>
+        <a class="panel-logo" href="#">ReHome</a>
         
-        <div class="login-tabs">
-          <button type="button" data-tab="login" class="active ghost-button">Sign In</button>
-          <button type="button" data-tab="register" class="ghost-button">Register</button>
-        </div>
-
-        <h2 data-login-heading>Welcome Back</h2>
-        <p class="muted" data-login-subheading>Continue your journey of mindful luxury.</p>
+        <h2 id="login-title">Welcome Back</h2>
+        <p class="muted">Continue your journey of mindful luxury.</p>
 
         <label data-name-field style="display: none;">
-          <span class="label-row">Full Name</span>
+          <span>Full Name</span>
           <input name="name" type="text" placeholder="Vivian">
         </label>
 
         <label>
-          <span class="label-row">Email Address</span>
-          <input name="email" type="email" placeholder="name@example.com" required>
+          <span>Email Address</span>
+          <input name="email" type="email" placeholder="name@example.com" autocomplete="email" value="vivian@rehome.test" required>
         </label>
 
         <label>
-          <span class="label-row">Password <button type="button" class="forgot-link">Forgot?</button></span>
-          <input name="password" type="password" placeholder="••••••••" required>
+          <span class="label-row">Password <a href="#">Forgot?</a></span>
+          <input name="password" type="password" placeholder="........" autocomplete="current-password" value="rehome123" required>
         </label>
 
-        <button class="primary-button login-submit" type="submit">Sign In</button>
-        <p class="form-message" data-form-message></p>
+        <button class="primary-button" type="submit">Sign In</button>
+        <p class="form-message" aria-live="polite" data-form-message></p>
 
         <div class="divider"><span>OR CONTINUE WITH</span></div>
 
@@ -58,12 +53,10 @@
           <button type="button" class="social-button">Apple</button>
         </div>
 
-        <p class="join-text" data-login-footer>
-          Don't have an account? <button type="button" data-tab-trigger="register" class="text-button">Join the movement</button>
-        </p>
+        <p class="join-text">Don't have an account? <a href="#">Join the movement</a></p>
       </form>
 
-      <div class="trust-row">
+      <div class="trust-row" aria-label="ReHome trust badges">
         <span>Eco-conscious</span>
         <span>Certified sellers</span>
       </div>
@@ -74,133 +67,487 @@
     <header class="site-header">
       <nav class="nav-shell" aria-label="Main navigation">
         <button class="logo" type="button" data-route="home">ReHome</button>
+        
         <div class="nav-links">
           <button type="button" data-route="shop">Shop</button>
           <button type="button" data-route="sustain">Sustain</button>
+          <button type="button" data-route="curated">Curated</button>
           <button type="button" data-route="seller" data-role-nav="seller">Sell</button>
         </div>
+        
         <div class="nav-actions">
           <label class="search-field">
             <span class="sr-only">Search treasures</span>
             <input type="search" placeholder="Search treasures ...">
           </label>
-          <button type="button" data-route="cart" class="cart-button" aria-label="Open cart"><span data-cart-count>3</span></button>
-          <button type="button" data-route="profile" class="profile-button">Profile</button>
-          <button type="button" data-route="admin" class="admin-button" data-role-nav="admin">Admin</button>
-          <button type="button" data-route="settings" class="settings-button">Settings</button>
-          <span class="role-badge" data-role-badge>Buyer</span>
-          <button type="button" class="logout-button" data-logout>Logout</button>
+          <button type="button" data-route="cart" class="icon-button cart-button" aria-label="Open cart">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="cart-badge" data-cart-count>3</span>
+          </button>
+          <button type="button" data-route="profile" class="icon-button profile-button" aria-label="Profile">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </button>
         </div>
       </nav>
     </header>
 
+    <!-- ── HOME ── -->
     <section class="view is-active" data-view="home">
-      </section>
+      <div class="page-shell">
+        <section class="greeting">
+          <h1>Welcome back, <span data-user-name>Vivian</span>.</h1>
+          <p>Your conscious curation journey continues.</p>
+        </section>
 
+        <section class="feature-grid">
+          <article class="feature-card price-card" data-role-nav="seller">
+            <div class="card-top">
+              <span class="round-icon">01</span>
+              <span class="pill">Quick action</span>
+            </div>
+            <h2>Find a piece</h2>
+            <p>Browse curated items, save them to your cart, then checkout when you are ready.</p>
+            <button class="primary-button" type="button" data-route="shop">Open Shop</button>
+          </article>
+
+          <article class="feature-card price-card">
+            <div class="card-top">
+              <span class="round-icon">02</span>
+              <span class="pill">For sellers</span>
+            </div>
+            <h2>List an item</h2>
+            <p>Seller and admin menus appear only when your profile role allows those tools.</p>
+            <button class="primary-button" type="button" data-route="seller" data-role-nav="seller">Seller Tools</button>
+          </article>
+
+          <article class="feature-card impact-card">
+            <div class="impact-copy">
+              <span class="eyebrow">Cart Status</span>
+              <h2>Ready to checkout</h2>
+              <div class="stats">
+                <div><strong data-dashboard-cart-count>3</strong><span>Cart Items</span></div>
+                <div><strong>0kg</strong><span>Saved This Order</span></div>
+              </div>
+            </div>
+            <img src="assets/impact.png" alt="Sustainability impact figure">
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <div>
+            <h2>Smart Recommendations</h2>
+            <p>Curated for your Scandinavian aesthetic.</p>
+          </div>
+          <button type="button" class="text-link" data-route="shop">View Gallery</button>
+        </section>
+
+        <section class="product-grid" aria-label="Smart recommendations" data-home-products></section>
+
+        <section class="curated-band decorative-section">
+          <div class="section-heading">
+            <div>
+              <h2>Curated Treasures</h2>
+              <p>Editorial collections for slower, better interiors.</p>
+            </div>
+          </div>
+          <div class="curated-grid">
+            <article style="--img: url('assets/interior.jpg')">
+              <span>Editorial</span>
+              <h3>The Kinfolk Edit</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+            <article style="--img: url('assets/design.jpg')">
+              <span>Curation</span>
+              <h3>Tactile Textures</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+            <article style="--img: url('assets/luxury.jpg')">
+              <span>Limited</span>
+              <h3>Midnight Serenity</h3>
+              <button type="button" data-route="curated">Explore Lookbook</button>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ── SHOP ── -->
     <section class="view" data-view="shop">
       <div class="page-shell split-page">
         <aside class="filter-panel">
           <h2>Category</h2>
-          <button class="active" type="button" data-category="all">All Furniture</button>
-          <button type="button" data-category="seating">Seating</button>
-          <button type="button" data-category="storage">Storage &amp; Tables</button>
-          <button type="button" data-category="textiles">Textiles</button>
-          <button type="button" data-category="decor">Decor</button>
+          <div class="filter-group">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="category" value="all" checked>
+              <span class="checkmark"></span>
+              All Furniture
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="category" value="seating">
+              <span class="checkmark"></span>
+              Seating
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="category" value="storage">
+              <span class="checkmark"></span>
+              Storage & Tables
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="category" value="textiles">
+              <span class="checkmark"></span>
+              Textiles
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="category" value="decor">
+              <span class="checkmark"></span>
+              Decor
+            </label>
+          </div>
+
           <h2>Price Range</h2>
-          <div class="range-row"><span>$0</span><span>$5000+</span></div>
+          <div class="price-slider-container">
+            <div class="slider-track">
+              <div class="slider-fill"></div>
+              <input type="range" min="0" max="5000" value="0" class="slider-thumb slider-left">
+              <input type="range" min="0" max="5000" value="5000" class="slider-thumb slider-right">
+            </div>
+            <div class="price-inputs">
+              <div class="price-box"><span>$</span> 0</div>
+              <div class="price-dash">-</div>
+              <div class="price-box"><span>$</span> 5000+</div>
+            </div>
+          </div>
+
           <h2>Condition</h2>
-          <div class="chip-row"><span>Like New</span><span>Excellent</span><span>Good</span><span>Fair</span></div>
+          <div class="filter-group">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="condition" value="like-new" checked>
+              <span class="checkmark"></span>
+              Like New
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="condition" value="excellent" checked>
+              <span class="checkmark"></span>
+              Excellent
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="condition" value="good">
+              <span class="checkmark"></span>
+              Good
+            </label>
+            <label class="custom-checkbox">
+              <input type="checkbox" name="condition" value="fair">
+              <span class="checkmark"></span>
+              Fair
+            </label>
+          </div>
+
           <article class="eco-card">
             <span>Eco Choice</span>
             <p>Shop preloved to reduce carbon footprint by up to 82% per item.</p>
           </article>
         </aside>
+        
         <section class="catalog-content">
-          <div class="section-heading compact">
+          <div class="catalog-header">
             <div>
               <h1>Curated Findings</h1>
               <p>Discover 124 preloved architectural gems.</p>
             </div>
+            <div class="catalog-controls">
+              <div class="view-toggles">
+                <button class="active" type="button" aria-label="Grid view">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </button>
+                <button type="button" aria-label="List view">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </button>
+              </div>
+              <div class="sort-dropdown">
+                <span class="sort-label">Sort by:</span>
+                <select>
+                  <option>Newest Added</option>
+                  <option>Best Selling</option>
+                  <option>Price: Low to High</option>
+                  <option>Price: High to Low</option>
+                </select>
+              </div>
+            </div>
           </div>
+          
           <div class="catalog-grid" data-catalog-products></div>
           <button class="outline-wide" type="button" data-action="load-more">Load More Treasures</button>
         </section>
       </div>
     </section>
 
+    <!-- ── SUSTAIN ── -->
     <section class="view" data-view="sustain">
       <div class="page-shell">
-        <section class="hero-copy">
-          <span class="eyebrow">Artificial Intelligence</span>
-          <h1>AI Price Checker</h1>
-          <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate, fair-market valuation for your pre-loved luxury goods.</p>
-        </section>
-        <section class="valuation-layout">
-          <article class="upload-panel">
-            <div class="tabs"><span class="active">Analyze Item</span><span>Valuation Result</span></div>
-            <div class="drop-zone">
-              <strong>Upload or drag photos</strong>
-              <p>AI works best with clear, high-resolution shots from multiple angles.</p>
-              <button type="button" data-action="select-files">Select Files</button>
-            </div>
-            <label>Item Category<input value="Scandinavian Mid-Century Furniture"></label>
-            <div class="form-pair">
-              <label>Item Condition<input value="Pristine (Like New)"></label>
-              <label>Original Price (Optional)<input value="$0.00"></label>
-            </div>
-            <button class="primary-button" type="button" data-action="valuation">Get AI Valuation</button>
-          </article>
-          <article class="result-panel">
-            <span class="eyebrow">Estimated Fair Price</span>
-            <h2>$1,240 USD</h2>
-            <strong>Excellent Fair Price</strong>
-            <p>Within 3% of market average.</p>
-            <div class="insight-grid">
-              <div><span>Market Sentiment</span><strong>Strong Demand</strong></div>
-              <div><span>Appreciating Value</span><strong>+12% vs last year</strong></div>
-              <div><span>Fast Turnover</span><strong>Avg. 4 days to sell</strong></div>
-            </div>
-            <p class="eco-score">Eco-Check Score: 98/100. Reselling this item offsets 4kg of CO2.</p>
-          </article>
-        </section>
-        <section class="approach-grid decorative-section">
-          <article><h3>Visual Triage</h3><p>Identifies designers, manufacturing periods, and material quality through computer vision.</p></article>
-          <article><h3>Global Indexing</h3><p>Cross-referenced against historical auction data and real-time marketplace trends globally.</p></article>
-          <article><h3>Sustainable Value</h3><p>Calculates Earth Credit, adding value based on longevity and low environmental impact.</p></article>
+        <section class="greeting">
+          <h1>Sustain</h1>
+          <p>Sustainability features coming soon.</p>
         </section>
       </div>
     </section>
 
-    <section class="view" data-view="curated" id="curated-container">
+    <!-- ── CURATED (AI PRICE CHECKER) ── -->
+    <section class="view" data-view="curated">
+      <div class="page-shell">
+
+        <section class="ai-hero-copy">
+          <span class="eyebrow">Artificial Intelligence</span>
+          <h1>AI Price Checker</h1>
+          <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate, fair-market valuation for your pre-loved luxury goods.</p>
+        </section>
+
+        <section class="ai-valuation-layout">
+
+          <!-- LEFT: Upload / Analyze Panel -->
+          <article class="ai-upload-panel">
+            <div class="ai-panel-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 3 3.5.5-2.5 2.5.5 3.5L12 11l-3 1.5.5-3.5L7 6.5l3.5-.5z"/><path d="M5 3l.8 1.8L7.5 5l-1.7 1.7.5 2.3L5 8l-1.3 1 .5-2.3L2.5 5l1.7-.2z"/><path d="M19 13l.8 1.8 1.7.2-1.7 1.7.5 2.3L19 18l-1.3 1 .5-2.3-1.7-1.7 1.7-.2z"/></svg>
+              <h2>Analyze Item</h2>
+            </div>
+
+            <div class="ai-drop-zone">
+              <div class="ai-upload-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 16 12 12 8 16"></polyline>
+                  <line x1="12" y1="12" x2="12" y2="21"></line>
+                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                </svg>
+              </div>
+              <strong>Upload or drag photos</strong>
+              <p>AI works best with clear, high-resolution shots from multiple angles.</p>
+              <button class="ai-select-btn" type="button">Select Files</button>
+            </div>
+
+            <div class="ai-form-field">
+              <label>Item Category</label>
+              <div class="ai-select-wrapper">
+                <select>
+                  <option>Scandinavian Mid-Century Furniture</option>
+                  <option>Luxury Handbags</option>
+                  <option>Fine Art &amp; Prints</option>
+                  <option>Vintage Watches</option>
+                  <option>Designer Clothing</option>
+                </select>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="ai-form-row">
+              <div class="ai-form-field">
+                <label>Item Condition</label>
+                <div class="ai-select-wrapper">
+                  <select>
+                    <option>Pristine (Like New)</option>
+                    <option>Excellent</option>
+                    <option>Good</option>
+                    <option>Fair</option>
+                  </select>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <div class="ai-form-field">
+                <label>Original Price (Optional)</label>
+                <div class="ai-select-wrapper">
+                  <select>
+                    <option>$0.00</option>
+                    <option>Under $500</option>
+                    <option>$500–$1,000</option>
+                    <option>$1,000–$5,000</option>
+                    <option>Over $5,000</option>
+                  </select>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+            </div>
+
+            <button class="ai-valuation-btn" type="button" data-action="valuation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 3 3.5.5-2.5 2.5.5 3.5L12 11l-3 1.5.5-3.5L7 6.5l3.5-.5z"/></svg>
+              Get AI Valuation
+            </button>
+          </article>
+
+          <!-- RIGHT: Result Panel -->
+          <article class="ai-result-panel">
+
+            <div class="ai-result-topbar">
+              <div class="ai-result-tab">
+                <span class="ai-dot"></span>
+                Valuation Result
+              </div>
+              <div class="ai-result-check">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="ai-price-block">
+              <span class="ai-price-label">Estimated Fair Price</span>
+              <div class="ai-price-value">$1,240 <span>USD</span></div>
+            </div>
+
+            <div class="ai-fair-badge">
+              <div class="ai-fair-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 12 11 14 15 10"></polyline><circle cx="12" cy="12" r="10"></circle></svg>
+              </div>
+              <div>
+                <strong>Excellent Fair Price</strong>
+                <span>Within 3% of market average.</span>
+              </div>
+            </div>
+
+            <div class="ai-sentiment-row">
+              <span>Market Sentiment</span>
+              <strong>Strong Demand</strong>
+            </div>
+            <div class="ai-sentiment-bar">
+              <div class="ai-sentiment-fill" style="width: 82%"></div>
+            </div>
+
+            <div class="ai-insights-card">
+              <h3>Market Insights</h3>
+              <div class="ai-insight-item">
+                <div class="ai-insight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                </div>
+                <div>
+                  <strong>Appreciating Value</strong>
+                  <span>+12% vs last year</span>
+                </div>
+              </div>
+              <div class="ai-insight-item">
+                <div class="ai-insight-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div>
+                  <strong>Fast Turnover</strong>
+                  <span>Avg. 4 days to sell</span>
+                </div>
+              </div>
+              <div class="ai-insight-experts">
+                <div class="ai-expert-avatars">
+                  <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="">
+                  <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="">
+                  <span class="ai-expert-count">+14</span>
+                </div>
+                <span>Experts checking this category now</span>
+              </div>
+            </div>
+
+            <div class="ai-eco-bar">
+              <div class="ai-eco-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22c1.25-1.25 2.5-2 4-2 3 0 4 2 8 2 1.5 0 2.75-.75 4-2"></path><path d="M12 2C9.5 5 8 8 8 11a4 4 0 0 0 8 0c0-3-1.5-6-4-9z"></path></svg>
+              </div>
+              <div>
+                <strong>Eco-Check Score: 98/100</strong>
+                <span>Reselling this item offsets 45kg of CO2</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Bottom: The Curatorial Approach -->
+        <section class="ai-approach-section">
+          <h2>The Curatorial Approach</h2>
+          <div class="ai-approach-grid">
+            <div class="ai-approach-item">
+              <div class="ai-approach-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </div>
+              <h3>Visual Triage</h3>
+              <p>Our AI identifies specific designers, manufacturing periods, and material quality through computer vision.</p>
+            </div>
+            <div class="ai-approach-item">
+              <div class="ai-approach-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+              </div>
+              <h3>Global Indexing</h3>
+              <p>Cross-referenced against historical auction data and real-time marketplace trends globally.</p>
+            </div>
+            <div class="ai-approach-item">
+              <div class="ai-approach-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22c1.25-1.25 2.5-2 4-2 3 0 4 2 8 2 1.5 0 2.75-.75 4-2"></path><path d="M12 2C9.5 5 8 8 8 11a4 4 0 0 0 8 0c0-3-1.5-6-4-9z"></path></svg>
+              </div>
+              <h3>Sustainable Value</h3>
+              <p>We calculate the "Earth Credit" – adding value based on the item's longevity and low environmental impact.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ── PRODUCT DETAIL ── -->
+    <section class="view" data-view="product-detail" id="product-detail-container">
       <div class="page-shell product-detail">
         <div class="gallery-stack">
           <img class="main-product-image" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated oak lounge chair">
           <div class="thumb-row">
-            <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" alt="">
-            <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg" alt="">
-            <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png" alt="">
+            <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" alt="Thumb 1">
+            <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg" alt="Thumb 2">
+            <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png" alt="Thumb 3">
           </div>
         </div>
+        
         <article class="detail-copy">
           <nav class="crumbs">Shop / Living Room / Curated Oak Lounge Chair</nav>
           <span class="eyebrow">Sustainably Sourced</span>
           <h1>Curated Oak Lounge Chair</h1>
           <strong class="detail-price">$1,240.00</strong>
-          <div class="condition-row"><span>Condition</span><strong>Excellent (Pre-owned)</strong><em>Refurbished</em></div>
-          <p>A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
-          <div class="purchase-row"><input type="number" value="1" min="1"><span>Only 2 in stock</span></div>
-          <button class="primary-button" type="button" data-add-cart>Add to Cart</button>
-          <button class="ghost-button" type="button" data-action="make-offer">Make an Offer</button>
-          <div class="seller-card"><strong>Elena Studio</strong><span>4.9 (124 reviews)</span><button type="button" data-route="seller-profile">View Shop</button></div>
+          
+          <div class="condition-row">
+            <span>Condition</span>
+            <strong>Excellent (Pre-owned)</strong>
+            <em>Refurbished</em>
+          </div>
+          
+          <p class="description-text">A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
+          
+          <div class="purchase-row">
+            <input type="number" value="1" min="1">
+            <span>Only 2 in stock</span>
+          </div>
+          
+          <div class="action-buttons-stack">
+            <button class="primary-button" type="button" data-add-cart>Add to Cart</button>
+            <button class="ghost-button" type="button" data-action="make-offer">Make an Offer</button>
+          </div>
+          
+          <div class="seller-card">
+            <div>
+              <strong style="display:block; font-size:16px;">Elena Studio</strong>
+              <span style="font-size:13px; color:#78716c;">4.9 (124 reviews)</span>
+            </div>
+            <button type="button" data-route="seller-profile">View Shop</button>
+          </div>
         </article>
       </div>
-      <div class="page-shell service-grid decorative-section">
-        <article><h3>Conscious Shipping</h3><p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p></article>
-        <article><h3>Authenticity Verified</h3><p>Our experts manually inspect every item to ensure historical accuracy and quality.</p></article>
-        <article><h3>Traceable Origin</h3><p>This piece was originally curated from a design studio in Copenhagen in 2019.</p></article>
+
+      <div class="page-shell">
+        <div class="service-grid">
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <h3>Conscious Shipping</h3>
+            <p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p>
+          </article>
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <h3>Authenticity Verified</h3>
+            <p>Our experts manually inspect every item to ensure historical accuracy and quality.</p>
+          </article>
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <h3>Traceable Origin</h3>
+            <p>This piece was originally curated from a design studio in Copenhagen in 2019.</p>
+          </article>
+        </div>
       </div>
     </section>
 
+    <!-- ── CART ── -->
     <section class="view" data-view="cart">
       <div class="page-shell cart-layout">
         <section>
@@ -222,6 +569,7 @@
       </div>
     </section>
 
+    <!-- ── CHECKOUT ── -->
     <section class="view" data-view="checkout">
       <div class="page-shell checkout-layout">
         <section class="checkout-main">
@@ -257,6 +605,7 @@
       </div>
     </section>
 
+    <!-- ── CONFIRMATION ── -->
     <section class="view" data-view="confirmation">
       <div class="page-shell confirmation-layout">
         <section class="thanks-panel">
@@ -283,6 +632,7 @@
       </div>
     </section>
 
+    <!-- ── PROFILE ── -->
     <section class="view" data-view="profile">
       <div class="page-shell profile-layout">
         <aside class="profile-card">
@@ -300,6 +650,7 @@
       </div>
     </section>
 
+    <!-- ── SELLER ── -->
     <section class="view" data-view="seller">
       <div class="page-shell">
         <section class="section-heading">
@@ -331,6 +682,7 @@
       </div>
     </section>
 
+    <!-- ── SETTINGS ── -->
     <section class="view" data-view="settings">
       <div class="page-shell settings-layout">
         <section>
@@ -380,6 +732,7 @@
       </div>
     </section>
 
+    <!-- ── ADMIN ── -->
     <section class="view" data-view="admin">
       <div class="page-shell admin-layout">
         <section class="section-heading">
@@ -398,6 +751,7 @@
       </div>
     </section>
 
+    <!-- ── NEW LISTING ── -->
     <section class="view" data-view="new-listing">
       <div class="page-shell form-page">
         <section>
@@ -408,7 +762,7 @@
         <form class="settings-card" data-new-listing-form>
           <label><span>Item title</span><input name="title" value="Scandinavian Oak Sideboard" required></label>
           <label><span>Maker or studio</span><input name="maker" value="Independent Seller"></label>
-          <label><span>Category</span><input name="category" value="Storage & Tables" required></label>
+          <label><span>Category</span><input name="category" value="Storage &amp; Tables" required></label>
           <label><span>Condition</span><input name="condition" value="Excellent" required></label>
           <label><span>Price</span><input name="price" value="$980" required></label>
           <label><span>Carbon saved (kg)</span><input name="carbonOffset" type="number" min="0" step="0.1" value="2.4"></label>
@@ -420,6 +774,7 @@
       </div>
     </section>
 
+    <!-- ── SALES HISTORY ── -->
     <section class="view" data-view="sales-history">
       <div class="page-shell">
         <section class="section-heading"><div><span class="eyebrow">Seller Tools</span><h1>Sales History</h1><p>Review completed sales, payouts, and buyer activity.</p></div></section>
@@ -430,6 +785,7 @@
       </div>
     </section>
 
+    <!-- ── SELLER SUPPORT ── -->
     <section class="view" data-view="seller-support">
       <div class="page-shell support-page">
         <section><span class="eyebrow">Seller Support</span><h1>How can we help?</h1><p class="muted">Shipping, listing review, payouts, authenticity checks, and buyer questions.</p></section>
@@ -441,6 +797,7 @@
       </div>
     </section>
 
+    <!-- ── SELLER PROFILE ── -->
     <section class="view" data-view="seller-profile">
       <div class="page-shell profile-layout">
         <aside class="profile-card"><img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Elena Studio avatar"><span class="eyebrow">Certified Seller</span><h1>Elena Studio</h1><p>4.9 rating from 124 reviews. Curating Scandinavian pieces since 2019.</p><button class="primary-button" type="button" data-route="shop">Shop Listings</button></aside>
@@ -448,6 +805,7 @@
       </div>
     </section>
 
+    <!-- ── EDIT PROFILE ── -->
     <section class="view" data-view="edit-profile">
       <div class="page-shell form-page">
         <section><span class="eyebrow">Profile</span><h1>Edit Profile</h1><p class="muted">Update account details, role, and buyer preferences for this demo.</p></section>
@@ -460,14 +818,17 @@
       </div>
     </section>
 
+    <!-- ── SHIPPING ── -->
     <section class="view" data-view="shipping">
       <div class="page-shell support-page"><section><span class="eyebrow">Support</span><h1>Shipping</h1><p class="muted">Carbon-neutral delivery, recycled packaging, tracking, and insured handoff.</p></section><div class="support-grid"><article><h3>Standard</h3><p>3-5 business days for most verified pieces.</p></article><article><h3>Fragile Items</h3><p>Special crating is available for ceramics, glass, and lighting.</p></article><article><h3>Tracking</h3><p>Order tracking appears in your profile after checkout.</p></article></div></div>
     </section>
 
+    <!-- ── RETURNS ── -->
     <section class="view" data-view="returns">
       <div class="page-shell support-page"><section><span class="eyebrow">Support</span><h1>Returns</h1><p class="muted">Return windows vary by seller, item condition, and authenticity review status.</p></section><div class="support-grid"><article><h3>48-hour Review</h3><p>Inspect your item after arrival and report any issue quickly.</p></article><article><h3>Authenticity</h3><p>Verified authenticity issues are covered by ReHome protection.</p></article><article><h3>Packaging</h3><p>Keep original circular packaging for safe returns.</p></article></div></div>
     </section>
 
+    <!-- ── TERMS ── -->
     <section class="view" data-view="terms">
       <div class="page-shell support-page"><section><span class="eyebrow">Legal</span><h1>Terms &amp; Trust</h1><p class="muted">Demo terms for marketplace safety, payments, seller obligations, and buyer protection.</p></section><div class="support-grid"><article><h3>Marketplace</h3><p>Sellers are responsible for accurate condition and provenance details.</p></article><article><h3>Payments</h3><p>Payments are held until order milestones are completed.</p></article><article><h3>Privacy</h3><p>Only necessary account and order data is stored.</p></article></div></div>
     </section>
@@ -479,17 +840,32 @@
           <p>Redefining the secondary market with intentionality, luxury, and care for the planet.</p>
           <strong>&copy; 2024 ReHome. Conscious Luxury Marketplace.</strong>
         </div>
-        <div><h3>Marketplace</h3><button data-route="shop">Shop All</button><button data-route="sustain">Sustain</button><button data-route="seller" data-role-nav="seller">Sell an Item</button><button data-route="admin" data-role-nav="admin">Admin</button></div>
-        <div><h3>Support</h3><button data-route="shipping">Shipping</button><button data-route="returns">Returns</button><button data-route="terms">Terms</button></div>
+        <div>
+          <h3>Marketplace</h3>
+          <button data-route="shop">Shop All</button>
+          <button data-route="sustain">Sustain</button>
+          <button data-route="curated">Curated</button>
+          <button data-route="seller" data-role-nav="seller">Sell an Item</button>
+        </div>
+        <div>
+          <h3>Support</h3>
+          <button data-route="shipping">Shipping</button>
+          <button data-route="returns">Returns</button>
+          <button data-route="terms">Terms</button>
+          <button data-route="sustain">AI Valuation</button>
+        </div>
         <div>
           <h3>Newsletter</h3>
-          <form class="newsletter"><input type="email" placeholder="Email address"><button type="submit" aria-label="Subscribe">-></button></form>
+          <form class="newsletter">
+            <input type="email" placeholder="Email address">
+            <button type="submit" aria-label="Subscribe">→</button>
+          </form>
         </div>
       </div>
     </footer>
   </main>
-  <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
 
+  <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
   <script type="module" src="script.js?v=20260529-polish"></script>
 </body>
 </html>
