@@ -37,6 +37,48 @@ function createNewListingCard() {
   return card;
 }
 
+// Tambahkan di dalam export function render() di listings.js,
+// setelah form sudah ada di DOM:
+
+function bindImagePreview() {
+  const fileInput   = document.querySelector("[data-new-listing-form] [name='imageFile']");
+  const urlInput    = document.querySelector("[data-new-listing-form] [name='imageUrl']");
+  const form        = document.querySelector("[data-new-listing-form]");
+  if (!form) return;
+
+  // Buat elemen preview sekali
+  let preview = form.querySelector(".image-preview-box");
+  if (!preview) {
+    preview = document.createElement("img");
+    preview.className = "image-preview-box";
+    preview.alt = "Image preview";
+    form.appendChild(preview);
+  }
+
+  function showPreview(src) {
+    if (!src) {
+      preview.classList.remove("is-visible");
+      return;
+    }
+    preview.src = src;
+    preview.classList.add("is-visible");
+  }
+
+  fileInput?.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    if (!file) { showPreview(""); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => showPreview(e.target.result);
+    reader.readAsDataURL(file);
+  });
+
+  urlInput?.addEventListener("input", () => {
+    const url = urlInput.value.trim();
+    showPreview(url || "");
+  });
+}
+
+
 export function renderListings() {
   const database = loadDatabase();
   const listings = activeFilter === "all"

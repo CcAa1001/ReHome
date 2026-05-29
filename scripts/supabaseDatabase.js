@@ -122,6 +122,19 @@ export async function getProducts() {
   return data.length ? data.map(formatProduct) : fallbackProducts;
 }
 
+async function uploadProductImage(file, userId) {
+  if (!file || !file.size) return "";
+  const supabase = await getSupabaseClient();
+  const safeName = file.name.replace(/[^a-z0-9._-]/gi, "-").toLowerCase();
+  const filePath = `${userId}/${Date.now()}-${safeName}`;
+  const { error } = await supabase.storage
+    .from("product-images")
+    .upload(filePath, file, { upsert: false });
+  if (error) throw error;
+  const { data } = supabase.storage.from("product-images").getPublicUrl(filePath);
+  return data.publicUrl;
+}
+
 export async function createRemoteProduct(formData) {
   try {
     const user = await getSignedInUser();
@@ -333,7 +346,7 @@ export async function checkoutCart() {
   return { ...order, items: cartRows };
 }
 
-// ── HISTORY ───────────────────────────────────────────────────────────────────
+// ── HISTORY (FUNGSI BARU) ─────────────────────────────────────────────────────
 
 export async function getPurchaseHistory() {
   try {
@@ -381,17 +394,23 @@ export async function getSalesHistory() {
   }
 }
 
-// ── STORAGE ───────────────────────────────────────────────────────────────────
+// scripts/supabaseDatabase.js — tambahkan setelah getSalesHistory()
 
-async function uploadProductImage(file, userId) {
-  if (!file || !file.size) return "";
-  const supabase = await getSupabaseClient();
-  const safeName = file.name.replace(/[^a-z0-9._-]/gi, "-").toLowerCase();
-  const filePath = `${userId}/${Date.now()}-${safeName}`;
-  const { error } = await supabase.storage
-    .from("product-images")
-    .upload(filePath, file, { upsert: false });
-  if (error) throw error;
-  const { data } = supabase.storage.from("product-images").getPublicUrl(filePath);
-  return data.publicUrl;
+export async function updateOrderStatus(orderId, status) {
+  try {
+    const user = await getSignedInUser();
+    if (!user || !orderId) return false;
+
+    const supabase = await getSupabaseClient();
+    const { error } = await supabase
+      .from("orders")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", orderId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.warn("Order status update failed:", error.message);
+    return false;
+  }
 }

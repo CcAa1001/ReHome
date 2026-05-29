@@ -62,15 +62,26 @@ export async function renderCart() {
   }
   renderCartSummary(cart);
 
+
   if (!cart.length) {
     elements.cartList.innerHTML = `
-      <article class="empty-state">
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
         <h3>Your selection is empty</h3>
-        <p>Explore curated findings and add a piece when something feels right.</p>
-      </article>
-    `;
+        <p>Explore our curated collection and add a piece when something feels right.</p>
+        <button class="primary-button" id="cart-shop-btn"
+          style="width:auto;padding:0 28px;margin-top:8px;">
+          Browse Collection
+        </button>
+      </div>`;
+
+    document.getElementById("cart-shop-btn")?.addEventListener("click", () => {
+      // import navigate secara langsung agar tidak circular
+      import("../router.js").then(({ navigate }) => navigate("shop"));
+    });
     return;
   }
+
 
   elements.cartList.replaceChildren(...cart.map((item, index) => {
     const card = document.createElement("article");

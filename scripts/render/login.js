@@ -1,24 +1,37 @@
 // scripts/render/login.js
-import { navigate }                    from "../router.js";
-import { loginUser, registerUser }     from "../auth.js";
-import { authenticate, setSession, createLocalDemoUser } from "../storage.js"; // ← tambah createLocalDemoUser
-import { showToast }                   from "../ui.js";
-import { getCurrentUserWithProfile }   from "../supabaseDatabase.js";
-import { applyRoleUI }                 from "../roles.js";
+import { navigate }                             from "../router.js";
+import { loginUser, registerUser }              from "../auth.js";
+import { authenticate, setSession, createLocalDemoUser } from "../storage.js";
+import { showToast }                            from "../ui.js";
+import { getCurrentUserWithProfile }            from "../supabaseDatabase.js";
+import { applyRoleUI }                          from "../roles.js";
 
 let activeTab = "login";
 
+const HEADINGS = {
+  login:    { h: "Welcome Back",    sub: "Sign in to continue your journey of mindful luxury." },
+  register: { h: "Join the Movement", sub: "Create your account and start curating consciously." }
+};
+
 export function bindLoginPage() {
   const form        = document.querySelector("[data-login-form]");
-  const tabLogin    = document.querySelector("[data-tab='login']");
-  const tabRegister = document.querySelector("[data-tab='register']");
   const message     = document.querySelector("[data-form-message]");
   const nameField   = document.querySelector("[data-name-field]");
+  const heading     = document.querySelector("[data-login-heading]");
+  const subheading  = document.querySelector("[data-login-subheading]");
+  const footer      = document.querySelector("[data-login-footer]");
 
   if (!form) return;
 
-  tabLogin?.addEventListener("click",    () => switchTab("login",    nameField, tabLogin, tabRegister));
-  tabRegister?.addEventListener("click", () => switchTab("register", nameField, tabLogin, tabRegister));
+  // Tab buttons (header row)
+  document.querySelectorAll("[data-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+
+  // "Join the movement" / "Sign in" footer link
+  document.querySelectorAll("[data-tab-trigger]").forEach((btn) => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tabTrigger));
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -44,6 +57,36 @@ export function bindLoginPage() {
       submitBtn.disabled = false;
     }
   });
+
+  function switchTab(tab) {
+    activeTab = tab;
+    const isRegister = tab === "register";
+
+    // Update tabs visual
+    document.querySelectorAll("[data-tab]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+
+    // Show/hide name field
+    if (nameField) nameField.style.display = isRegister ? "block" : "none";
+
+    // Update heading & subtitle
+    if (heading)    heading.textContent    = HEADINGS[tab].h;
+    if (subheading) subheading.textContent = HEADINGS[tab].sub;
+
+    // Update submit button text
+    const submitBtn = form.querySelector("[type='submit']");
+    if (submitBtn) submitBtn.textContent = isRegister ? "Create Account" : "Sign In";
+
+    // Update footer link
+    if (footer) {
+      footer.innerHTML = isRegister
+        ? `Already have an account? <button type="button" data-tab-trigger="login">Sign in</button>`
+        : `Don't have an account? <button type="button" data-tab-trigger="register">Join the movement</button>`;
+      footer.querySelector("[data-tab-trigger]")
+            ?.addEventListener("click", (e) => switchTab(e.target.dataset.tabTrigger));
+    }
+  }
 }
 
 // ── HANDLERS ─────────────────────────────────────────────────────────────────
@@ -53,39 +96,30 @@ async function handleLogin(email, password, messageEl) {
   let isDemo = false;
 
   try {
-    // Jalur 1: Supabase auth
     user = await loginUser(email, password);
   } catch {
-    // Jalur 2: Local demo database
     user = authenticate(email, password);
-
     if (!user) {
-      // Jalur 3: Auto-register sebagai demo user (frictionless testing)
-      user    = createLocalDemoUser(email, password);
-      isDemo  = true;
+      user   = createLocalDemoUser(email, password);
+      isDemo = true;
     }
-
     setSession(user);
   }
 
-  // Jika Supabase berhasil, ambil profile lengkap
   if (user?.id && !isDemo) {
     const full = await getCurrentUserWithProfile();
     if (full) setSession(full);
   }
 
   applyRoleUI();
-
-  const greeting = isDemo
-    ? `Welcome, ${user.name}! (Demo mode — data is local only)`
-    : `Welcome back, ${user.name ?? user.email}!`;
-
-  showToast(greeting);
+  showToast(isDemo
+    ? `Welcome, ${user.name}! (Demo mode)`
+    : `Welcome back, ${user.name ?? user.email}!`);
   await navigateAfterAuth();
 }
 
 async function handleRegister(email, password, name, messageEl) {
-  if (!name)              throw new Error("Please enter your name.");
+  if (!name)               throw new Error("Please enter your name.");
   if (password.length < 8) throw new Error("Password must be at least 8 characters.");
 
   try {
@@ -106,16 +140,4 @@ async function navigateAfterAuth() {
   const { showApp }   = await import("../router.js");
   await showApp("home", renderAll);
   applyRoleUI();
-}
-
-function switchTab(tab, nameField, tabLogin, tabRegister) {
-  activeTab = tab;
-  const isRegister = tab === "register";
-
-  if (nameField) nameField.style.display = isRegister ? "block" : "none";
-  tabLogin?.classList.toggle("active",    !isRegister);
-  tabRegister?.classList.toggle("active",  isRegister);
-
-  const submitBtn = document.querySelector("[data-login-form] [type='submit']");
-  if (submitBtn) submitBtn.textContent = isRegister ? "Create Account" : "Sign In";
 }

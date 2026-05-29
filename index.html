@@ -12,44 +12,44 @@
 <body>
   <main id="login" class="login-screen">
     <section class="login-visual">
-      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="Sunlit interior with plants and a wood side table">
+      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="ReHome Interior">
       <div class="visual-overlay"></div>
-      <a class="brand-mark" href="#">ReHome</a>
+      <span class="brand-mark">ReHome</span>
       <div class="login-tagline">
         <h1>Give Things a<br>Second Life</h1>
         <p>Join our community of conscious curators. Discover pre-loved treasures that tell a story.</p>
       </div>
     </section>
 
-    <section class="login-panel" aria-labelledby="login-title">
-      <form class="login-card" data-login-form>
-        <a class="panel-logo" href="#">ReHome</a>
+    <section class="login-panel">
+      <form class="login-card" data-login-form autocomplete="off">
+        <span class="panel-logo">ReHome</span>
         
-        <div style="display:flex; gap:10px; margin-bottom: 24px;">
-          <button type="button" data-tab="login" class="active ghost-button" style="flex:1">Sign In</button>
-          <button type="button" data-tab="register" class="ghost-button" style="flex:1">Register</button>
+        <div class="login-tabs">
+          <button type="button" data-tab="login" class="active ghost-button">Sign In</button>
+          <button type="button" data-tab="register" class="ghost-button">Register</button>
         </div>
 
-        <h2 id="login-title">Welcome Back</h2>
-        <p class="muted">Continue your journey of mindful luxury.</p>
+        <h2 data-login-heading>Welcome Back</h2>
+        <p class="muted" data-login-subheading>Continue your journey of mindful luxury.</p>
 
         <label data-name-field style="display: none;">
-          <span>Full Name</span>
+          <span class="label-row">Full Name</span>
           <input name="name" type="text" placeholder="Vivian">
         </label>
 
         <label>
-          <span>Email Address</span>
-          <input name="email" type="email" placeholder="name@example.com" autocomplete="email" value="vivian@rehome.test" required>
+          <span class="label-row">Email Address</span>
+          <input name="email" type="email" placeholder="name@example.com" required>
         </label>
 
         <label>
-          <span class="label-row">Password <a href="#">Forgot?</a></span>
-          <input name="password" type="password" placeholder="........" autocomplete="current-password" value="rehome123" required>
+          <span class="label-row">Password <button type="button" class="forgot-link">Forgot?</button></span>
+          <input name="password" type="password" placeholder="••••••••" required>
         </label>
 
-        <button class="primary-button" type="submit">Sign In</button>
-        <p class="form-message" aria-live="polite" data-form-message></p>
+        <button class="primary-button login-submit" type="submit">Sign In</button>
+        <p class="form-message" data-form-message></p>
 
         <div class="divider"><span>OR CONTINUE WITH</span></div>
 
@@ -58,10 +58,12 @@
           <button type="button" class="social-button">Apple</button>
         </div>
 
-        <p class="join-text">Don't have an account? <a href="#">Join the movement</a></p>
+        <p class="join-text" data-login-footer>
+          Don't have an account? <button type="button" data-tab-trigger="register" class="text-button">Join the movement</button>
+        </p>
       </form>
 
-      <div class="trust-row" aria-label="ReHome trust badges">
+      <div class="trust-row">
         <span>Eco-conscious</span>
         <span>Certified sellers</span>
       </div>
@@ -93,83 +95,7 @@
     </header>
 
     <section class="view is-active" data-view="home">
-      <div class="page-shell">
-        <section class="greeting">
-          <h1>Welcome back, <span data-user-name>Vivian</span>.</h1>
-          <p>Your conscious curation journey continues.</p>
-        </section>
-
-        <section class="feature-grid">
-          <article class="feature-card price-card" data-role-nav="seller">
-            <div class="card-top">
-              <span class="round-icon">01</span>
-              <span class="pill">Quick action</span>
-            </div>
-            <h2>Find a piece</h2>
-            <p>Browse curated items, save them to your cart, then checkout when you are ready.</p>
-            <button class="primary-button" type="button" data-route="shop">Open Shop</button>
-          </article>
-
-          <article class="feature-card price-card">
-            <div class="card-top">
-              <span class="round-icon">02</span>
-              <span class="pill">For sellers</span>
-            </div>
-            <h2>List an item</h2>
-            <p>Seller and admin menus appear only when your profile role allows those tools.</p>
-            <button class="primary-button" type="button" data-route="seller" data-role-nav="seller">Seller Tools</button>
-          </article>
-
-          <article class="feature-card impact-card">
-            <div class="impact-copy">
-              <span class="eyebrow">Cart Status</span>
-              <h2>Ready to checkout</h2>
-              <div class="stats">
-                <div><strong data-dashboard-cart-count>3</strong><span>Cart Items</span></div>
-                <div><strong>0kg</strong><span>Saved This Order</span></div>
-              </div>
-            </div>
-            <img src="assets/impact.png" alt="Sustainability impact figure">
-          </article>
-        </section>
-
-        <section class="section-heading">
-          <div>
-            <h2>Smart Recommendations</h2>
-            <p>Curated for your Scandinavian aesthetic.</p>
-          </div>
-          <button type="button" class="text-link" data-route="shop">View Gallery</button>
-        </section>
-
-        <section class="product-grid" aria-label="Smart recommendations" data-home-products></section>
-
-        <section class="curated-band decorative-section">
-          <div class="section-heading">
-            <div>
-              <h2>Curated Treasures</h2>
-              <p>Editorial collections for slower, better interiors.</p>
-            </div>
-          </div>
-          <div class="curated-grid">
-            <article style="--img: url('assets/interior.jpg')">
-              <span>Editorial</span>
-              <h3>The Kinfolk Edit</h3>
-              <button type="button" data-route="curated">Explore Lookbook</button>
-            </article>
-            <article style="--img: url('assets/design.jpg')">
-              <span>Curation</span>
-              <h3>Tactile Textures</h3>
-              <button type="button" data-route="curated">Explore Lookbook</button>
-            </article>
-            <article style="--img: url('assets/luxury.jpg')">
-              <span>Limited</span>
-              <h3>Midnight Serenity</h3>
-              <button type="button" data-route="curated">Explore Lookbook</button>
-            </article>
-          </div>
-        </section>
-      </div>
-    </section>
+      </section>
 
     <section class="view" data-view="shop">
       <div class="page-shell split-page">

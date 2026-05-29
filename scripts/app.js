@@ -108,10 +108,25 @@ function bindCategoryFilters() {
 
 // ── CART ──────────────────────────────────────────────────────────────────────
 
+// ── CART ANIMATION ────────────────────────────────────────────────────────────
+
+function triggerCartAnimation() {
+  const cartBtn = document.querySelector(".cart-button");
+  if (!cartBtn) return;
+  cartBtn.classList.remove("cart-pop");
+  void cartBtn.offsetWidth; // force reflow agar animasi bisa diulang
+  cartBtn.classList.add("cart-pop");
+  cartBtn.addEventListener("animationend", () => {
+    cartBtn.classList.remove("cart-pop");
+  }, { once: true });
+}
+
+// ── CART ACTIONS ──────────────────────────────────────────────────────────────
+
 function bindCartActions() {
   if (elements.addCartButton) {
     elements.addCartButton.addEventListener("click", async () => {
-      const products      = await getProducts();
+      const products = await getProducts();
       const featuredProduct =
         products.find((p) => p.title === "Curated Oak Lounge Chair") ??
         products.find((p) => p.title?.includes("Oak")) ??
@@ -127,6 +142,7 @@ function bindCartActions() {
 
       await renderCart();
       showToast(`Added ${featuredProduct.title} to your selection.`);
+      triggerCartAnimation(); // ← animasi setelah tambah item
       navigate("cart");
     });
   }
@@ -144,8 +160,10 @@ function bindStateEvents() {
   state.subscribe("cartUpdated", (cart = []) => {
     const count = Array.isArray(cart) ? cart.length : 0;
     if (elements.cartCount) elements.cartCount.textContent = count;
+    if (count > 0) triggerCartAnimation(); // ← animasi saat cart berubah dari mana pun
   });
 }
+
 
 // ── LOGOUT ────────────────────────────────────────────────────────────────────
 
