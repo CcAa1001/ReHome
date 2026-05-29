@@ -1,89 +1,95 @@
-import { elements } from "../dom.js";
-import { loadDatabase } from "../storage.js";
+// scripts/render/listings.js
+import { getProducts } from "../supabaseDatabase.js";
 
-let activeFilter = "all";
+// 1. Variabel penyimpan memori filter yang sedang aktif
+let currentFilter = "all";
 
+// 2. Fungsi ini otomatis dipanggil oleh app.js saat Bos klik tab di atas tabel
 export function setListingFilter(filter) {
-  activeFilter = filter;
+  currentFilter = filter;
 }
 
-function createListingCard(listing) {
-  const card = document.createElement("article");
-  card.className = "listing-card";
-  card.innerHTML = `
-    <img src="${listing.image}" alt="${listing.title}">
-    <div>
-      <span class="eyebrow">${listing.label}</span>
-      <h3>${listing.title}</h3>
-      <p>${listing.views} views</p>
-      <footer><strong>${listing.price}</strong><a>Edit</a></footer>
-    </div>
-  `;
-  return card;
-}
+// 3. Fungsi pembuat baris tabel
+function createListingRow(product, itemStatus) {
+  const tr = document.createElement("tr");
+  
+  // Penentuan warna label status
+  let statusClass = "status-active";
+  let displayText = "Active";
 
-function createNewListingCard() {
-  const card = document.createElement("article");
-  card.className = "listing-card";
-  card.innerHTML = `
-    <img src="assets/figma-export/268b036d427a5127a614793cadef99464ad05a75.png" alt="Botanical listing illustration">
-    <div>
-      <span class="eyebrow">Curated Zero Waste</span>
-      <h3>Create New Listing</h3>
-      <p>4 slots remaining</p>
-      <footer><small></small><a>Edit</a></footer>
-    </div>
-  `;
-  return card;
-}
-
-// Tambahkan di dalam export function render() di listings.js,
-// setelah form sudah ada di DOM:
-
-function bindImagePreview() {
-  const fileInput   = document.querySelector("[data-new-listing-form] [name='imageFile']");
-  const urlInput    = document.querySelector("[data-new-listing-form] [name='imageUrl']");
-  const form        = document.querySelector("[data-new-listing-form]");
-  if (!form) return;
-
-  // Buat elemen preview sekali
-  let preview = form.querySelector(".image-preview-box");
-  if (!preview) {
-    preview = document.createElement("img");
-    preview.className = "image-preview-box";
-    preview.alt = "Image preview";
-    form.appendChild(preview);
+  if (itemStatus === "sold") {
+    statusClass = "status-sold";
+    displayText = "Sold";
+  } else if (itemStatus === "drafts") {
+    statusClass = "status-sold"; // Drafts pakai warna abu-abu yang sama dengan Sold
+    displayText = "Draft";
   }
 
-  function showPreview(src) {
-    if (!src) {
-      preview.classList.remove("is-visible");
-      return;
+  const category = product.category || "Living Room";
+  const condition = product.condition || "Excellent";
+
+  tr.innerHTML = `
+    <td>
+      <div class="item-cell">
+        <img src="${product.image}" alt="${product.title}">
+        <span>${product.title}</span>
+      </div>
+    </td>
+    <td style="color: #78716c;">${category}</td>
+    <td><strong>${product.price}</strong></td>
+    <td style="color: #78716c;">${condition}</td>
+    <td><span class="status-badge ${statusClass}">${displayText}</span></td>
+    <td>
+      <button class="action-menu-btn" onclick="alert('Menu opsi untuk: ${product.title}')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+      </button>
+    </td>
+  `;
+  return tr;
+}
+
+// 4. Fungsi Utama untuk Render Tabel
+export async function renderListings() {
+  const container = document.querySelector("tbody[data-listings]");
+  if (!container) return;
+
+  try {
+    const products = await getProducts();
+    
+    // --- SIMULASI STATUS DEMO ---
+    // Karena database dummy belum punya field 'status', kita simulasikan:
+    const productsWithStatus = products.map((p, index) => {
+      let status = "active";
+      if (index % 3 === 1) status = "sold";
+      if (index % 3 === 2) status = "drafts";
+      return { ...p, demoStatus: status };
+    });
+
+    // --- LOGIC PENYARINGAN (FILTERING) ---
+    const filteredProducts = productsWithStatus.filter(p => {
+      if (currentFilter === "all") return true; // Tampilkan semua
+      return p.demoStatus === currentFilter;    // Tampilkan yang cocok
+    });
+
+    const displayProducts = filteredProducts.slice(0, 5); // Tampilkan max 5 baris
+    
+    container.innerHTML = ""; // Bersihkan tabel sebelum diisi ulang
+    
+    // Jika data kosong setelah difilter
+    if (displayProducts.length === 0) {
+      container.innerHTML = `
+        <tr>
+          <td colspan='6' style='text-align:center; padding: 48px; color: #78716c;'>
+            No listings found in this tab.
+          </td>
+        </tr>`;
+    } else {
+      // Masukkan data ke dalam tabel
+      displayProducts.forEach(p => {
+        container.appendChild(createListingRow(p, p.demoStatus));
+      });
     }
-    preview.src = src;
-    preview.classList.add("is-visible");
+  } catch (e) {
+    container.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Failed to load listings.</td></tr>";
   }
-
-  fileInput?.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (!file) { showPreview(""); return; }
-    const reader = new FileReader();
-    reader.onload = (e) => showPreview(e.target.result);
-    reader.readAsDataURL(file);
-  });
-
-  urlInput?.addEventListener("input", () => {
-    const url = urlInput.value.trim();
-    showPreview(url || "");
-  });
-}
-
-
-export function renderListings() {
-  const database = loadDatabase();
-  const listings = activeFilter === "all"
-    ? database.listings
-    : database.listings.filter((listing) => listing.status === activeFilter);
-
-  elements.listingGrid.replaceChildren(createNewListingCard(), ...listings.map(createListingCard));
 }

@@ -1,0 +1,50 @@
+<div class="page-shell">
+  <section class="section-heading">
+    <div>
+      <span class="eyebrow" style="margin-bottom: 12px; display: inline-block;">Seller Tools</span>
+      <h1>Seller Dashboard</h1>
+      <p>Manage your conscious listings and track your environmental impact.</p>
+    </div>
+    <button class="ghost-button" type="button" data-action="download-report">Download Report</button>
+  </section>
+
+  <section class="seller-metrics">
+    <article><span>Sales Performance</span><strong>$1,850</strong><p>Current month</p></article>
+    <article><span>Sustainable Impact</span><strong>450kg</strong><p>Waste diverted from landfills this month.</p></article>
+    <article><span>Yearly Goal</span><strong>82%</strong><p>Week 4 target reached.</p></article>
+  </section>
+
+  <section class="action-grid">
+    <button type="button" data-route="new-listing">
+      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
+      <div><strong>Upload Item</strong><small>List a new curated piece</small></div>
+    </button>
+    <button type="button" data-route="sales-history">
+      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
+      <div><strong>Sales History</strong><small>View all past transactions</small></div>
+    </button>
+    <button type="button" data-route="seller-support">
+      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
+      <div><strong>Seller Support</strong><small>Get help with shipping & returns</small></div>
+    </button>
+  </section>
+
+  <section class="dashboard-head">
+    <h2>Active Listings</h2>
+    <div class="segment-control">
+      <button class="active" type="button" data-filter="all">All</button>
+      <button type="button" data-filter="active">Active</button>
+      <button type="button" data-filter="drafts">Drafts</button>
+      <button type="button" data-filter="sold">Sold</button>
+    </div>
+  </section>
+
+  <div class="table-container">
+    <table class="listing-table">
+      <thead>
+        <tr><th>Item</th><th>Category</th><th>Price</th><th>Condition</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody data-listings></tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="page-shell checkout-layout">
+  <section class="checkout-main">
+    <div class="steps"><span class="active">1 Shipping</span><span>2 Payment</span><span>3 Confirmation</span></div>
+    <article class="address-card">
+      <div><h2>Shipping Information</h2><button type="button" data-action="edit-shipping">Edit</button></div>
+      <p>Arya Saloka<br>Jl. Senopati No. 42, Kebayoran Baru<br>Jakarta Selatan, DKI Jakarta 12190<br>+62 812 3456 7890</p>
+    </article>
+    <h2>Choose Payment Method</h2>
+    <div class="payment-list">
+      <label><input type="radio" name="payment" checked> Bank Transfer (Virtual Account)</label>
+      <div class="payment-options"><span>BCA Virtual Account</span><span>Mandiri Bill Payment</span></div>
+      <label><input type="radio" name="payment"> Digital Wallets &amp; QRIS</label>
+      <div class="payment-options"><span>QRIS</span><span>OVO</span><span>GoPay</span></div>
+      <label><input type="radio" name="payment"> Credit or Debit Card</label>
+      <div class="card-fields"><input placeholder="Card Number"><input placeholder="MM/YY"><input placeholder="CVV"></div>
+      <label><input type="radio" name="payment"> Cash on Delivery (COD)</label>
+    </div>
+    <button class="primary-button" type="button" data-checkout-submit>Place Order Securely</button>
+  </section>
+  <aside class="summary-card">
+    <h2>Order Summary</h2>
+    <div class="mini-line"><span>Nordic Oak Chair</span><strong>Rp 1.450.000</strong></div>
+    <div class="mini-line"><span>Linen Throw</span><strong>Rp 320.000</strong></div>
+    <dl>
+      <div><dt>Subtotal</dt><dd>Rp 1.770.000</dd></div>
+      <div><dt>Shipping</dt><dd>Rp 45.000</dd></div>
+      <div><dt>Eco-impact Credit</dt><dd>- Rp 20.000</dd></div>
+      <div class="total"><dt>Total</dt><dd>Rp 1.795.000</dd></div>
+    </dl>
+    <p>Carbon neutral delivery offsets 2.4kg of CO2.</p>
+  </aside>
+</div>
