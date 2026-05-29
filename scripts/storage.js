@@ -28,6 +28,10 @@ export function getSession() {
   return stored ? JSON.parse(stored) : null;
 }
 
+export function clearSession() {
+  localStorage.removeItem(sessionKey);
+}
+
 export function updateSession(updates) {
   const session = getSession() ?? {};
   const next = { ...session, ...updates };

@@ -14,16 +14,18 @@ import {
 import { bindCartRemoval } from "./render/cart.js";
 import { setListingFilter } from "./render/listings.js";
 import { setCategoryFilter } from "./render/products.js";
-import { addCartItem, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
+import { addCartItem, clearSession, exportDatabase, hasSession, resetDatabase, saveSettings, setSession, updateSession } from "./storage.js";
 import {
   addRemoteCartItem,
   createRemoteProduct,
   getCurrentUserWithProfile,
   getProducts,
   saveRemoteSettings,
+  signOutSupabase,
   updateRemoteProfile
 } from "./supabaseDatabase.js";
 import state from "./state.js";
+import { applyRoleUI } from "./roles.js";
 import { showToast } from "./ui.js";
 
 // ── BOOT (Hanya panggil bind saat elemen tersedia) ──────────────────────────
@@ -36,6 +38,7 @@ async function boot() {
   bindCartActions();
   bindStateEvents();
   bindCheckout();
+  bindLogout();
   bindPassiveForms();
   bindSettings();
   bindProfile();
@@ -44,14 +47,21 @@ async function boot() {
   // Cek session
   try {
     const supabaseUser = await getCurrentUserWithProfile();
-    if (supabaseUser) setSession(supabaseUser);
+    if (supabaseUser) {
+      setSession(supabaseUser);
+      applyRoleUI();
+    }
     
     if (supabaseUser || hasSession()) {
       await showApp("home", renderAll);
+      applyRoleUI();
     }
   } catch (e) {
     console.error("Boot error:", e);
-    if (hasSession()) await showApp("home", renderAll);
+    if (hasSession()) {
+      await showApp("home", renderAll);
+      applyRoleUI();
+    }
   }
 }
 
@@ -109,9 +119,34 @@ function bindCartActions() {
 
 function bindStateEvents() {
   state.subscribe("cartUpdated", (cart = []) => {
+    const count = Array.isArray(cart) ? cart.length : 0;
     if (elements.cartCount) {
-      elements.cartCount.textContent = Array.isArray(cart) ? cart.length : 0;
+      elements.cartCount.textContent = count;
     }
+    if (elements.dashboardCartCount) {
+      elements.dashboardCartCount.textContent = count;
+    }
+  });
+}
+
+function bindLogout() {
+  elements.logoutButton?.addEventListener("click", async () => {
+    elements.logoutButton.disabled = true;
+
+    try {
+      await signOutSupabase();
+    } catch (error) {
+      console.warn("Supabase logout failed:", error.message);
+    }
+
+    clearSession();
+    state.publish("authChanged", null);
+    state.publish("cartUpdated", []);
+    elements.app.hidden = true;
+    elements.login.hidden = false;
+    applyRoleUI();
+    showToast("You have been logged out.");
+    elements.logoutButton.disabled = false;
   });
 }
 
@@ -138,6 +173,7 @@ function bindProfile() {
     const session = updateSession({ name: data.get("name"), role: data.get("role") });
     await updateRemoteProfile(session);
     renderAccount();
+    applyRoleUI();
     showToast("Profile saved.");
   });
 }

@@ -117,6 +117,15 @@ export async function getCurrentSupabaseUser() {
   }
 }
 
+export async function signOutSupabase() {
+  if (!isSupabaseConfigured) {
+    return;
+  }
+
+  const supabase = await getSupabaseClient();
+  await supabase.auth.signOut();
+}
+
 export async function getCurrentUserWithProfile() {
   try {
     const user = await getSignedInUser();

@@ -13,10 +13,10 @@
   align-items: center;
   justify-content: space-between;
   max-width: 1280px;
-  height: 80px;
+  min-height: 72px;
   margin: 0 auto;
-  padding: 0 32px;
-  gap: 24px;
+  padding: 12px 32px;
+  gap: 18px;
 }
 
 .nav-links,
@@ -31,13 +31,13 @@
 }
 
 .nav-links {
-  gap: 42px;
+  gap: 28px;
 }
 
 .page-shell {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 32px 96px;
+  padding: 40px 32px 72px;
 }
 
 .split-page {
@@ -48,9 +48,9 @@
 
 .feature-grid {
   display: grid;
-  grid-template-columns: 1fr 2.06fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
-  margin-bottom: 64px;
+  margin-bottom: 42px;
 }
 
 .product-grid,

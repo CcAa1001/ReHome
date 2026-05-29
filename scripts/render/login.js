@@ -4,6 +4,7 @@ import { loginUser, registerUser } from "../auth.js";
 import { authenticate, setSession, hasSession } from "../storage.js";
 import { showToast } from "../ui.js";
 import { getCurrentUserWithProfile } from "../supabaseDatabase.js";
+import { applyRoleUI } from "../roles.js";
 
 // ── STATE LOKAL ───────────────────────────────────────────────────────────────
 
@@ -64,10 +65,12 @@ async function handleLogin(email, password) {
   }
 
   // Jika Supabase berhasil, ambil profile lengkap
-  if (user?.userId) {
+  if (user?.id || user?.userId) {
     const full = await getCurrentUserWithProfile();
     if (full) setSession(full);
   }
+
+  applyRoleUI();
 
   showToast(`Welcome back, ${user.name ?? user.email}!`);
   await navigateAfterAuth();
@@ -96,6 +99,7 @@ async function navigateAfterAuth() {
   const { renderAll } = await import("./index.js");
   const { showApp }   = await import("../router.js");
   await showApp("home", renderAll);
+  applyRoleUI();
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────

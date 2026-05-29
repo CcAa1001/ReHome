@@ -75,8 +75,7 @@
         <div class="nav-links">
           <button type="button" data-route="shop">Shop</button>
           <button type="button" data-route="sustain">Sustain</button>
-          <button type="button" data-route="curated">Curated</button>
-          <button type="button" data-route="seller">Sell</button>
+          <button type="button" data-route="seller" data-role-nav="seller">Sell</button>
         </div>
         <div class="nav-actions">
           <label class="search-field">
@@ -85,9 +84,10 @@
           </label>
           <button type="button" data-route="cart" class="cart-button" aria-label="Open cart"><span data-cart-count>3</span></button>
           <button type="button" data-route="profile" class="profile-button">Profile</button>
-          <button type="button" data-route="admin" class="admin-button">Admin</button>
+          <button type="button" data-route="admin" class="admin-button" data-role-nav="admin">Admin</button>
           <button type="button" data-route="settings" class="settings-button">Settings</button>
           <span class="role-badge" data-role-badge>Buyer</span>
+          <button type="button" class="logout-button" data-logout>Logout</button>
         </div>
       </nav>
     </header>
@@ -100,23 +100,33 @@
         </section>
 
         <section class="feature-grid">
+          <article class="feature-card price-card" data-role-nav="seller">
+            <div class="card-top">
+              <span class="round-icon">01</span>
+              <span class="pill">Quick action</span>
+            </div>
+            <h2>Find a piece</h2>
+            <p>Browse curated items, save them to your cart, then checkout when you are ready.</p>
+            <button class="primary-button" type="button" data-route="shop">Open Shop</button>
+          </article>
+
           <article class="feature-card price-card">
             <div class="card-top">
-              <span class="round-icon">AI</span>
-              <span class="pill">New Feature</span>
+              <span class="round-icon">02</span>
+              <span class="pill">For sellers</span>
             </div>
-            <h2>AI Price Checker</h2>
-            <p>Scan any pre-owned luxury item to instantly determine its fair market value based on real-time data.</p>
-            <button class="primary-button" type="button" data-route="sustain">Try the Scanner</button>
+            <h2>List an item</h2>
+            <p>Seller and admin menus appear only when your profile role allows those tools.</p>
+            <button class="primary-button" type="button" data-route="seller" data-role-nav="seller">Seller Tools</button>
           </article>
 
           <article class="feature-card impact-card">
             <div class="impact-copy">
-              <span class="eyebrow">Impact Report</span>
-              <h2>Your Sustainability Impact</h2>
+              <span class="eyebrow">Cart Status</span>
+              <h2>Ready to checkout</h2>
               <div class="stats">
-                <div><strong>142kg</strong><span>Carbon Offset</span></div>
-                <div><strong>12</strong><span>Items ReHomed</span></div>
+                <div><strong data-dashboard-cart-count>3</strong><span>Cart Items</span></div>
+                <div><strong>0kg</strong><span>Saved This Order</span></div>
               </div>
             </div>
             <img src="assets/impact.png" alt="Sustainability impact figure">
@@ -133,7 +143,7 @@
 
         <section class="product-grid" aria-label="Smart recommendations" data-home-products></section>
 
-        <section class="curated-band">
+        <section class="curated-band decorative-section">
           <div class="section-heading">
             <div>
               <h2>Curated Treasures</h2>
@@ -227,7 +237,7 @@
             <p class="eco-score">Eco-Check Score: 98/100. Reselling this item offsets 4kg of CO2.</p>
           </article>
         </section>
-        <section class="approach-grid">
+        <section class="approach-grid decorative-section">
           <article><h3>Visual Triage</h3><p>Identifies designers, manufacturing periods, and material quality through computer vision.</p></article>
           <article><h3>Global Indexing</h3><p>Cross-referenced against historical auction data and real-time marketplace trends globally.</p></article>
           <article><h3>Sustainable Value</h3><p>Calculates Earth Credit, adding value based on longevity and low environmental impact.</p></article>
@@ -258,7 +268,7 @@
           <div class="seller-card"><strong>Elena Studio</strong><span>4.9 (124 reviews)</span><button type="button" data-route="seller-profile">View Shop</button></div>
         </article>
       </div>
-      <div class="page-shell service-grid">
+      <div class="page-shell service-grid decorative-section">
         <article><h3>Conscious Shipping</h3><p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p></article>
         <article><h3>Authenticity Verified</h3><p>Our experts manually inspect every item to ensure historical accuracy and quality.</p></article>
         <article><h3>Traceable Origin</h3><p>This piece was originally curated from a design studio in Copenhagen in 2019.</p></article>
@@ -340,7 +350,7 @@
           </dl>
         </aside>
       </div>
-      <div class="page-shell journey-grid">
+      <div class="page-shell journey-grid decorative-section">
         <article><h3>Carefully Packed</h3><p>100% plastic-free, compostable materials.</p></article>
         <article><h3>Low-Impact Transit</h3><p>Optimized routes to minimize fuel consumption.</p></article>
         <article><h3>New Life</h3><p>Arriving at its destination to be loved again.</p></article>
@@ -543,7 +553,7 @@
           <p>Redefining the secondary market with intentionality, luxury, and care for the planet.</p>
           <strong>&copy; 2024 ReHome. Conscious Luxury Marketplace.</strong>
         </div>
-        <div><h3>Marketplace</h3><button data-route="shop">Shop All</button><button data-route="sustain">Sustain</button><button data-route="seller">Sell an Item</button><button data-route="admin">Admin</button></div>
+        <div><h3>Marketplace</h3><button data-route="shop">Shop All</button><button data-route="sustain">Sustain</button><button data-route="seller" data-role-nav="seller">Sell an Item</button><button data-route="admin" data-role-nav="admin">Admin</button></div>
         <div><h3>Support</h3><button data-route="shipping">Shipping</button><button data-route="returns">Returns</button><button data-route="terms">Terms</button></div>
         <div>
           <h3>Newsletter</h3>
@@ -554,6 +564,6 @@
   </main>
   <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
 
-  <script type="module" src="script.js?v=20260529-checkout"></script>
+  <script type="module" src="script.js?v=20260529-polish"></script>
 </body>
 </html>

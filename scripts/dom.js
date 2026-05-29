@@ -9,6 +9,7 @@ export const elements = {
   roleBadge: document.querySelector("[data-role-badge]"),
   userName: document.querySelector("[data-user-name]"),
   cartCount: document.querySelector("[data-cart-count]"),
+  dashboardCartCount: document.querySelector("[data-dashboard-cart-count]"),
   cartSummary: document.querySelector("[data-cart-summary]"),
   homeProducts: document.querySelector("[data-home-products]"),
   catalogProducts: document.querySelector("[data-catalog-products]"),
@@ -27,5 +28,6 @@ export const elements = {
   databaseStats: document.querySelector("[data-database-stats]"),
   exportDatabaseButton: document.querySelector("[data-export-database]"),
   resetDatabaseButton: document.querySelector("[data-reset-database]"),
+  logoutButton: document.querySelector("[data-logout]"),
   toast: document.querySelector("[data-toast]")
 };

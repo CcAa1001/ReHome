@@ -41,10 +41,15 @@
   background: white;
 }
 
+.search-field {
+  display: none;
+}
+
 .cart-button,
 .profile-button,
 .admin-button,
-.settings-button {
+.settings-button,
+.logout-button {
   min-width: 38px;
   height: 38px;
   border: 1px solid rgba(6, 78, 59, 0.16);
@@ -53,16 +58,16 @@
   background: white;
 }
 
-.profile-button {
-  padding: 0 16px;
-}
-
-.settings-button {
+.profile-button,
+.settings-button,
+.admin-button,
+.logout-button {
   padding: 0 14px;
 }
 
-.admin-button {
-  padding: 0 14px;
+.logout-button {
+  color: #8a3324;
+  border-color: rgba(138, 51, 36, 0.22);
 }
 
 .role-badge {

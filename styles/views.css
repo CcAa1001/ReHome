@@ -200,7 +200,7 @@
 }
 
 .feature-card {
-  min-height: 420px;
+  min-height: 260px;
   border-radius: 12px;
   box-shadow: var(--shadow);
 }
@@ -208,12 +208,12 @@
 .price-card {
   display: flex;
   flex-direction: column;
-  padding: 33px;
+  padding: 28px;
 }
 
 .feature-card h2 {
-  margin-top: 28px;
-  font-size: 28px;
+  margin-top: 22px;
+  font-size: 24px;
 }
 
 .feature-card p {
@@ -222,10 +222,10 @@
 
 .impact-card {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(260px, 370px);
-  gap: 48px;
+  grid-template-columns: 1fr;
+  gap: 20px;
   align-items: center;
-  padding: 32px;
+  padding: 28px;
   overflow: hidden;
   background: #f0eded;
 }
@@ -242,8 +242,8 @@
 
 .impact-card img {
   width: 100%;
-  aspect-ratio: 1;
-  border-radius: 16px;
+  max-height: 150px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
@@ -255,6 +255,10 @@
 
 .curated-band {
   margin-top: 72px;
+}
+
+.decorative-section {
+  display: none !important;
 }
 
 .curated-grid article {

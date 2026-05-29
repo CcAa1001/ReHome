@@ -57,6 +57,9 @@ export async function renderCart() {
 
   // Update badge angka keranjang di header
   elements.cartCount.textContent = cart.length;
+  if (elements.dashboardCartCount) {
+    elements.dashboardCartCount.textContent = cart.length;
+  }
   renderCartSummary(cart);
 
   if (!cart.length) {
