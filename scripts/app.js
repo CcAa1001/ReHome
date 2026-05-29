@@ -2,6 +2,7 @@
 import { elements } from "./dom.js";
 import { navigate, showApp } from "./router.js";
 import { bindLoginPage } from "./render/login.js";
+import { bindCheckout } from "./render/checkout.js";
 import { 
   renderAll, 
   renderAccount, 
@@ -22,6 +23,7 @@ import {
   saveRemoteSettings,
   updateRemoteProfile
 } from "./supabaseDatabase.js";
+import state from "./state.js";
 import { showToast } from "./ui.js";
 
 // ── BOOT (Hanya panggil bind saat elemen tersedia) ──────────────────────────
@@ -32,6 +34,8 @@ async function boot() {
   bindListingFilters();
   bindCategoryFilters();
   bindCartActions();
+  bindStateEvents();
+  bindCheckout();
   bindPassiveForms();
   bindSettings();
   bindProfile();
@@ -100,6 +104,14 @@ function bindCartActions() {
     await renderCart();
     await renderSettings();
     showToast("Item removed.");
+  });
+}
+
+function bindStateEvents() {
+  state.subscribe("cartUpdated", (cart = []) => {
+    if (elements.cartCount) {
+      elements.cartCount.textContent = Array.isArray(cart) ? cart.length : 0;
+    }
   });
 }
 

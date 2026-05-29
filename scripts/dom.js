@@ -13,6 +13,7 @@ export const elements = {
   homeProducts: document.querySelector("[data-home-products]"),
   catalogProducts: document.querySelector("[data-catalog-products]"),
   cartList: document.querySelector("[data-cart-list]"),
+  checkoutSubmitButton: document.querySelector("[data-checkout-submit]"),
   historyList: document.querySelector("[data-history-list]"),
   listingGrid: document.querySelector("[data-listings]"),
   filterButtons: document.querySelectorAll("[data-filter]"),

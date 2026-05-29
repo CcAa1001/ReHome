@@ -52,6 +52,8 @@ export function navigate(route, params = {}) {
   window.scrollTo({ top: 0, behavior: "auto" });
 }
 
+export const Maps = navigate;
+
 export async function showApp(route = "home", renderAll) {
   elements.login.hidden = true;
   elements.app.hidden = false;

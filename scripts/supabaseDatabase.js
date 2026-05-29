@@ -309,6 +309,84 @@ export async function removeRemoteCartItem(cartItemId) {
   }
 }
 
+export async function checkoutCart() {
+  const user = await getSignedInUser();
+  if (!user) {
+    throw new Error("Silakan login dengan akun Supabase sebelum checkout.");
+  }
+
+  const supabase = await getSupabaseClient();
+  const { data: cartRows, error: cartError } = await supabase
+    .from("cart_items")
+    .select("id, quantity, product_id, products(id, title, price)")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true });
+
+  if (cartError) {
+    throw cartError;
+  }
+
+  if (!cartRows?.length) {
+    throw new Error("Keranjang masih kosong.");
+  }
+
+  const subtotal = cartRows.reduce((sum, row) => {
+    return sum + Number(row.products?.price ?? 0) * Number(row.quantity ?? 1);
+  }, 0);
+  const shipping = 0;
+  const carbonCredit = 0;
+  const total = subtotal + shipping - carbonCredit;
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .insert({
+      user_id: user.id,
+      status: "pending",
+      subtotal,
+      shipping,
+      carbon_credit: carbonCredit,
+      total
+    })
+    .select()
+    .single();
+
+  if (orderError) {
+    throw orderError;
+  }
+
+  const orderItems = cartRows.map((row) => ({
+    order_id: order.id,
+    product_id: row.product_id,
+    title: row.products?.title ?? "ReHome item",
+    quantity: Number(row.quantity ?? 1),
+    price: Number(row.products?.price ?? 0)
+  }));
+
+  const { error: itemsError } = await supabase
+    .from("order_items")
+    .insert(orderItems);
+
+  if (itemsError) {
+    throw itemsError;
+  }
+
+  const cartIds = cartRows.map((row) => row.id);
+  const { error: deleteError } = await supabase
+    .from("cart_items")
+    .delete()
+    .eq("user_id", user.id)
+    .in("id", cartIds);
+
+  if (deleteError) {
+    throw deleteError;
+  }
+
+  return {
+    ...order,
+    items: orderItems
+  };
+}
+
 async function uploadProductImage(file, userId) {
   if (!file || !file.size) {
     return "";

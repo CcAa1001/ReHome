@@ -190,6 +190,18 @@ using (
   )
 );
 
+drop policy if exists "Users can create their own order items" on public.order_items;
+create policy "Users can create their own order items"
+on public.order_items for insert
+to authenticated
+with check (
+  exists (
+    select 1 from public.orders
+    where orders.id = order_items.order_id
+    and orders.user_id = (select auth.uid())
+  )
+);
+
 drop policy if exists "Users can view their own settings" on public.user_settings;
 create policy "Users can view their own settings"
 on public.user_settings for select
