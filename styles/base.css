@@ -104,3 +104,32 @@ h2,
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
+
+
+
+
+
+
+/* ── FULLSCREEN LIGHTBOX ── */
+.lightbox-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(28, 25, 23, 0.9); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transition: 0.3s;
+}
+.lightbox-overlay.active { opacity: 1; visibility: visible; }
+.lightbox-img { max-width: 90%; max-height: 90vh; border-radius: 12px; object-fit: contain; }
+
+/* Tombol bulat & lebih transparan */
+.lightbox-prev, .lightbox-next {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15); /* Transparan */
+  color: white; border: none; 
+  width: 50px; height: 50px; border-radius: 50%; /* Bulat Sempurna */
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px);
+}
+.lightbox-prev:hover, .lightbox-next:hover { background: rgba(255, 255, 255, 0.3); }
+.lightbox-prev { left: 40px; }
+.lightbox-next { right: 40px; }
+/* Tombol close dihilangkan */
