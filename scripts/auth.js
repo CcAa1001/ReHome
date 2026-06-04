@@ -80,17 +80,34 @@ export async function logoutUser() {
 
 // ── SOCIAL LOGIN (OAUTH) ──────────────────────────────────────────────────────
 
+// Tambahkan ini di scripts/auth.js
 export async function loginWithProvider(provider) {
+  if (!isSupabaseConfigured) throw new Error("Supabase is not configured.");
+  
+  const supabase = await getSupabaseClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+    options: {
+      // Pastikan Supabase mengembalikan user ke halaman utama setelah sukses
+      redirectTo: window.location.origin + '/#home'
+    }
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+// ── RESET PASSWORD ────────────────────────────────────────────────────────────
+
+export async function resetPassword(email) {
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured.");
   }
   
   const supabase = await getSupabaseClient();
-  // Supabase akan otomatis mengarahkan user ke halaman login Google/Apple
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: provider,
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/#reset-password',
   });
 
   if (error) throw error;
-  return data;
 }

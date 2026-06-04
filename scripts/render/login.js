@@ -1,104 +1,134 @@
 // scripts/render/login.js
 import { showApp } from "../router.js";
-import { loginUser, registerUser, loginWithProvider } from "../auth.js";
+import { loginUser, registerUser, loginWithProvider, resetPassword } from "../auth.js"; // ← add resetPassword
+
+// Mencegah event listener ganda
+let isLoginBound = false;
 
 export function bindLoginPage() {
-  const loginSection = document.getElementById("login");
-  const registerSection = document.getElementById("register");
-  
-  const loginForm = document.querySelector("[data-login-form]");
-  const registerForm = document.querySelector("[data-register-form]");
-  
-  const toRegisterBtn = document.querySelector("[data-nav-to='register']");
-  const toLoginBtn = document.querySelector("[data-nav-to='login']");
+  if (isLoginBound) return;
+  isLoginBound = true;
 
-  const loginError = document.getElementById("login-error");
-  const registerError = document.getElementById("register-error");
-
-  // 1. Logika Navigasi Pindah Halaman (Login <-> Register)
-  if (toRegisterBtn) {
-    toRegisterBtn.addEventListener("click", () => {
-      loginSection.hidden = true;
-      registerSection.hidden = false;
-    });
-  }
-
-  if (toLoginBtn) {
-    toLoginBtn.addEventListener("click", () => {
-      registerSection.hidden = true;
-      loginSection.hidden = false;
-    });
-  }
-
-  // 2. Logika Submit Login Manual
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
+  document.addEventListener("click", async (e) => {
+    
+    // -- 1. Navigasi Pindah Layar (Join the movement <-> Sign in) --
+    const navBtn = e.target.closest("[data-nav-to]");
+    if (navBtn) {
       e.preventDefault();
-      const btn = loginForm.querySelector(".btn-signin");
-      const email = loginForm.querySelector('input[name="email"]').value;
-      const password = loginForm.querySelector('input[name="password"]').value;
+      const target = navBtn.getAttribute("data-nav-to");
+      const loginSection = document.getElementById("login");
+      const registerSection = document.getElementById("register");
       
-      btn.disabled = true;
-      loginError.textContent = "Processing...";
-      loginError.style.color = "#1c1917";
+      if (target === "register" && loginSection && registerSection) {
+        loginSection.hidden = true;
+        registerSection.hidden = false;
+      } else if (target === "login" && loginSection && registerSection) {
+        registerSection.hidden = true;
+        loginSection.hidden = false;
+      }
+      return;
+    }
+
+    // -- 2. Tombol Forgot Password --
+    if (e.target.closest(".forgot-link-new")) {
+      e.preventDefault();
+
+      const email = prompt("Enter your email address to reset your password:");
+      if (!email) return; // user cancelled
+
+      try {
+        await resetPassword(email.trim());
+        alert("Password reset email sent! Check your inbox.");
+      } catch (err) {
+        alert("Failed to send reset email: " + err.message);
+      }
+      return;
+    }
+
+    // -- 3. Tombol Social Login (Google & Apple) --
+    const providerBtn = e.target.closest("[data-provider]");
+    if (providerBtn) {
+      e.preventDefault();
+      const provider = providerBtn.getAttribute("data-provider");
+      const originalHtml = providerBtn.innerHTML;
+      
+      providerBtn.innerHTML = "Connecting...";
+      providerBtn.style.opacity = "0.7";
+      providerBtn.style.pointerEvents = "none";
+
+      try {
+        await loginWithProvider(provider);
+      } catch (err) {
+        if (err.message.includes("not enabled") || err.message.includes("Unsupported provider")) {
+          alert(`[INFO] Bos harus mengaktifkan Provider ${provider.toUpperCase()} di Dashboard Supabase -> Authentication -> Providers.`);
+        } else {
+          alert(`Gagal terhubung: ${err.message}`);
+        }
+        providerBtn.innerHTML = originalHtml;
+        providerBtn.style.opacity = "1";
+        providerBtn.style.pointerEvents = "auto";
+      }
+      return;
+    }
+  });
+
+  // -- 4. SUBMIT FORM LOGIN & REGISTER --
+  document.addEventListener("submit", async (e) => {
+    
+    // Form Login
+    if (e.target.matches("[data-login-form]")) {
+      e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector(".btn-signin");
+      const email = form.querySelector('input[name="email"]').value;
+      const password = form.querySelector('input[name="password"]').value;
+      const errorMsg = document.getElementById("login-error");
+      
+      if (btn) { btn.textContent = "Authenticating..."; btn.disabled = true; }
+      if (errorMsg) { errorMsg.textContent = ""; }
       
       try {
         await loginUser(email, password);
-        loginError.textContent = "";
-        loginSection.hidden = true;
+        document.getElementById("login").hidden = true;
         document.getElementById("app").hidden = false;
         await showApp("home");
       } catch (error) {
-        loginError.textContent = error.message;
-        loginError.style.color = "#dc2626";
-      } finally {
-        btn.disabled = false;
+        if (errorMsg) errorMsg.textContent = "Error: " + error.message;
+        if (btn) { btn.textContent = "Sign In"; btn.disabled = false; }
       }
-    });
-  }
+    }
 
-  // 3. Logika Submit Register Manual
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
+    // Form Register
+    if (e.target.matches("[data-register-form]")) {
       e.preventDefault();
-      const btn = registerForm.querySelector(".btn-signin");
-      const name = registerForm.querySelector('input[name="name"]').value;
-      const email = registerForm.querySelector('input[name="email"]').value;
-      const password = registerForm.querySelector('input[name="password"]').value;
+      const form = e.target;
+      const btn = form.querySelector(".btn-signin");
+      const name = form.querySelector('input[name="name"]').value;
+      const email = form.querySelector('input[name="email"]').value;
+      const password = form.querySelector('input[name="password"]').value;
+      const errorMsg = document.getElementById("register-error");
 
-      btn.disabled = true;
-      registerError.textContent = "Creating account...";
-      registerError.style.color = "#1c1917";
+      if (btn) { btn.textContent = "Creating Account..."; btn.disabled = true; }
+      if (errorMsg) { errorMsg.textContent = ""; errorMsg.style.color = "#1c1917"; }
 
       try {
         await registerUser(email, password, name);
-        registerError.textContent = "Berhasil! Masuk ke aplikasi...";
-        registerError.style.color = "#3d5a30";
-        
+        if (errorMsg) {
+          errorMsg.style.color = "#3d5a30"; 
+          errorMsg.textContent = "Success! Redirecting...";
+        }
         setTimeout(async () => {
-           registerSection.hidden = true;
-           document.getElementById("app").hidden = false;
-           await showApp("home");
+          document.getElementById("register").hidden = true;
+          document.getElementById("app").hidden = false;
+          await showApp("home");
         }, 1000);
       } catch (error) {
-        registerError.textContent = error.message;
-        registerError.style.color = "#dc2626";
-      } finally {
-        btn.disabled = false;
+        if (errorMsg) {
+          errorMsg.style.color = "#dc2626";
+          errorMsg.textContent = "Error: " + error.message;
+        }
+        if (btn) { btn.textContent = "Create Account"; btn.disabled = false; }
       }
-    });
-  }
-
-  // 4. Logika Social Login (Google & Apple)
-  document.querySelectorAll("[data-provider]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const provider = btn.dataset.provider;
-      try {
-        // Supabase akan melakukan redirect ke halaman provider (misal Google)
-        await loginWithProvider(provider);
-      } catch (err) {
-        alert(`Gagal terhubung dengan ${provider}: ${err.message}`);
-      }
-    });
+    }
   });
 }

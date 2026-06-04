@@ -1,40 +1,8 @@
 // scripts/storage.js
 import { sessionKey } from "./config.js";
-import { loadDatabase, updateDatabase } from "./database.js";
 import state from "./state.js";
 
-export { loadDatabase, resetDatabase, exportDatabase, getDatabaseStats } from "./database.js";
-
-// ── AUTH ──────────────────────────────────────────────────────────────────────
-
-export function authenticate(email, password) {
-  const database = loadDatabase();
-  return database.users?.find((u) => u.email === email && u.password === password) ?? null;
-}
-
-/**
- * Buat user demo lokal dari email apa pun.
- * Digunakan saat testing agar tidak ada yang tertolak di halaman login.
- */
-export function createLocalDemoUser(email, password = "") {
-  const demoUser = {
-    id:       `demo-${Date.now()}`,
-    email,
-    name:     email.split("@")[0],
-    role:     "buyer",
-    password
-  };
-
-  updateDatabase((db) => {
-    if (!Array.isArray(db.users)) db.users = [];
-    const alreadyExists = db.users.some((u) => u.email === email);
-    if (!alreadyExists) db.users.push(demoUser);
-  });
-
-  return demoUser;
-}
-
-// ── SESSION ───────────────────────────────────────────────────────────────────
+// ── SESSION (Login & Auth) ────────────────────────────────────────────────────
 
 export function setSession(user) {
   localStorage.setItem(sessionKey, JSON.stringify({
@@ -65,26 +33,35 @@ export function updateSession(updates) {
   return next;
 }
 
-// ── CART ──────────────────────────────────────────────────────────────────────
+// ── CART (Sementara dialihkan ke LocalStorage) ────────────────────────────────
+const CART_KEY = "rehome.cart";
+
+function getCart() {
+  return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+}
 
 export function addCartItem(item) {
-  updateDatabase((db) => { db.cart.push(item); });
-  state.publish("cartUpdated", loadDatabase().cart);
+  const cart = getCart();
+  cart.push(item);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  state.publish("cartUpdated", cart);
 }
 
 export function removeCartItem(index) {
-  updateDatabase((db) => { db.cart.splice(index, 1); });
-  state.publish("cartUpdated", loadDatabase().cart);
+  const cart = getCart();
+  cart.splice(index, 1);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  state.publish("cartUpdated", cart);
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────────
+// ── SETTINGS (Sementara dialihkan ke LocalStorage) ────────────────────────────
+const SETTINGS_KEY = "rehome.settings";
 
 export function getSettings() {
-  return loadDatabase().settings;
+  return JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
 }
 
 export function saveSettings(settings) {
-  updateDatabase((db) => {
-    db.settings = { ...db.settings, ...settings };
-  });
+  const current = getSettings();
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...current, ...settings }));
 }

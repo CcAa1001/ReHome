@@ -44,6 +44,7 @@
       display: flex; align-items: center; justify-content: center; border: 2px solid #fbfaf9;
     }
     .hidden-item { display: none !important; } /* Sembunyikan elemen yg merusak UI */
+    [hidden] { display: none !important; }
 
     /* --- LOGIN (GAMBAR 250500) --- */
     .login-screen-new {
@@ -158,12 +159,12 @@
     </section>
   </main>
 
-  <main id="register" class="login-screen-new" hidden>
-    <section class="login-visual-new" style="background: url('assets/figma-export/2e09933e727252961828b90b8f665940c6212fbe.jpg') center/cover;">
+<main id="register" class="login-screen-new" hidden>
+    <section class="login-visual-new">
       <div class="visual-content"><span class="brand-logo-white">ReHome</span></div>
       <div class="login-tagline-new visual-content">
-        <h1>Curate Your<br>Lifestyle</h1>
-        <p>Join a global movement of sustainability.<br>Buy, sell, and cherish items that matter.</p>
+        <h1>Give Things a<br>Second Life</h1>
+        <p>Join our community of conscious curators.<br>Discover pre-loved treasures that tell a story.</p>
       </div>
     </section>
 
@@ -208,6 +209,34 @@
     </section>
   </main>
 
+  <main id="forgot" class="login-screen-new" hidden>
+    <section class="login-visual-new">
+      <div class="visual-content"><span class="brand-logo-white">ReHome</span></div>
+      <div class="login-tagline-new visual-content">
+        <h1>Give Things a<br>Second Life</h1>
+        <p>Join our community of conscious curators.<br>Discover pre-loved treasures that tell a story.</p>
+      </div>
+    </section>
+
+    <section class="login-panel-new">
+      <form class="login-card-new" data-forgot-form autocomplete="off">
+        <h2>Reset Password</h2>
+        <p class="subtitle">Enter your email address and we'll send you a link to reset your password.</p>
+
+        <label>
+          <span class="label-row-new">Email Address</span>
+          <input name="email" type="email" placeholder="name@example.com" required>
+        </label>
+
+        <button class="btn-signin" type="submit">Send Reset Link</button>
+        <p id="forgot-error" style="font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px;"></p>
+
+        <p class="join-footer-new" style="margin-top: 48px;">
+          Remembered your password? <button type="button" data-nav-to="login">Back to Sign in</button>
+        </p>
+      </form>
+    </section>
+  </main>
   <!-- ── 2. APLIKASI UTAMA & HEADER BARU (GAMBAR 25019c) ── -->
   <main id="app" class="app-shell" hidden>
     
@@ -220,6 +249,7 @@
           <button type="button" data-route="sustain">Sustain</button>
           <button type="button" data-route="curated">Curated</button>
           <button type="button" data-route="seller" data-role-nav="seller">Sell</button>
+          <button class="nav-link" data-route="sell" style="font-weight: bold; color: #3d5a30;">Sell an Item</button>
         </div>
         
         <div class="nav-actions-new">

@@ -12,56 +12,78 @@ export async function renderProductDetail() {
   try {
     const { productId } = getRouteParams();
     const products = await getProducts();
-    // Jika tidak ada ID produk yang di-klik, tampilkan produk pertama
-    const product = products.find(p => p.id === productId) || products[0];
-
+    const product = products.find(p => String(p.id) === String(productId)) || products[0];
     if (!product) return;
 
-    // 1. Ganti Data secara perlahan (Tanpa Merusak HTML)
-    const mainImg = container.querySelector(".main-product-image");
-    const titleText = container.querySelector(".product-title");
-    const priceText = container.querySelector(".detail-price");
-    const crumbTitle = container.querySelector(".crumb-title");
-    const conditionText = container.querySelector(".product-condition");
-    const makerText = container.querySelector(".product-maker");
+    // -- Main image
+    const mainImg = container.querySelector(".pd-main-img");
+    if (mainImg) { mainImg.src = product.image; mainImg.alt = product.title; }
 
-    if (mainImg) mainImg.src = product.image;
-    if (titleText) titleText.textContent = product.title;
-    if (priceText) priceText.textContent = product.price;
-    if (crumbTitle) crumbTitle.textContent = product.title;
-    if (conditionText) conditionText.textContent = product.condition || "Excellent (Pre-owned)";
-    if (makerText) makerText.textContent = product.maker || "Elena Studio";
-
-    // 2. Logic Efek Klik Thumbnail Gambar
-    const thumbs = container.querySelectorAll(".thumb-row img");
-    if (thumbs.length > 0 && mainImg) {
-      thumbs[0].src = product.image; // Paksa thumbnail pertama pakai gambar asli
-      thumbs.forEach(thumb => {
+    // -- Gallery thumbnails: show first image, hide extras if no extra images
+    const thumbsEl = container.querySelector(".pd-thumbs");
+    if (thumbsEl) {
+      // Products only have one image currently — show just that
+      thumbsEl.innerHTML = `<img class="active" src="${product.image}" alt="${product.title}">`;
+      thumbsEl.querySelectorAll("img").forEach(thumb => {
         thumb.addEventListener("click", () => {
-          mainImg.src = thumb.src;
-          thumbs.forEach(t => t.style.opacity = "0.6");
-          thumb.style.opacity = "1";
+          if (mainImg) mainImg.src = thumb.src;
+          thumbsEl.querySelectorAll("img").forEach(t => t.classList.remove("active"));
+          thumb.classList.add("active");
         });
       });
     }
 
-    // 3. Logic Tombol "Add to Cart"
+    // -- Breadcrumb
+    const crumb = container.querySelector(".pd-breadcrumbs");
+    if (crumb) crumb.innerHTML = `Shop / ${product.category ?? "Furniture"} / <span>${product.title}</span>`;
+
+    // -- Eyebrow
+    const eyebrow = container.querySelector(".pd-eyebrow");
+    if (eyebrow) eyebrow.textContent = product.rrp ?? "Authenticated";
+
+    // -- Title
+    const title = container.querySelector(".pd-title");
+    if (title) title.textContent = product.title;
+
+    // -- Price
+    const price = container.querySelector(".pd-price");
+    if (price) price.textContent = product.price;
+
+    // -- Condition
+    const condEl = container.querySelector(".pd-condition");
+    if (condEl) condEl.innerHTML = `
+      <span>Condition</span>
+      <strong>${product.condition ?? "Excellent (Pre-owned)"}</strong>
+      <em>${product.category ?? "Furniture"}</em>`;
+
+    // -- Description (use real description if available)
+    const desc = container.querySelector(".pd-desc");
+    if (desc) desc.textContent = product.description
+      ?? "A beautifully curated preloved piece, sustainably sourced and authenticity verified.";
+
+    // -- Seller
+    const sellerName = container.querySelector(".pd-seller strong");
+    if (sellerName) sellerName.textContent = product.maker ?? "ReHome Seller";
+
+    // -- Add to Cart button
     const btnCart = container.querySelector("[data-add-cart]");
     if (btnCart) {
-      // Bersihkan tombol dari event lama agar tidak dobel
       const newBtn = btnCart.cloneNode(true);
       btnCart.parentNode.replaceChild(newBtn, btnCart);
-      
       newBtn.addEventListener("click", async () => {
+        newBtn.textContent = "Adding...";
+        newBtn.disabled = true;
         const remoteAdded = await addRemoteCartItem(product);
         if (!remoteAdded) addCartItem(product);
-        
         state.publish("cartUpdated", product);
         showToast(`${product.title} added to your selection.`);
+        newBtn.textContent = "Add to Cart";
+        newBtn.disabled = false;
         navigate("cart");
       });
     }
+
   } catch (err) {
-    console.warn("Gagal memuat detail produk:", err);
+    console.warn("Failed to load product detail:", err);
   }
 }

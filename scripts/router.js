@@ -1,6 +1,17 @@
 import { showToast } from "./ui.js";
 
 const viewCache = {};
+// ── TAMBAHAN UNTUK MENYIMPAN DATA ANTAR HALAMAN ──
+let routeParams = {}; 
+
+export function setRouteParams(params) {
+  routeParams = params;
+}
+
+export function getRouteParams() {
+  return routeParams;
+}
+// ─────────────────────────────────────────────────
 
 export async function navigate(route) {
   const container = document.getElementById("router-view");
@@ -24,6 +35,7 @@ export async function navigate(route) {
     // Panggil JS Spesifik untuk halaman tersebut secara dinamis
     try {
       const module = await import(`./render/${route}.js`);
+      // Ini otomatis membuat nama fungsi, misal: route "sell" -> "renderSell"
       const renderFunctionName = "render" + route.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
       if (module[renderFunctionName]) module[renderFunctionName]();
     } catch (e) {
@@ -33,7 +45,8 @@ export async function navigate(route) {
     // Aktifkan semua tombol pindah halaman di HTML baru
     container.querySelectorAll("[data-route]").forEach(btn => {
       btn.addEventListener("click", (e) => {
-        e.preventDefault(); navigate(btn.dataset.route);
+        e.preventDefault(); 
+        navigate(btn.dataset.route);
       });
     });
 
