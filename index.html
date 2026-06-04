@@ -113,11 +113,9 @@
 <body>
   
   <!-- ── 1. FORM LOGIN BARU (GAMBAR 250500) ── -->
-  <main id="login" class="login-screen-new">
+ <main id="login" class="login-screen-new">
     <section class="login-visual-new">
-      <div class="visual-content">
-        <span class="brand-logo-white">ReHome</span>
-      </div>
+      <div class="visual-content"><span class="brand-logo-white">ReHome</span></div>
       <div class="login-tagline-new visual-content">
         <h1>Give Things a<br>Second Life</h1>
         <p>Join our community of conscious curators.<br>Discover pre-loved treasures that tell a story.</p>
@@ -125,16 +123,9 @@
     </section>
 
     <section class="login-panel-new">
-      <!-- Tag Form Lama Tetap Ada Agar Logic JS Login Tetap Berfungsi -->
       <form class="login-card-new" data-login-form autocomplete="off">
-        
-        <h2 data-login-heading>Welcome Back</h2>
-        <p class="subtitle" data-login-subheading>Sign in to continue your journey of mindful luxury.</p>
-
-        <label data-name-field style="display: none;">
-          <span class="label-row-new">Full Name</span>
-          <input name="name" type="text" placeholder="Vivian">
-        </label>
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to continue your journey of mindful luxury.</p>
 
         <label>
           <span class="label-row-new">Email Address</span>
@@ -142,44 +133,78 @@
         </label>
 
         <label>
-          <span class="label-row-new">
-            Password 
-            <button type="button" class="forgot-link-new">Forgot?</button>
-          </span>
+          <span class="label-row-new">Password <button type="button" class="forgot-link-new">Forgot?</button></span>
           <input name="password" type="password" placeholder="••••••••" value="rehome123" required>
         </label>
 
         <button class="btn-signin" type="submit">Sign In</button>
-        <p class="form-message" data-form-message style="color: #dc2626; font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px;"></p>
+        <p id="login-error" style="color: #dc2626; font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px;"></p>
 
         <div class="divider-new"><span>OR CONTINUE WITH</span></div>
 
         <div class="social-grid-new">
-          <button type="button" class="btn-social">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19.29A9 9 0 1 1 20.71 10h-8.21v3.29h4.72A4.5 4.5 0 1 1 12 16.5a4.5 4.5 0 0 1-0.29-8.96l2.33-2.33A9 9 0 0 0 3 12a9 9 0 0 0 9 9 9.04 9.04 0 0 0 5.5-1.71z"></path></svg>
-            Google
+          <button type="button" class="btn-social" data-provider="google">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19.29A9 9 0 1 1 20.71 10h-8.21v3.29h4.72A4.5 4.5 0 1 1 12 16.5a4.5 4.5 0 0 1-0.29-8.96l2.33-2.33A9 9 0 0 0 3 12a9 9 0 0 0 9 9 9.04 9.04 0 0 0 5.5-1.71z"></path></svg> Google
           </button>
-          <button type="button" class="btn-social">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20.94c-1.6 0-3.14-.52-4.48-1.42A8.94 8.94 0 0 1 3 12c0-4.97 4.03-9 9-9 1.34 0 2.58.29 3.69.8.96.44 1.83 1.05 2.57 1.8.74.74 1.35 1.61 1.79 2.57.51 1.11.8 2.35.8 3.69 0 4.97-4.03 9-9 9zm0-16.14a7.14 7.14 0 1 0 0 14.28 7.14 7.14 0 0 0 0-14.28z"></path></svg>
-            Apple
+          <button type="button" class="btn-social" data-provider="apple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20.94c-1.6 0-3.14-.52-4.48-1.42A8.94 8.94 0 0 1 3 12c0-4.97 4.03-9 9-9 1.34 0 2.58.29 3.69.8.96.44 1.83 1.05 2.57 1.8.74.74 1.35 1.61 1.79 2.57.51 1.11.8 2.35.8 3.69 0 4.97-4.03 9-9 9zm0-16.14a7.14 7.14 0 1 0 0 14.28 7.14 7.14 0 0 0 0-14.28z"></path></svg> Apple
           </button>
         </div>
 
-        <p class="join-footer-new" data-login-footer>
-          Don't have an account? <button type="button" data-tab-trigger="register">Join the movement</button>
+        <p class="join-footer-new">
+          Don't have an account? <button type="button" data-nav-to="register">Join the movement</button>
         </p>
       </form>
+    </section>
+  </main>
 
-      <div class="trust-badges-new">
-        <div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg>
-          Eco-conscious
-        </div>
-        <div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          Certified sellers
-        </div>
+  <main id="register" class="login-screen-new" hidden>
+    <section class="login-visual-new" style="background: url('assets/figma-export/2e09933e727252961828b90b8f665940c6212fbe.jpg') center/cover;">
+      <div class="visual-content"><span class="brand-logo-white">ReHome</span></div>
+      <div class="login-tagline-new visual-content">
+        <h1>Curate Your<br>Lifestyle</h1>
+        <p>Join a global movement of sustainability.<br>Buy, sell, and cherish items that matter.</p>
       </div>
+    </section>
+
+    <section class="login-panel-new">
+      <form class="login-card-new" data-register-form autocomplete="off">
+        <h2>Join the Movement</h2>
+        <p class="subtitle">Create an account to start curating your mindful lifestyle.</p>
+
+        <label>
+          <span class="label-row-new">Full Name</span>
+          <input name="name" type="text" placeholder="Vivian Curator" required>
+        </label>
+
+        <label>
+          <span class="label-row-new">Email Address</span>
+          <input name="email" type="email" placeholder="name@example.com" required>
+        </label>
+
+        <label>
+          <span class="label-row-new">Password</span>
+          <input name="password" type="password" placeholder="••••••••" required>
+        </label>
+
+        <button class="btn-signin" type="submit">Create Account</button>
+        <p id="register-error" style="color: #dc2626; font-size: 13px; margin-top: 12px; text-align: center; min-height: 18px;"></p>
+
+        <div class="divider-new"><span>OR CONTINUE WITH</span></div>
+
+        <div class="social-grid-new">
+          <button type="button" class="btn-social" data-provider="google">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19.29A9 9 0 1 1 20.71 10h-8.21v3.29h4.72A4.5 4.5 0 1 1 12 16.5a4.5 4.5 0 0 1-0.29-8.96l2.33-2.33A9 9 0 0 0 3 12a9 9 0 0 0 9 9 9.04 9.04 0 0 0 5.5-1.71z"></path></svg> Google
+          </button>
+          <button type="button" class="btn-social" data-provider="apple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20.94c-1.6 0-3.14-.52-4.48-1.42A8.94 8.94 0 0 1 3 12c0-4.97 4.03-9 9-9 1.34 0 2.58.29 3.69.8.96.44 1.83 1.05 2.57 1.8.74.74 1.35 1.61 1.79 2.57.51 1.11.8 2.35.8 3.69 0 4.97-4.03 9-9 9zm0-16.14a7.14 7.14 0 1 0 0 14.28 7.14 7.14 0 0 0 0-14.28z"></path></svg> Apple
+          </button>
+        </div>
+
+        <p class="join-footer-new">
+          Already have an account? <button type="button" data-nav-to="login">Sign in here</button>
+        </p>
+      </form>
     </section>
   </main>
 

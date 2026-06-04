@@ -29,7 +29,7 @@ export async function loginUser(email, password) {
   return session;
 }
 
-// ── REGISTER ──────────────────────────────────────────────────────────────────
+// ── REGISTER ───────────────────Q───────────────────────────────────────────────
 
 export async function registerUser(email, password, name) {
   if (!isSupabaseConfigured) {
@@ -76,4 +76,21 @@ export async function logoutUser() {
 
   localStorage.clear();
   state.publish("authChanged", null);
+}
+
+// ── SOCIAL LOGIN (OAUTH) ──────────────────────────────────────────────────────
+
+export async function loginWithProvider(provider) {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured.");
+  }
+  
+  const supabase = await getSupabaseClient();
+  // Supabase akan otomatis mengarahkan user ke halaman login Google/Apple
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+  });
+
+  if (error) throw error;
+  return data;
 }
