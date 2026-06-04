@@ -1,18 +1,160 @@
-<div class="page-shell">
-  <section class="ai-hero-copy">
-    <span class="eyebrow">Artificial Intelligence</span>
+<style>
+  /* ── CSS KHUSUS CURATED (GAMBAR 24f2f3 & 24f2d4) ── */
+  .curated-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  
+  .ai-hero { text-align: center; max-width: 720px; margin: 0 auto 64px; }
+  .eyebrow-pill { display: inline-block; padding: 6px 16px; background: #f0ede8; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #78716c; margin-bottom: 24px; }
+  .ai-hero h1 { font-family: var(--serif, serif); font-size: 56px; line-height: 1.1; margin: 0 0 16px; color: #1c1917; }
+  .ai-hero p { font-size: 16px; color: #78716c; line-height: 1.6; margin: 0; }
+
+  .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 80px; align-items: start; }
+  .ai-panel { background: white; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 24px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.02); }
+  
+  /* Upload Panel */
+  .ai-tabs { display: flex; gap: 16px; margin-bottom: 32px; border-bottom: 1px solid #f0ede8; padding-bottom: 16px; }
+  .ai-tabs span { font-size: 14px; font-weight: 700; color: #a8a29e; cursor: pointer; position: relative; }
+  .ai-tabs span.active { color: #3d5a30; }
+  .ai-tabs span.active::after { content: ""; position: absolute; bottom: -17px; left: 0; width: 100%; height: 2px; background: #3d5a30; }
+
+  .upload-box { border: 2px dashed #d6d3d1; border-radius: 16px; background: #fafaf9; padding: 48px 24px; text-align: center; margin-bottom: 24px; }
+  .upload-box svg { color: #a8a29e; margin-bottom: 16px; }
+  .upload-box strong { display: block; font-size: 16px; margin-bottom: 8px; }
+  .upload-box p { font-size: 13px; color: #78716c; margin-bottom: 24px; }
+  .upload-box button { background: white; border: 1px solid #d6d3d1; padding: 10px 24px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+
+  .ai-field { margin-bottom: 20px; }
+  .ai-field label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #78716c; margin-bottom: 8px; }
+  .ai-input { width: 100%; padding: 14px 16px; border: 1px solid #e7e5e4; border-radius: 12px; background: #fbfaf9; font-size: 15px; font-weight: 600; color: #1c1917; outline: none; }
+  .ai-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .btn-green-full { width: 100%; background: #3d5a30; color: white; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 12px; transition: 0.2s; }
+  .btn-green-full:hover { background: #2e4424; }
+
+  /* Result Panel */
+  .result-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #fbfaf9; border: 1px solid #e7e5e4; border-radius: 12px; margin-bottom: 24px; font-weight: 700; font-size: 14px; }
+  .dot { display: inline-block; width: 8px; height: 8px; background: #3d5a30; border-radius: 50%; margin-right: 8px; }
+  
+  .price-large { font-family: var(--serif, serif); font-size: 56px; line-height: 1; color: #1c1917; margin-bottom: 24px; }
+  .price-large span { font-size: 24px; color: #a8a29e; font-weight: 500; vertical-align: top; margin-right: 4px; }
+  
+  .badge-fair { display: inline-flex; align-items: center; gap: 12px; background: #f4f7f2; border-radius: 12px; padding: 16px; width: 100%; margin-bottom: 32px; }
+  .badge-fair svg { color: white; background: #3d5a30; padding: 8px; border-radius: 50%; width: 36px; height: 36px; }
+  
+  .insight-bar { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  .bar-bg { height: 6px; background: #e7e5e4; border-radius: 999px; overflow: hidden; margin-bottom: 32px; }
+  .bar-fill { height: 100%; background: #3d5a30; width: 85%; }
+
+  .insight-card { border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .insight-item { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .insight-item:last-child { margin-bottom: 0; }
+  .insight-item svg { background: #f5f4f0; padding: 8px; border-radius: 8px; width: 36px; height: 36px; color: #3d5a30; }
+
+  .eco-check { background: #2e4424; color: white; border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+  .eco-check svg { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 50%; width: 40px; height: 40px; color: #a3b18a; }
+
+  /* Approach Section */
+  .approach-title { text-align: center; font-family: var(--serif, serif); font-size: 36px; margin-bottom: 48px; color: #1c1917; }
+  .approach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; text-align: center; }
+  .approach-card { display: flex; flex-direction: column; align-items: center; }
+  .approach-icon { width: 64px; height: 64px; background: #f0ede8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #78716c; margin-bottom: 24px; }
+  .approach-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+  .approach-card p { font-size: 15px; color: #78716c; line-height: 1.6; }
+</style>
+
+<div class="page-shell curated-wrapper">
+  
+  <section class="ai-hero">
+    <span class="eyebrow-pill">Artificial Intelligence</span>
     <h1>AI Price Checker</h1>
-    <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate valuation.</p>
+    <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate, fair-market valuation for your pre-loved luxury goods.</p>
   </section>
-  <section class="ai-valuation-layout">
-    <article class="ai-upload-panel">
-      <div class="ai-panel-header"><h2>Analyze Item</h2></div>
-      <div class="ai-drop-zone"><strong>Upload or drag photos</strong><button class="ai-select-btn">Select Files</button></div>
-      <button class="ai-valuation-btn" type="button">Get AI Valuation</button>
+
+  <section class="ai-grid">
+    
+    <article class="ai-panel">
+      <div class="ai-tabs"><span class="active">Analyze Item</span><span>Valuation Result</span></div>
+      
+      <div class="upload-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <strong>Upload or drag photos</strong>
+        <p>AI works best with clear, high-resolution shots from multiple angles.</p>
+        <button type="button">Select Files</button>
+      </div>
+
+      <div class="ai-field">
+        <label>Item Category</label>
+        <select class="ai-input"><option>Scandinavian Mid-Century Furniture</option></select>
+      </div>
+      <div class="ai-row">
+        <div class="ai-field"><label>Item Condition</label><select class="ai-input"><option>Pristine (Like New)</option></select></div>
+        <div class="ai-field"><label>Original Price (Optional)</label><input class="ai-input" type="text" value="$0.00"></div>
+      </div>
+
+      <button class="btn-green-full" type="button" data-action="valuation">Get AI Valuation</button>
     </article>
-    <article class="ai-result-panel">
-      <div class="ai-price-block"><span class="ai-price-label">Estimated Fair Price</span><div class="ai-price-value"><span>$</span>1,240</div></div>
-      <div class="ai-fair-badge"><strong>Excellent Fair Price</strong></div>
+
+    <article class="ai-panel">
+      <div class="result-header">
+        <span><span class="dot"></span>Valuation Result</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+
+      <span style="display:block; font-size:13px; color:#78716c; margin-bottom:8px;">Estimated Fair Price</span>
+      <div class="price-large"><span>$</span>1,240</div>
+
+      <div class="badge-fair">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <div>
+          <strong style="display:block; font-size:15px; color:#1c1917;">Excellent Fair Price</strong>
+          <span style="font-size:13px; color:#78716c;">Within 3% of market average.</span>
+        </div>
+      </div>
+
+      <div class="insight-bar"><span style="color:#78716c;">Market Sentiment</span><strong style="color:#1c1917;">Strong Demand</strong></div>
+      <div class="bar-bg"><div class="bar-fill"></div></div>
+
+      <div class="insight-card">
+        <h3 style="font-size:15px; font-weight:800; margin:0 0 20px;">Market Insights</h3>
+        <div class="insight-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          <div><strong style="display:block; font-size:14px;">Appreciating Value</strong><span style="font-size:13px; color:#78716c;">+12% vs last year</span></div>
+        </div>
+        <div class="insight-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <div><strong style="display:block; font-size:14px;">Fast Turnover</strong><span style="font-size:13px; color:#78716c;">Avg. 4 days to sell</span></div>
+        </div>
+      </div>
+
+      <div class="eco-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+        <div>
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">Eco-Check Score: 98/100</strong>
+          <span style="font-size:13px; color:rgba(255,255,255,0.7);">Reselling offsets 4kg of CO2.</span>
+        </div>
+      </div>
     </article>
+
   </section>
+
+  <section>
+    <h2 class="approach-title">Curatorial Approach</h2>
+    <div class="approach-grid">
+      <article class="approach-card">
+        <div class="approach-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+        <h3>Visual Triage</h3>
+        <p>Identifies designers, manufacturing periods, and material quality through computer vision.</p>
+      </article>
+      <article class="approach-card">
+        <div class="approach-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
+        <h3>Global Indexing</h3>
+        <p>Cross-referenced against historical auction data and real-time marketplace trends globally.</p>
+      </article>
+      <article class="approach-card">
+        <div class="approach-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></div>
+        <h3>Sustainable Value</h3>
+        <p>Calculates Earth Credit, adding value based on longevity and low environmental impact.</p>
+      </article>
+    </div>
+  </section>
+
 </div>

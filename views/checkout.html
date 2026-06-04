@@ -1,32 +1,64 @@
-<div class="page-shell checkout-layout">
-  <section class="checkout-main">
-    <div class="steps"><span class="active">1 Shipping</span><span>2 Payment</span><span>3 Confirmation</span></div>
-    <article class="address-card">
-      <div><h2>Shipping Information</h2><button type="button" data-action="edit-shipping">Edit</button></div>
-      <p>Arya Saloka<br>Jl. Senopati No. 42, Kebayoran Baru<br>Jakarta Selatan, DKI Jakarta 12190<br>+62 812 3456 7890</p>
-    </article>
-    <h2>Choose Payment Method</h2>
-    <div class="payment-list">
-      <label><input type="radio" name="payment" checked> Bank Transfer (Virtual Account)</label>
-      <div class="payment-options"><span>BCA Virtual Account</span><span>Mandiri Bill Payment</span></div>
-      <label><input type="radio" name="payment"> Digital Wallets &amp; QRIS</label>
-      <div class="payment-options"><span>QRIS</span><span>OVO</span><span>GoPay</span></div>
-      <label><input type="radio" name="payment"> Credit or Debit Card</label>
-      <div class="card-fields"><input placeholder="Card Number"><input placeholder="MM/YY"><input placeholder="CVV"></div>
-      <label><input type="radio" name="payment"> Cash on Delivery (COD)</label>
+<style>
+  .co-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .co-layout { display: grid; grid-template-columns: 1fr 380px; gap: 64px; align-items: start; }
+  
+  .co-steps { display: flex; gap: 24px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #a8a29e; margin-bottom: 32px; }
+  .co-steps .done { color: #3d5a30; }
+  .co-steps .active { color: #1c1917; }
+
+  .co-card { background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 32px; margin-bottom: 32px; }
+  .co-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .co-card-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
+  .co-card-head button { background: none; border: none; color: #526442; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .co-card p { font-size: 15px; color: #78716c; line-height: 1.6; margin: 0; }
+
+  .pay-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .pay-option { border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; cursor: pointer; transition: 0.2s; }
+  .pay-option.selected { border-color: #3d5a30; background: #fbfaf9; }
+  .pay-head { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 700; }
+  .pay-head input { accent-color: #3d5a30; width: 18px; height: 18px; }
+  
+  .cc-fields { display: grid; grid-template-columns: 1fr 100px 100px; gap: 12px; margin-top: 16px; padding-left: 30px; }
+  .cc-fields input { padding: 14px; border: 1px solid #d6d3d1; border-radius: 8px; font-size: 14px; outline: none; }
+  .cc-fields input:focus { border-color: #3d5a30; }
+
+  .summary-box { background: #fbfaf9; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; position: sticky; top: 120px; }
+  .summary-item { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .summary-item span { color: #78716c; font-weight: 500; }
+  .btn-green { width: 100%; background: #3d5a30; color: white; padding: 18px; border-radius: 12px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+</style>
+
+<div class="page-shell co-wrapper">
+  <div class="co-layout">
+    <div>
+      <div class="co-steps"><span class="done">✓ Shipping</span><span class="active">2 Payment</span><span>3 Confirmation</span></div>
+      
+      <div class="co-card">
+        <div class="co-card-head"><h2>Shipping Information</h2><button>Edit</button></div>
+        <p>Vivian Curator<br>Strøget 42, Floor 3<br>Copenhagen, 1160 Denmark<br>+45 12 34 56 78</p>
+      </div>
+
+      <h2 style="font-size:24px; font-weight:700; margin-bottom:24px;">Choose Payment Method</h2>
+      <div class="pay-list">
+        <label class="pay-option"><div class="pay-head"><input type="radio" name="pay"> Bank Transfer (Virtual Account)</div></label>
+        <label class="pay-option"><div class="pay-head"><input type="radio" name="pay"> Digital Wallets & QRIS</div></label>
+        <label class="pay-option selected">
+          <div class="pay-head"><input type="radio" name="pay" checked> Credit or Debit Card</div>
+          <div class="cc-fields"><input placeholder="Card Number"><input placeholder="MM/YY"><input placeholder="CVV"></div>
+        </label>
+      </div>
+
+      <button class="btn-green" type="button" data-route="confirmation">Place Order Securely</button>
     </div>
-    <button class="primary-button" type="button" data-checkout-submit>Place Order Securely</button>
-  </section>
-  <aside class="summary-card">
-    <h2>Order Summary</h2>
-    <div class="mini-line"><span>Nordic Oak Chair</span><strong>Rp 1.450.000</strong></div>
-    <div class="mini-line"><span>Linen Throw</span><strong>Rp 320.000</strong></div>
-    <dl>
-      <div><dt>Subtotal</dt><dd>Rp 1.770.000</dd></div>
-      <div><dt>Shipping</dt><dd>Rp 45.000</dd></div>
-      <div><dt>Eco-impact Credit</dt><dd>- Rp 20.000</dd></div>
-      <div class="total"><dt>Total</dt><dd>Rp 1.795.000</dd></div>
-    </dl>
-    <p>Carbon neutral delivery offsets 2.4kg of CO2.</p>
-  </aside>
+    
+    <aside class="summary-box">
+      <h2 style="font-family:var(--serif, serif); font-size:24px; margin:0 0 24px;">Order Summary</h2>
+      <div class="summary-item"><span>Nordic Oak Chair</span>$1,240</div>
+      <div class="summary-item"><span>Grib Toolbox Vase</span>$85</div>
+      <hr style="border:none; border-top:1px solid #e7e5e4; margin:24px 0;">
+      <div class="summary-item"><span>Subtotal</span>$1,325</div>
+      <div class="summary-item"><span>Eco-Delivery</span>$0</div>
+      <div class="summary-item" style="font-size:20px; font-weight:800; color:#1c1917; margin-top:24px;"><span>Total</span>$1,325</div>
+    </aside>
+  </div>
 </div>

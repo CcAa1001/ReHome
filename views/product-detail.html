@@ -1,34 +1,82 @@
-<div class="page-shell product-detail">
-  <div class="gallery-stack">
-    <img class="main-product-image" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated oak lounge chair">
-    <div class="thumb-row">
-      <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" alt="Thumb 1">
-      <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg" alt="Thumb 2">
-      <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png" alt="Thumb 3">
+<style>
+  .pd-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .pd-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; margin-bottom: 80px; }
+  .pd-gallery { display: flex; flex-direction: column; gap: 16px; }
+  .pd-main-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 24px; background: #f4f3ef; }
+  .pd-thumbs { display: flex; gap: 16px; }
+  .pd-thumbs img { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; cursor: pointer; opacity: 0.6; transition: 0.2s; }
+  .pd-thumbs img:hover, .pd-thumbs img.active { opacity: 1; border: 2px solid #3d5a30; }
+
+  .pd-breadcrumbs { font-size: 13px; font-weight: 600; color: #a8a29e; margin-bottom: 24px; }
+  .pd-breadcrumbs span { color: #1c1917; }
+  .pd-eyebrow { display: inline-block; padding: 6px 14px; background: #f4f3ef; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #78716c; margin-bottom: 16px; }
+  .pd-title { font-family: var(--serif, serif); font-size: 40px; line-height: 1.2; margin: 0 0 16px; color: #1c1917; }
+  .pd-price { font-size: 32px; font-weight: 700; color: #1c1917; display: block; margin-bottom: 32px; }
+
+  .pd-condition { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e7e5e4; }
+  .pd-condition span { font-size: 13px; color: #78716c; }
+  .pd-condition strong { font-size: 13px; background: #f4f7f2; color: #3d5a30; padding: 6px 12px; border-radius: 8px; }
+  .pd-condition em { font-size: 13px; color: #a8a29e; font-style: italic; }
+
+  .pd-desc { font-size: 16px; line-height: 1.6; color: #78716c; margin-bottom: 32px; }
+  .qty-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .qty-row input { width: 64px; padding: 12px; border: 1px solid #d6d3d1; border-radius: 8px; font-size: 15px; text-align: center; outline: none; }
+  .qty-row span { font-size: 13px; color: #b45309; font-weight: 600; }
+
+  .btn-green { width: 100%; background: #526442; color: white; border: none; padding: 18px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 12px; }
+  .btn-green:hover { background: #3d5a30; }
+  .btn-outline { width: 100%; background: white; border: 1px solid #d6d3d1; color: #1c1917; padding: 18px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-bottom: 32px; }
+  .btn-outline:hover { border-color: #1c1917; }
+
+  .pd-seller { display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #fbfaf9; border: 1px solid #f0ede8; border-radius: 16px; }
+  
+  .pd-services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-top: 48px; border-top: 1px solid #f0ede8; }
+  .pd-services svg { color: #526442; margin-bottom: 16px; }
+  .pd-services h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .pd-services p { font-size: 14px; color: #78716c; line-height: 1.6; }
+</style>
+
+<div class="page-shell pd-wrapper">
+  <div class="pd-layout">
+    <div class="pd-gallery">
+      <img class="pd-main-img" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated Oak Lounge Chair">
+      <div class="pd-thumbs">
+        <img class="active" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png">
+        <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png">
+        <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg">
+      </div>
+    </div>
+    
+    <div>
+      <div class="pd-breadcrumbs">Shop / Living Room / <span>Curated Oak Lounge Chair</span></div>
+      <span class="pd-eyebrow">Sustainably Sourced</span>
+      <h1 class="pd-title">Curated Oak Lounge Chair</h1>
+      <strong class="pd-price">$1,240.00</strong>
+      
+      <div class="pd-condition">
+        <span>Condition</span><strong>Excellent (Pre-owned)</strong><em>Refurbished</em>
+      </div>
+      
+      <p class="pd-desc">A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
+      
+      <div class="qty-row"><input type="number" value="1" min="1"><span>Only 2 in stock</span></div>
+      
+      <button class="btn-green" type="button" data-route="cart">Add to Cart</button>
+      <button class="btn-outline" type="button">Make an Offer</button>
+      
+      <div class="pd-seller">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+          <div><strong style="display:block; font-size:15px;">Elena Studio</strong><span style="font-size:13px; color:#78716c;">4.9 (124 reviews)</span></div>
+        </div>
+        <button style="background:none; border:none; color:#526442; font-weight:700; cursor:pointer;">View Shop</button>
+      </div>
     </div>
   </div>
-  <article class="detail-copy">
-    <nav class="crumbs">Shop / Living Room / Curated Oak Lounge Chair</nav>
-    <span class="eyebrow">Sustainably Sourced</span>
-    <h1>Curated Oak Lounge Chair</h1>
-    <strong class="detail-price">$1,240.00</strong>
-    <div class="condition-row"><span>Condition</span><strong>Excellent (Pre-owned)</strong><em>Refurbished</em></div>
-    <p class="description-text">A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
-    <div class="purchase-row"><input type="number" value="1" min="1"><span>Only 2 in stock</span></div>
-    <div class="action-buttons-stack">
-      <button class="primary-button" type="button" data-add-cart>Add to Cart</button>
-      <button class="ghost-button" type="button" data-action="make-offer">Make an Offer</button>
-    </div>
-    <div class="seller-card">
-      <div><strong style="display:block; font-size:16px;">Elena Studio</strong><span style="font-size:13px; color:#78716c;">4.9 (124 reviews)</span></div>
-      <button type="button" data-route="seller-profile">View Shop</button>
-    </div>
-  </article>
-</div>
-<div class="page-shell">
-  <div class="service-grid">
-    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg><h3>Conscious Shipping</h3><p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p></article>
-    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><h3>Authenticity Verified</h3><p>Our experts manually inspect every item to ensure historical accuracy and quality.</p></article>
-    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><h3>Traceable Origin</h3><p>This piece was originally curated from a design studio in Copenhagen in 2019.</p></article>
+
+  <div class="pd-services">
+    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg><h3>Conscious Shipping</h3><p>Carbon-neutral delivery using recycled packaging materials. Ships within 3-5 days.</p></article>
+    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><h3>Authenticity Verified</h3><p>Our experts manually inspect every item to ensure historical accuracy and quality.</p></article>
+    <article><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><h3>Traceable Origin</h3><p>This piece was originally curated from a design studio in Copenhagen in 2019.</p></article>
   </div>
 </div>

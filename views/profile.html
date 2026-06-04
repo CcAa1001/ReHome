@@ -1,19 +1,87 @@
-<div class="page-shell profile-layout">
-  <aside class="profile-sidebar">
-    <div class="profile-card">
-      <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Vivian profile avatar">
-      <span class="eyebrow" style="margin-bottom: 16px;">Member since 2021</span>
-      <h1>Vivian</h1>
-      <button class="primary-button" type="button">Edit Profile</button>
+<style>
+  .prof-wrap { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .prof-header { margin-bottom: 40px; }
+  .prof-header h1 { font-family: var(--serif, serif); font-size: 40px; margin: 0 0 8px; }
+  .prof-header p { color: #78716c; font-size: 16px; margin: 0; }
+  
+  .prof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .prof-card { background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .prof-card h2 { font-family: var(--serif, serif); font-size: 24px; margin: 0 0 24px; }
+  
+  .avatar-row { display: flex; align-items: center; gap: 24px; margin-bottom: 32px; }
+  .avatar-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+  .btn-outline { background: white; border: 1px solid #d6d3d1; color: #1c1917; padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-outline:hover { border-color: #1c1917; }
+  
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .field-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .field-group label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #78716c; }
+  .field-group input { padding: 14px; border: 1px solid #e7e5e4; border-radius: 12px; background: #fbfaf9; font-size: 15px; outline: none; transition: 0.2s; }
+  .field-group input:focus { border-color: #3d5a30; }
+  
+  .btn-green { width: 100%; background: #526442; color: white; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 16px; }
+  .btn-green:hover { background: #3d5a30; }
+  
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 15px; font-weight: 600; color: #1c1917; }
+  .toggle-switch { width: 44px; height: 24px; appearance: none; background: #e7e5e4; border-radius: 999px; position: relative; cursor: pointer; transition: 0.2s; outline: none; }
+  .toggle-switch:checked { background: #3d5a30; }
+  .toggle-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.2s; }
+  .toggle-switch:checked::after { left: 22px; }
+  
+  .action-list { display: flex; flex-direction: column; gap: 12px; }
+  .action-btn { display: flex; justify-content: space-between; align-items: center; background: #fbfaf9; border: 1px solid #e7e5e4; padding: 16px 20px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .action-btn:hover { border-color: #3d5a30; color: #3d5a30; }
+</style>
+
+<div class="page-shell prof-wrap">
+  <div class="prof-header">
+    <h1>Profile Settings</h1>
+    <p>Manage your account, preferences, and personal data.</p>
+  </div>
+  
+  <div class="prof-grid">
+    <div>
+      <article class="prof-card">
+        <h2>Personal Details</h2>
+        <div class="avatar-row">
+          <img class="avatar-img" src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Vivian">
+          <button class="btn-outline">Change Photo</button>
+        </div>
+        <div class="form-grid">
+          <div class="field-group"><label>First Name</label><input type="text" value="Vivian"></div>
+          <div class="field-group"><label>Last Name</label><input type="text" value="Curator"></div>
+        </div>
+        <div class="field-group"><label>Email Address</label><input type="email" value="vivian@rehome.test"></div>
+        <div class="field-group"><label>Phone Number</label><input type="tel" value="+45 12 34 56 78"></div>
+        <div class="field-group"><label>Location</label><input type="text" value="Copenhagen, DK"></div>
+        <button class="btn-green">Save Changes</button>
+      </article>
+
+      <article class="prof-card">
+        <h2>Security & Data</h2>
+        <button class="btn-outline" style="width:100%; margin-bottom:24px;">Change Password</button>
+        <label class="toggle-row">Two-Factor Authentication <input type="checkbox" class="toggle-switch"></label>
+        <button class="btn-outline" style="width:100%; color:#b45309; border-color:#fcd34d;">Download My Data</button>
+      </article>
     </div>
-    <nav class="profile-menu">
-      <button type="button">Settings</button>
-      <button type="button" style="color: #dc2626;">Log Out</button>
-    </nav>
-  </aside>
-  <section class="history-panel">
-    <h2 style="font-family: var(--serif); font-size: 32px; color: #1c1917; margin-bottom: 32px;">Purchase History</h2>
-    <div class="history-list" data-history-list>
-      </div>
-  </section>
+
+    <div>
+      <article class="prof-card">
+        <h2>Notification Preferences</h2>
+        <label class="toggle-row">Order Updates <input type="checkbox" class="toggle-switch" checked></label>
+        <label class="toggle-row">Price Drops on Saved Items <input type="checkbox" class="toggle-switch" checked></label>
+        <label class="toggle-row">Marketing Emails <input type="checkbox" class="toggle-switch"></label>
+        <label class="toggle-row">New Messages <input type="checkbox" class="toggle-switch" checked></label>
+      </article>
+
+      <article class="prof-card">
+        <h2>Your Activity</h2>
+        <div class="action-list">
+          <button class="action-btn">View Purchase History <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+          <button class="action-btn">View Saved Items <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+          <button class="action-btn">Manage Reviews <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+        </div>
+      </article>
+    </div>
+  </div>
 </div>

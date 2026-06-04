@@ -1,56 +1,169 @@
-<div class="page-shell">
-  <section class="greeting">
-    <h1>Welcome back, <span data-user-name>Vivian</span>.</h1>
-    <p>Your conscious curation journey continues.</p>
+<style>
+  /* ── CSS KHUSUS HOME (TIDAK MENGGANGGU PAGE LAIN) ── */
+  .home-rebuild { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .home-rebuild h1, .home-rebuild h2, .home-rebuild h3 { font-family: var(--serif, 'Noto Serif', serif); font-weight: 500; }
+  
+  /* Hero Section */
+  .hero-split { display: grid; grid-template-columns: 1fr 1.8fr; gap: 24px; margin-bottom: 80px; }
+  
+  .card-ai { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(197, 200, 188, 0.4); }
+  .ai-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+  .ai-icon { width: 48px; height: 48px; background: #f5f4f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #526442; }
+  .badge-new { background: #fcf1eb; color: #b45309; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+  
+  .card-impact { background: #f4f3ef; border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 40px 48px; overflow: hidden; }
+  .impact-text span.label { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #78716c; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; text-transform: uppercase; }
+  .impact-stats { display: flex; gap: 48px; margin-top: 32px; }
+  .impact-stats strong { font-size: 48px; color: #3d5a30; font-family: var(--serif, serif); line-height: 1; display: block; margin-bottom: 4px; }
+  .impact-stats span { font-size: 13px; color: #78716c; }
+  .impact-img-box { width: 280px; height: 280px; background: white; border-radius: 20px; padding: 24px; box-shadow: 0 12px 32px rgba(0,0,0,0.05); }
+  .impact-img-box img { width: 100%; height: 100%; object-fit: contain; }
+
+  /* Recommendations */
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
+  .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px; }
+  .rec-card { cursor: pointer; transition: transform 0.3s ease; }
+  .rec-card:hover { transform: translateY(-8px); }
+  .rec-img { height: 420px; border-radius: 16px; margin-bottom: 16px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .rec-img img { width: 100%; height: 100%; object-fit: cover; }
+  .rec-img.white-bg { background: white; border: 1px solid rgba(197,200,188,0.4); }
+  .rec-img.dark-bg { background: #161513; }
+  .rec-img.red-bg { background: radial-gradient(circle, #a53b24 0%, #4a150c 100%); }
+  
+  .badge-leaf { position: absolute; top: 16px; right: 16px; color: #8b5cf6; }
+  .badge-pristine { position: absolute; top: 16px; left: 16px; background: rgba(156,175,136,0.95); color: white; padding: 6px 14px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+
+  .rec-info { display: flex; justify-content: space-between; align-items: flex-start; }
+  .rec-info span { font-size: 10px; font-weight: 800; color: #78716c; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+  .rec-info h3 { font-size: 18px; margin: 0; color: #1c1917; font-family: var(--sans, sans-serif); font-weight: 600; }
+  .rec-info strong { font-size: 16px; color: #78716c; font-weight: 600; }
+
+  /* Curated Treasures */
+  .treasure-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .treasure-card { height: 400px; border-radius: 20px; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; color: white; }
+  .treasure-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%); z-index: 1; }
+  .treasure-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+  .treasure-content { position: relative; z-index: 2; }
+  .treasure-content span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 8px; color: rgba(255,255,255,0.8); }
+  .treasure-content h3 { font-size: 28px; margin: 0 0 24px; font-family: var(--sans, sans-serif); font-weight: 500; }
+  .btn-glass { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
+  .btn-glass:hover { background: rgba(255,255,255,0.2); }
+</style>
+
+<div class="page-shell home-rebuild">
+  
+  <!-- GREETING -->
+  <section style="margin-bottom: 48px;">
+    <h1 style="font-size: 48px; color: #1c1917; margin-bottom: 8px;">Welcome back, <span data-user-name>Vivian</span>.</h1>
+    <p style="font-family: 'Caveat', 'Segoe Script', cursive; font-size: 32px; color: #78716c; margin: 0;">From your closet, to someone's heart</p>
   </section>
 
-  <section class="feature-grid">
-    <article class="feature-card price-card" data-role-nav="seller">
-      <div class="card-top"><span class="round-icon">01</span><span class="pill">Quick action</span></div>
-      <h2>Find a piece</h2>
-      <p>Browse curated items, save them to your cart, then checkout when you are ready.</p>
-      <button class="primary-button" type="button" data-route="shop">Open Shop</button>
+  <!-- HERO CARDS -->
+  <section class="hero-split">
+    <article class="card-ai">
+      <div>
+        <div class="ai-top">
+          <div class="ai-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          </div>
+          <span class="badge-new">New Feature</span>
+        </div>
+        <h2 style="font-size: 28px; margin-bottom: 16px;">AI Price Checker</h2>
+        <p style="color: #78716c; font-size: 15px; line-height: 1.6;">Scan any pre-owned luxury item to instantly determine its fair market value based on real-time data.</p>
+      </div>
+      <button class="primary-button" type="button" data-route="curated" style="width: 100%; padding: 16px; margin-top: 32px; font-size: 15px;">Try the Scanner</button>
     </article>
-    <article class="feature-card price-card">
-      <div class="card-top"><span class="round-icon">02</span><span class="pill">For sellers</span></div>
-      <h2>List an item</h2>
-      <p>Seller and admin menus appear only when your profile role allows those tools.</p>
-      <button class="primary-button" type="button" data-route="seller" data-role-nav="seller">Seller Tools</button>
-    </article>
-    <article class="feature-card impact-card">
-      <div class="impact-copy">
-        <span class="eyebrow">Cart Status</span>
-        <h2>Ready to checkout</h2>
-        <div class="stats">
-          <div><strong data-dashboard-cart-count>3</strong><span>Cart Items</span></div>
-          <div><strong>0kg</strong><span>Saved This Order</span></div>
+
+    <article class="card-impact">
+      <div class="impact-text">
+        <span class="label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
+          IMPACT REPORT
+        </span>
+        <h2 style="font-size: 36px; line-height: 1.2;">Your Sustainability<br>Impact</h2>
+        <div class="impact-stats">
+          <div><strong>142kg</strong><span>Carbon Offset</span></div>
+          <div><strong>12</strong><span>Items ReHomed</span></div>
         </div>
       </div>
-      <img src="assets/impact.png" alt="Sustainability impact figure">
+      <div class="impact-img-box">
+        <!-- GAMBAR KURSI ORANYE SEPERTI DI 256a9a -->
+        <img src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated Chair">
+      </div>
     </article>
   </section>
 
-  <section class="section-heading">
-    <div><h2>Smart Recommendations</h2><p>Curated for your Scandinavian aesthetic.</p></div>
-    <button type="button" class="text-link" data-route="shop">View Gallery</button>
+  <!-- SMART RECOMMENDATIONS -->
+  <section class="section-head">
+    <div>
+      <h2 style="font-size: 32px; margin-bottom: 8px;">Smart Recommendations</h2>
+      <p style="color: #78716c; margin: 0; font-size: 16px;">Curated for your Scandinavian aesthetic.</p>
+    </div>
+    <button type="button" data-route="shop" style="background:none; border:none; color:#526442; font-weight:700; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+      View Gallery <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </button>
   </section>
 
-  <section class="product-grid" aria-label="Smart recommendations" data-home-products></section>
+  <section class="rec-grid">
+    <!-- Kartu 1: Hay Design -->
+    <article class="rec-card" data-route="product-detail">
+      <div class="rec-img white-bg">
+        <svg class="badge-leaf" width="20" height="20" viewBox="0 0 24 24" fill="#8a6a4b" stroke="none"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg>
+        <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" alt="About A Chair 22" style="width: 80%; height: 80%; object-fit: contain;">
+      </div>
+      <div class="rec-info">
+        <div><span>HAY DESIGN</span><h3>About A Chair 22</h3></div>
+        <strong>$185</strong>
+      </div>
+    </article>
+    <!-- Kartu 2: Muuto -->
+    <article class="rec-card" data-route="product-detail">
+      <div class="rec-img dark-bg">
+        <span class="badge-pristine">PRISTINE</span>
+        <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg" alt="Control Table Lamp">
+      </div>
+      <div class="rec-info">
+        <div><span>MUUTO</span><h3>Control Table Lamp</h3></div>
+        <strong>$120</strong>
+      </div>
+    </article>
+    <!-- Kartu 3: Ferm Living -->
+    <article class="rec-card" data-route="product-detail">
+      <div class="rec-img red-bg">
+        <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png" alt="Grib Toolbox Vase" style="width: 70%; height: 70%; object-fit: contain;">
+      </div>
+      <div class="rec-info">
+        <div><span>FERM LIVING</span><h3>Grib Toolbox Vase</h3></div>
+        <strong>$85</strong>
+      </div>
+    </article>
+  </section>
 
-  <section class="curated-band decorative-section">
-    <div class="section-heading">
-      <div><h2>Curated Treasures</h2><p>Editorial collections for slower, better interiors.</p></div>
-    </div>
-    <div class="curated-grid">
-      <article style="--img: url('assets/interior.jpg')">
-        <span>Editorial</span><h3>The Kinfolk Edit</h3><button type="button" data-route="curated">Explore Lookbook</button>
-      </article>
-      <article style="--img: url('assets/design.jpg')">
-        <span>Curation</span><h3>Tactile Textures</h3><button type="button" data-route="curated">Explore Lookbook</button>
-      </article>
-      <article style="--img: url('assets/luxury.jpg')">
-        <span>Limited</span><h3>Midnight Serenity</h3><button type="button" data-route="curated">Explore Lookbook</button>
-      </article>
-    </div>
+  <!-- CURATED TREASURES -->
+  <section class="section-head" style="margin-bottom: 24px;">
+    <h2 style="font-size: 32px;">Curated Treasures</h2>
+  </section>
+  <section class="treasure-grid">
+    <article class="treasure-card">
+      <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" alt="Interior">
+      <div class="treasure-content">
+        <span>EDITORIAL</span><h3>The Kinfolk Edit</h3>
+        <button class="btn-glass" type="button" data-route="shop">Explore Lookbook</button>
+      </div>
+    </article>
+    <article class="treasure-card">
+      <img src="assets/figma-export/f5cbf3fb56c10e5beb58746a074d87055699d04c.jpg" alt="Textures">
+      <div class="treasure-content">
+        <span>CURATION</span><h3>Tactile Textures</h3>
+        <button class="btn-glass" type="button" data-route="shop">Explore Lookbook</button>
+      </div>
+    </article>
+    <article class="treasure-card">
+      <img src="assets/figma-export/a15c7742399f0f95918a67598c638bc804f55267.png" alt="Midnight">
+      <div class="treasure-content">
+        <span>LIMITED</span><h3>Midnight Serenity</h3>
+        <button class="btn-glass" type="button" data-route="shop">Explore Lookbook</button>
+      </div>
+    </article>
   </section>
 </div>

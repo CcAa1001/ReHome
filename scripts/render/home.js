@@ -1,31 +1,18 @@
 // scripts/render/home.js
-import { getProducts } from "../supabaseDatabase.js";
 import { navigate } from "../router.js";
 
 export async function renderHome() {
-  // Hanya menargetkan kotak grid-nya saja, jangan timpa seluruh halaman!
-  const grid = document.querySelector("#home-product-grid");
-  if (!grid) return;
+  // Logic lama dimatikan. HTML statis di views/home.html yang akan memegang kendali penuh 
+  // demi kestabilan desain 100% pixel-perfect.
+  
+  const container = document.getElementById("router-view");
+  if (!container) return;
 
-  try {
-    const products = await getProducts();
-    // Cetak kartu produk saja
-    grid.innerHTML = products.slice(0, 3).map(p => `
-      <div class="catalog-card" style="cursor:pointer;" data-id="${p.id}">
-        <img src="${p.image}" alt="${p.alt || p.title}">
-        <div>
-          <span>${p.maker || 'Independent Studio'}</span>
-          <strong>${p.price}</strong>
-          <h3>${p.title}</h3>
-        </div>
-      </div>
-    `).join("");
-
-    // Tambahkan fungsi klik menuju halaman detail produk
-    grid.querySelectorAll(".catalog-card").forEach(card => {
-      card.addEventListener("click", () => navigate("product-detail", { productId: card.dataset.id }));
+  // Cukup aktifkan tombol-tombol navigasi di dalam home
+  container.querySelectorAll("[data-route]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      navigate(btn.dataset.route);
     });
-  } catch (err) {
-    console.warn("Home products failed to load:", err);
-  }
+  });
 }

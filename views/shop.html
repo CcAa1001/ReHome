@@ -1,52 +1,132 @@
-<div class="page-shell split-page">
-  <aside class="filter-panel">
-    <h2>Category</h2>
-    <div class="filter-group">
-      <label class="custom-checkbox"><input type="checkbox" name="category" value="all" checked><span class="checkmark"></span> All Furniture</label>
-      <label class="custom-checkbox"><input type="checkbox" name="category" value="seating"><span class="checkmark"></span> Seating</label>
-      <label class="custom-checkbox"><input type="checkbox" name="category" value="storage"><span class="checkmark"></span> Storage & Tables</label>
-      <label class="custom-checkbox"><input type="checkbox" name="category" value="textiles"><span class="checkmark"></span> Textiles</label>
-      <label class="custom-checkbox"><input type="checkbox" name="category" value="decor"><span class="checkmark"></span> Decor</label>
-    </div>
-    <h2>Price Range</h2>
-    <div class="price-slider-container">
-      <div class="slider-track">
-        <div class="slider-fill"></div>
-        <input type="range" min="0" max="5000" value="0" class="slider-thumb slider-left">
-        <input type="range" min="0" max="5000" value="5000" class="slider-thumb slider-right">
+<style>
+  /* ── CSS KHUSUS SHOP (GAMBAR 24f963 & 24f69c) ── */
+  .shop-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 64px; align-items: start; }
+  
+  /* Sidebar */
+  .shop-sidebar { position: sticky; top: 120px; }
+  .shop-sidebar h2 { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #1c1917; margin: 32px 0 16px; font-family: var(--sans, sans-serif); }
+  .shop-sidebar h2:first-child { margin-top: 0; }
+  
+  .filter-list { display: flex; flex-direction: column; gap: 16px; }
+  .custom-checkbox { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: #1c1917; user-select: none; }
+  .custom-checkbox input { display: none; }
+  .checkmark { width: 22px; height: 22px; border: 2px solid rgba(197, 200, 188, 0.8); border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  .custom-checkbox:hover .checkmark { border-color: #3d5a30; }
+  .custom-checkbox input:checked ~ .checkmark { background: #3d5a30; border-color: #3d5a30; }
+  .custom-checkbox input:checked ~ .checkmark::after { content: ""; display: block; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
+  
+  .price-slider { height: 4px; background: #f0ede8; border-radius: 4px; margin: 24px 0 32px; position: relative; }
+  .price-slider-fill { position: absolute; left: 0; right: 20%; height: 100%; background: #3d5a30; border-radius: 4px; }
+  .price-slider-thumb { width: 20px; height: 20px; background: white; border: 2px solid #3d5a30; border-radius: 50%; position: absolute; top: 50%; transform: translateY(-50%); cursor: grab; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .price-inputs { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .price-box { flex: 1; padding: 12px 16px; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 12px; font-weight: 700; font-size: 15px; display: flex; gap: 4px; }
+  .price-box span { color: #78716c; }
+  
+  .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { padding: 8px 16px; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .chip.active { background: #3d5a30; color: white; border-color: #3d5a30; }
+  
+  .eco-card-sidebar { margin-top: 40px; padding: 24px; background: #3d5a30; color: white; border-radius: 16px; }
+  .eco-card-sidebar span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.8); display: block; margin-bottom: 8px; }
+  
+  /* Catalog Header */
+  .shop-header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid rgba(197, 200, 188, 0.5); margin-bottom: 32px; }
+  .shop-header h1 { font-family: var(--serif, serif); font-size: 40px; margin: 0 0 8px; }
+  .shop-header p { color: #78716c; font-size: 16px; margin: 0; }
+  .shop-controls { display: flex; gap: 24px; align-items: center; }
+  .view-toggles { display: flex; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 8px; padding: 4px; }
+  .view-toggles button { background: none; border: none; padding: 6px 8px; border-radius: 6px; color: #a8a29e; cursor: pointer; transition: 0.2s; }
+  .view-toggles button.active { background: #f0ede8; color: #1c1917; }
+  .sort-select { border: none; background: none; font-weight: 700; color: #1c1917; font-size: 14px; outline: none; cursor: pointer; }
+
+  /* Product Cards - Grid View */
+  .product-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .prod-card { border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 16px; overflow: hidden; background: white; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; }
+  .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
+  .prod-img { height: 280px; width: 100%; object-fit: cover; background: #f4f3ef; }
+  .prod-info { padding: 24px; display: flex; flex-direction: column; flex: 1; }
+  .prod-info span { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #78716c; margin-bottom: 8px; }
+  .prod-info h3 { font-family: var(--serif, serif); font-size: 20px; font-weight: 600; margin: 0; color: #1c1917; }
+  .prod-info strong { color: #3d5a30; font-size: 16px; font-weight: 700; margin-top: 8px; }
+
+  /* Product Cards - List View (Gambar 24f69c) */
+  .product-container.list-view { display: flex; flex-direction: column; gap: 20px; }
+  .product-container.list-view .prod-card { flex-direction: row; height: 220px; align-items: center; }
+  .product-container.list-view .prod-img { width: 280px; height: 100%; border-right: 1px solid rgba(197, 200, 188, 0.5); }
+  .product-container.list-view .prod-info { justify-content: center; padding: 0 40px; }
+  .product-container.list-view .prod-info h3 { font-size: 26px; margin-bottom: 12px; }
+  .product-container.list-view .prod-info strong { font-size: 20px; margin-top: 16px; }
+
+  .load-more-btn { width: 100%; padding: 18px; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 12px; background: white; font-weight: 700; font-size: 15px; margin-top: 48px; cursor: pointer; transition: 0.2s; }
+  .load-more-btn:hover { border-color: #3d5a30; color: #3d5a30; }
+</style>
+
+<div class="page-shell shop-wrapper">
+  <div class="shop-layout">
+    
+    <aside class="shop-sidebar">
+      <h2>Category</h2>
+      <div class="filter-list">
+        <label class="custom-checkbox"><input type="checkbox" checked><span class="checkmark"></span> All Furniture</label>
+        <label class="custom-checkbox"><input type="checkbox"><span class="checkmark"></span> Seating</label>
+        <label class="custom-checkbox"><input type="checkbox"><span class="checkmark"></span> Storage & Tables</label>
+        <label class="custom-checkbox"><input type="checkbox"><span class="checkmark"></span> Textiles</label>
+        <label class="custom-checkbox"><input type="checkbox"><span class="checkmark"></span> Decor</label>
+      </div>
+
+      <h2>Price Range</h2>
+      <div class="price-slider">
+        <div class="price-slider-fill"></div>
+        <div class="price-slider-thumb" style="left: 0%;"></div>
+        <div class="price-slider-thumb" style="left: 80%;"></div>
       </div>
       <div class="price-inputs">
-        <div class="price-box"><span>$</span> 0</div><div class="price-dash">-</div><div class="price-box"><span>$</span> 5000+</div>
+        <div class="price-box"><span>$</span> 0</div>
+        <span style="color:#a8a29e; font-weight:700;">-</span>
+        <div class="price-box"><span>$</span> 5000+</div>
       </div>
-    </div>
-    <h2>Condition</h2>
-    <div class="filter-group">
-      <label class="custom-checkbox"><input type="checkbox" name="condition" value="like-new" checked><span class="checkmark"></span> Like New</label>
-      <label class="custom-checkbox"><input type="checkbox" name="condition" value="excellent" checked><span class="checkmark"></span> Excellent</label>
-      <label class="custom-checkbox"><input type="checkbox" name="condition" value="good"><span class="checkmark"></span> Good</label>
-      <label class="custom-checkbox"><input type="checkbox" name="condition" value="fair"><span class="checkmark"></span> Fair</label>
-    </div>
-    <article class="eco-card">
-      <span>Eco Choice</span>
-      <p>Shop preloved to reduce carbon footprint by up to 82% per item.</p>
-    </article>
-  </aside>
-  
-  <section class="catalog-content">
-    <div class="catalog-header">
-      <div><h1>Curated Findings</h1><p>Discover 124 preloved architectural gems.</p></div>
-      <div class="catalog-controls">
-        <div class="view-toggles">
-          <button class="active" type="button" aria-label="Grid view"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></button>
-          <button type="button" aria-label="List view"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></button>
+
+      <h2>Condition</h2>
+      <div class="chip-row">
+        <span class="chip active">Like New</span>
+        <span class="chip active">Excellent</span>
+        <span class="chip">Good</span>
+        <span class="chip">Fair</span>
+      </div>
+
+      <div class="eco-card-sidebar">
+        <span>Eco Choice</span>
+        <p style="margin:0; font-size:14px; line-height:1.5;">Shop preloved to reduce carbon footprint by up to 82% per item.</p>
+      </div>
+    </aside>
+
+    <section>
+      <div class="shop-header">
+        <div>
+          <h1>Curated Findings</h1>
+          <p>Discover 124 preloved architectural gems.</p>
         </div>
-        <div class="sort-dropdown">
-          <span class="sort-label">Sort by:</span>
-          <select><option>Newest Added</option><option>Best Selling</option><option>Price: Low to High</option><option>Price: High to Low</option></select>
+        <div class="shop-controls">
+          <div class="view-toggles" id="shop-view-toggles">
+            <button class="active" data-view-mode="grid">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <button data-view-mode="list">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+          </div>
+          <div>
+            <span style="color:#78716c; font-size:14px; font-weight:700; margin-right:8px;">Sort by:</span>
+            <select class="sort-select"><option>Newest Added</option><option>Price: Low to High</option></select>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="catalog-grid" data-catalog-products></div>
-    <button class="outline-wide" type="button" data-action="load-more">Load More Treasures</button>
-  </section>
+
+      <div id="shop-catalog" class="product-container"></div>
+      
+      <button class="load-more-btn">Load More Treasures</button>
+    </section>
+
+  </div>
 </div>

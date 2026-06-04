@@ -1,50 +1,105 @@
-<div class="page-shell">
-  <section class="section-heading">
+<style>
+  .sell-wrap { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .sell-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .sell-header h1 { font-family: var(--serif, serif); font-size: 40px; margin: 0 0 8px; }
+  .sell-header p { color: #78716c; font-size: 16px; margin: 0; }
+  
+  .sell-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: start; }
+  .sell-card { background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .sell-card h2 { font-family: var(--serif, serif); font-size: 24px; margin: 0 0 24px; }
+  
+  .metric-row { display: flex; gap: 16px; margin-bottom: 32px; }
+  .metric-box { flex: 1; background: #fbfaf9; border: 1px solid #f0ede8; border-radius: 16px; padding: 20px; }
+  .metric-box span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #78716c; }
+  .metric-box strong { display: block; font-size: 32px; font-family: var(--serif, serif); color: #3d5a30; margin-top: 8px; line-height: 1; }
+  
+  .item-list { display: flex; flex-direction: column; gap: 16px; }
+  .item-row { display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #e7e5e4; border-radius: 16px; background: #fbfaf9; }
+  .item-info { display: flex; align-items: center; gap: 16px; }
+  .item-info img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: #e7e5e4; }
+  .item-info h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+  .item-info span { font-size: 13px; color: #78716c; }
+  .item-actions button { background: none; border: none; font-size: 14px; font-weight: 700; cursor: pointer; color: #78716c; transition: 0.2s; margin-left: 12px; }
+  .item-actions button:hover { color: #1c1917; }
+  
+  .btn-outline-dashed { width: 100%; background: transparent; border: 2px dashed #d6d3d1; color: #78716c; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 16px; }
+  .btn-outline-dashed:hover { border-color: #3d5a30; color: #3d5a30; }
+
+  .fin-box { background: #3d5a30; color: white; padding: 32px; border-radius: 20px; margin-bottom: 32px; }
+  .fin-box span { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.8); }
+  .fin-box strong { display: block; font-size: 48px; font-family: var(--serif, serif); margin: 12px 0 24px; line-height: 1; }
+  .fin-box button { background: white; color: #3d5a30; border: none; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  
+  .order-row { padding-bottom: 16px; border-bottom: 1px solid #e7e5e4; margin-bottom: 16px; }
+  .order-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .order-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .order-top strong { font-size: 15px; color: #1c1917; }
+  .pill { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 999px; }
+  .pill.proc { background: #fef0eb; color: #b45309; }
+  .pill.ship { background: #f4f7f2; color: #3d5a30; }
+  .order-row p { font-size: 13px; color: #78716c; margin: 0; }
+</style>
+
+<div class="page-shell sell-wrap">
+  <div class="sell-header">
     <div>
-      <span class="eyebrow" style="margin-bottom: 12px; display: inline-block;">Seller Tools</span>
       <h1>Seller Dashboard</h1>
-      <p>Manage your conscious listings and track your environmental impact.</p>
+      <p>Manage your listings, track performance, and fulfill orders.</p>
     </div>
-    <button class="ghost-button" type="button" data-action="download-report">Download Report</button>
-  </section>
+  </div>
 
-  <section class="seller-metrics">
-    <article><span>Sales Performance</span><strong>$1,850</strong><p>Current month</p></article>
-    <article><span>Sustainable Impact</span><strong>450kg</strong><p>Waste diverted from landfills this month.</p></article>
-    <article><span>Yearly Goal</span><strong>82%</strong><p>Week 4 target reached.</p></article>
-  </section>
+  <div class="sell-grid">
+    <div>
+      <article class="sell-card">
+        <h2>Seller Overview</h2>
+        <div class="metric-row">
+          <div class="metric-box"><span>Total Sales</span><strong>$3,450</strong></div>
+          <div class="metric-box"><span>Active Listings</span><strong>12</strong></div>
+          <div class="metric-box"><span>Items Sold</span><strong>8</strong></div>
+        </div>
+      </article>
 
-  <section class="action-grid">
-    <button type="button" data-route="new-listing">
-      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></span>
-      <div><strong>Upload Item</strong><small>List a new curated piece</small></div>
-    </button>
-    <button type="button" data-route="sales-history">
-      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span>
-      <div><strong>Sales History</strong><small>View all past transactions</small></div>
-    </button>
-    <button type="button" data-route="seller-support">
-      <span class="icon-circle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
-      <div><strong>Seller Support</strong><small>Get help with shipping & returns</small></div>
-    </button>
-  </section>
-
-  <section class="dashboard-head">
-    <h2>Active Listings</h2>
-    <div class="segment-control">
-      <button class="active" type="button" data-filter="all">All</button>
-      <button type="button" data-filter="active">Active</button>
-      <button type="button" data-filter="drafts">Drafts</button>
-      <button type="button" data-filter="sold">Sold</button>
+      <article class="sell-card">
+        <h2>Active Listings</h2>
+        <div class="item-list">
+          <div class="item-row">
+            <div class="item-info">
+              <img src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png">
+              <div><h3>Nordic Oak Chair</h3><span>$1,240</span></div>
+            </div>
+            <div class="item-actions"><button>Edit</button><button style="color:#dc2626;">Delete</button></div>
+          </div>
+          <div class="item-row">
+            <div class="item-info">
+              <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png">
+              <div><h3>Grib Toolbox Vase</h3><span>$85</span></div>
+            </div>
+            <div class="item-actions"><button>Edit</button><button style="color:#dc2626;">Delete</button></div>
+          </div>
+        </div>
+        <button class="btn-outline-dashed">+ Add New Listing</button>
+      </article>
     </div>
-  </section>
 
-  <div class="table-container">
-    <table class="listing-table">
-      <thead>
-        <tr><th>Item</th><th>Category</th><th>Price</th><th>Condition</th><th>Status</th><th></th></tr>
-      </thead>
-      <tbody data-listings></tbody>
-    </table>
+    <div>
+      <article class="fin-box">
+        <span>Available Balance</span>
+        <strong>$2,450.00</strong>
+        <button>Withdraw Funds</button>
+      </article>
+
+      <article class="sell-card">
+        <h2>Recent Orders</h2>
+        <div class="order-row">
+          <div class="order-top"><strong>Order #RH-28941</strong><span class="pill proc">Processing</span></div>
+          <p>Nordic Oak Chair • Placed today</p>
+        </div>
+        <div class="order-row">
+          <div class="order-top"><strong>Order #RH-28940</strong><span class="pill ship">Shipped</span></div>
+          <p>Artisan Clay Vase • Placed 2 days ago</p>
+        </div>
+        <button style="width:100%; background:none; border:none; color:#526442; font-weight:700; margin-top:24px; cursor:pointer;">View all orders</button>
+      </article>
+    </div>
   </div>
 </div>
