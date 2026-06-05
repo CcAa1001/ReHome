@@ -75,16 +75,24 @@
         <label class="custom-checkbox"><input type="checkbox"><span class="checkmark"></span> Decor</label>
       </div>
 
-      <h2>Price Range</h2>
-      <div class="price-slider">
-        <div class="price-slider-fill"></div>
-        <div class="price-slider-thumb" style="left: 0%;"></div>
-        <div class="price-slider-thumb" style="left: 80%;"></div>
+      <h4 style="font-size: 14px; font-weight: 700; color: #1c1917; margin-bottom: 16px;">PRICE RANGE</h4>
+
+      <div class="multi-range-slider">
+        <div class="slider-track"></div>
+        <input type="range" class="range-min" min="0" max="5000" value="0" step="50">
+        <input type="range" class="range-max" min="0" max="5000" value="5000" step="50">
       </div>
-      <div class="price-inputs">
-        <div class="price-box"><span>$</span> 0</div>
-        <span style="color:#a8a29e; font-weight:700;">-</span>
-        <div class="price-box"><span>$</span> 5000+</div>
+
+      <div style="display: flex; align-items: center; gap: 12px; margin-top: 24px;">
+        <div style="flex: 1; position: relative;">
+          <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #78716c; font-weight: 600;">$</span>
+          <input type="number" id="input-min" value="0" style="width: 100%; padding: 10px 10px 10px 24px; border: 1px solid #d6d3d1; border-radius: 8px; font-weight: 600; outline: none;">
+        </div>
+        <span style="color: #a8a29e; font-weight: bold;">-</span>
+        <div style="flex: 1; position: relative;">
+          <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #78716c; font-weight: 600;">$</span>
+          <input type="number" id="input-max" value="5000" style="width: 100%; padding: 10px 10px 10px 24px; border: 1px solid #d6d3d1; border-radius: 8px; font-weight: 600; outline: none;">
+        </div>
       </div>
 
       <h2>Condition</h2>

@@ -31,6 +31,8 @@ export async function loginUser(email, password) {
 
 // ── REGISTER ───────────────────Q───────────────────────────────────────────────
 
+// ── REGISTER ──────────────────────────────────────────────────────────────────
+
 export async function registerUser(email, password, name) {
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured.");
@@ -47,15 +49,15 @@ export async function registerUser(email, password, name) {
 
   if (error) throw error;
 
-  // Supabase mungkin butuh konfirmasi email — cek dulu
-  const user = data.user;
-  if (!user) {
-    throw new Error("Check your email to confirm your account.");
+  // Jika Supabase meminta konfirmasi email, "data.session" akan kosong (null)
+  if (!data.session) {
+    return { needsEmailConfirmation: true };
   }
 
+  // Jika fitur konfirmasi email dimatikan (langsung login otomatis)
   const session = {
-    userId: user.id,
-    email: user.email,
+    userId: data.user.id,
+    email: data.user.email,
     name,
     role: "buyer"
   };

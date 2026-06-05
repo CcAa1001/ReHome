@@ -105,11 +105,6 @@ h2,
   text-transform: uppercase;
 }
 
-
-
-
-
-
 /* ── FULLSCREEN LIGHTBOX ── */
 .lightbox-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -132,4 +127,210 @@ h2,
 .lightbox-prev:hover, .lightbox-next:hover { background: rgba(255, 255, 255, 0.3); }
 .lightbox-prev { left: 40px; }
 .lightbox-next { right: 40px; }
-/* Tombol close dihilangkan */
+
+/* --- FAVORITE BUTTON (HEART) --- */
+.btn-favorite {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 36px; height: 36px;
+  background: white;
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: 0.2s ease;
+  z-index: 10;
+}
+.btn-favorite:hover { transform: scale(1.1); }
+.btn-favorite.active { color: #dc2626; fill: #dc2626; }
+.btn-favorite svg { width: 18px; height: 18px; color: #78716c; transition: 0.2s; }
+.btn-favorite.active svg { color: #dc2626; fill: #dc2626; }
+
+/* --- PRODUCT DETAIL UI REFRESH --- */
+.pd-tag-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #f5f5f4; color: #57534e;
+  padding: 6px 12px; border-radius: 99px;
+  font-size: 12px; font-weight: 600;
+}
+.pd-condition-pill {
+  border: 1px solid #d6d3d1; color: #57534e;
+  padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  display: inline-block;
+}
+.qty-selector {
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid #d6d3d1; border-radius: 8px;
+  width: 120px; height: 48px; padding: 0 16px;
+}
+.qty-btn {
+  background: none; border: none; font-size: 20px;
+  color: #78716c; cursor: pointer; transition: 0.2s;
+}
+.qty-btn:hover { color: #1c1917; }
+.qty-input {
+  width: 40px; text-align: center; border: none;
+  font-size: 16px; font-weight: 600; color: #1c1917;
+  background: transparent; outline: none;
+}
+.btn-outline {
+  width: 100%; padding: 16px; background: white;
+  color: #1c1917; border: 1px solid #d6d3d1;
+  border-radius: 12px; font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: 0.2s; margin-top: 12px;
+}
+.btn-outline:hover { border-color: #1c1917; }
+.seller-box {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px; border: 1px solid #e7e5e4; border-radius: 12px;
+  margin-top: 24px;
+}
+
+
+/* =======================================================
+   MULTI RANGE SLIDER PREMIUM (ANTI-MEROSOT)
+   ======================================================= */
+.multi-range-slider {
+  position: relative !important; 
+  width: 100% !important; 
+  height: 6px !important;
+  background: #e7e5e4 !important; 
+  border-radius: 4px !important; 
+  margin: 20px 0 40px 0 !important; /* Jarak aman */
+  display: block !important;
+}
+
+.multi-range-slider .slider-track {
+  position: absolute !important; 
+  height: 100% !important; 
+  background: #3d5a30 !important; 
+  border-radius: 4px !important; 
+  top: 0 !important; 
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 1 !important; 
+  pointer-events: none !important;
+}
+
+.multi-range-slider input[type="range"] {
+  position: absolute !important; 
+  width: 100% !important; 
+  height: 6px !important; 
+  top: 0 !important; 
+  left: 0 !important;
+  background: transparent !important; 
+  pointer-events: none !important; 
+  -webkit-appearance: none !important; 
+  margin: 0 !important; 
+  padding: 0 !important;
+  z-index: 2 !important; 
+  border: none !important;
+}
+
+.multi-range-slider input[type="range"]::-webkit-slider-thumb {
+  height: 24px !important; 
+  width: 24px !important; 
+  border-radius: 50% !important;
+  background: white !important; 
+  border: 3px solid #3d5a30 !important;
+  pointer-events: auto !important; 
+  -webkit-appearance: none !important; 
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  margin-top: -9px !important; /* Mengunci di tengah baris */
+}
+
+.multi-range-slider input[type="range"]::-moz-range-thumb {
+  height: 24px !important; 
+  width: 24px !important; 
+  border-radius: 50% !important;
+  background: white !important; 
+  border: 3px solid #3d5a30 !important;
+  pointer-events: auto !important; 
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+  box-sizing: border-box !important;
+}
+
+
+/* Desain Tombol Bulat (Thumb) untuk Chrome/Safari */
+.multi-range-slider input[type="range"]::-webkit-slider-thumb {
+  height: 24px; 
+  width: 24px; 
+  border-radius: 50%;
+  background: white; 
+  border: 3px solid #3d5a30;
+  pointer-events: auto; /* Aktifkan klik */
+  -webkit-appearance: none; 
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  margin-top: -9px; /* RUMUS RAHASIA: (Tinggi Thumb 24 - Tinggi Bar 6) / 2 = Tarik naik 9px agar sentris */
+}
+
+/* Desain Tombol Bulat (Thumb) untuk Firefox */
+.multi-range-slider input[type="range"]::-moz-range-thumb {
+  height: 24px; 
+  width: 24px; 
+  border-radius: 50%;
+  background: white; 
+  border: 3px solid #3d5a30;
+  pointer-events: auto; 
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-sizing: border-box;
+}
+
+
+/* --- HILANGKAN TULISAN "SELL AN ITEM" DI HEADER --- */
+nav a[href*="sell"], nav a[data-route*="sell"], 
+header a[href*="sell"], header a[data-route*="sell"] {
+  /* Menyembunyikan link sell cadangan yang tidak diperlukan */
+  display: none !important;
+}
+nav a[data-route="sell"], header a[data-route="sell"] {
+  /* Munculkan kembali tombol utama "Sell" */
+  display: inline-block !important; 
+}
+
+/* --- UI DROPDOWN "SORT BY" PREMIUM --- */
+select.sort-select, .sort-select {
+  appearance: none; -webkit-appearance: none;
+  border: none !important; background: transparent !important;
+  font-size: 15px !important; font-weight: 700 !important;
+  color: #1c1917 !important; padding-right: 18px !important;
+  cursor: pointer; outline: none;
+  /* Membuat ikon panah custom */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22%231C1917%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right center !important;
+}
+
+/* --- UI LIST VIEW UNTUK MENU SHOP --- */
+.product-grid.list-view {
+  display: flex !important; flex-direction: column !important; gap: 32px !important;
+}
+.product-grid.list-view .prod-card {
+  display: flex !important; flex-direction: row !important; gap: 24px !important;
+  align-items: center; max-width: 100%;
+}
+.product-grid.list-view .prod-card img.prod-img {
+  width: 250px !important; height: 250px !important;
+  object-fit: cover !important; flex-shrink: 0;
+}
+.product-grid.list-view .prod-card .prod-info {
+  flex-grow: 1; display: flex; flex-direction: column; justify-content: center;
+}
+.product-grid.list-view .prod-card .btn-favorite {
+  top: auto !important; bottom: 16px !important; right: 16px !important;
+}
+
+/* --- FLOATING ACTION BUTTON (TOMBOL PLUS) --- */
+.fab-add {
+  position: fixed; bottom: 40px; right: 40px;
+  width: 64px; height: 64px; border-radius: 50%;
+  background-color: #526442; color: white;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(82,100,66,0.3); border: none;
+  cursor: pointer; z-index: 999; transition: transform 0.2s;
+}
+.fab-add:hover { transform: scale(1.05); }
