@@ -1,160 +1,94 @@
-/**
- * scripts/render/profile.js
- *
- * Renderer for the Profile Settings view.
- * Called by router.js after views/profile.html is injected into #router-view.
- *
- * Public API:
- *   renderProfile()  – bootstraps all UI behaviour for this view.
- */
+// scripts/render/profile.js
+import { getSupabaseClient } from "../supabaseClient.js";
+import { navigate } from "../router.js";
+import { logoutUser } from "../auth.js";
 
-export function renderProfile() {
-  /* ── 1. Element references ────────────────────────────────────── */
-  const form = {
-    fname:    document.getElementById('prof-fname'),
-    lname:    document.getElementById('prof-lname'),
-    email:    document.getElementById('prof-email'),
-    phone:    document.getElementById('prof-phone'),
-    location: document.getElementById('prof-loc'),
-  };
+export async function renderProfile() {
+  try {
+    const supabase = await getSupabaseClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error || !user) {
+      navigate("home");
+      return;
+    }
 
-  const meta = {
-    displayName: document.getElementById('display-name'),
-    email:       document.getElementById('meta-email'),
-    phone:       document.getElementById('meta-phone'),
-    location:    document.getElementById('meta-location'),
-  };
+    // Ekstrak Data User
+    const fullName = user.user_metadata?.full_name || "User ReHome";
+    const userEmail = user.email || "user@example.com";
+    const joinDate = new Date(user.created_at).getFullYear();
 
-  const saveBtn      = document.getElementById('btn-save-profile');
-  const saveFeedback = document.getElementById('save-feedback');
-  const changePhoto  = document.getElementById('btn-change-photo');
-  const changePw     = document.getElementById('btn-change-pw');
-  const dlData       = document.getElementById('btn-dl-data');
-  const impactBar    = document.getElementById('impact-bar');
+    // Tangkap Elemen HTML
+    const initialEl = document.getElementById("profile-initial");
+    const nameDisplay = document.getElementById("profile-name-display");
+    const emailDisplay = document.getElementById("profile-email-display");
+    const joinEl = document.getElementById("profile-join-date");
 
-  /* ── 2. Animate impact bar on mount ──────────────────────────── */
-  if (impactBar) {
-    const pct = parseInt(impactBar.dataset.pct, 10) || 0;
-    // Defer one frame so the CSS transition fires after paint
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        impactBar.style.width = `${pct}%`;
-      });
-    });
-  }
+    // Suntikkan Data
+    if (initialEl) initialEl.textContent = fullName.charAt(0).toUpperCase();
+    if (nameDisplay) nameDisplay.textContent = fullName;
+    if (emailDisplay) emailDisplay.textContent = userEmail;
+    if (joinEl) joinEl.textContent = `Member since ${joinDate}`;
 
-  /* ── 3. Save profile ─────────────────────────────────────────── */
-  if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      // Basic validation: all required fields filled
-      const allFilled = Object.values(form).every(el => el && el.value.trim() !== '');
-      if (!allFilled) {
-        // Highlight empty fields
-        Object.values(form).forEach(el => {
-          if (el && el.value.trim() === '') {
-            el.style.borderColor = '#e11d48';
-            el.addEventListener('input', () => {
-              el.style.borderColor = '';
-            }, { once: true });
-          }
+    // =====================================
+    // LOGIKA PERGANTIAN TAB (MAIN CONTENT)
+    // =====================================
+    const tabs = document.querySelectorAll('.profile-tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        // Matikan semua tab & sembunyikan semua konten
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.style.borderBottomColor = 'transparent';
+          t.style.color = '#78716c';
+          t.style.fontWeight = '600';
         });
-        return;
-      }
+        contents.forEach(c => c.style.display = 'none');
 
-      // Sync identity card meta panel
-      if (meta.displayName) {
-        meta.displayName.textContent =
-          `${form.fname.value.trim()} ${form.lname.value.trim()}`;
-      }
-      if (meta.email)    meta.email.textContent    = form.email.value.trim();
-      if (meta.phone)    meta.phone.textContent     = form.phone.value.trim();
-      if (meta.location) meta.location.textContent  = form.location.value.trim();
+        // Hidupkan tab yang di-klik
+        // e.target bisa kena <span> badge di dalam button — naik ke button
+        const targetTab = e.target.closest('.profile-tab');
+        if (!targetTab) return;
 
-      // TODO: Replace the block below with your real API call, e.g.:
-      // await api.patch('/users/me', { ...formData });
-      _showSaveFeedback();
-    });
-  }
+        targetTab.classList.add('active');
+        targetTab.style.borderBottomColor = '#3d5a30';
+        targetTab.style.color = '#1c1917';
+        targetTab.style.fontWeight = '700';
 
-  /* ── 4. Change photo (file picker) ──────────────────────────── */
-  if (changePhoto) {
-    changePhoto.addEventListener('click', () => {
-      const picker = document.createElement('input');
-      picker.type   = 'file';
-      picker.accept = 'image/*';
-      picker.addEventListener('change', () => {
-        const file = picker.files[0];
-        if (!file) return;
-        const url   = URL.createObjectURL(file);
-        const avatar = document.getElementById('prof-avatar');
-        if (avatar) avatar.src = url;
-        // TODO: upload `file` to your storage endpoint here
+        // Munculkan kontennya
+        const contentId = `tab-${targetTab.getAttribute('data-tab')}`;
+        const contentEl = document.getElementById(contentId);
+        if (contentEl) contentEl.style.display = 'block';
       });
-      picker.click();
     });
-  }
 
-  /* ── 5. Security actions ─────────────────────────────────────── */
-  if (changePw) {
-    changePw.addEventListener('click', () => {
-      // TODO: Navigate to /change-password or open a modal
-      console.info('[ReHome] Navigate → change password');
-      if (window.router?.navigate) window.router.navigate('/change-password');
+    // =====================================
+    // NAVIGASI TOMBOL ATAS KANAN
+    // =====================================
+    const btnNavs = document.querySelectorAll('button[data-route]');
+    btnNavs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetRoute = btn.getAttribute('data-route');
+        if (targetRoute) navigate(targetRoute);
+      });
     });
-  }
 
-  if (dlData) {
-    dlData.addEventListener('click', () => {
-      // TODO: Trigger GDPR data export endpoint
-      console.info('[ReHome] Data export requested');
-    });
-  }
+    // Fungsikan Tombol Sign Out
+    const logoutBtn = document.getElementById("profile-logout-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+        await logoutUser();
+        localStorage.removeItem('rehome_current_route');
 
-  /* ── 6. Toggle – Two-Factor Auth ────────────────────────────── */
-  const toggle2fa = document.getElementById('toggle-2fa');
-  if (toggle2fa) {
-    toggle2fa.addEventListener('change', (e) => {
-      console.info('[ReHome] 2FA toggled:', e.target.checked);
-      // TODO: PATCH /users/me/security { twoFactor: e.target.checked }
-    });
-  }
+        document.getElementById("app").hidden = true;
+        document.getElementById("login").hidden = false;
+        window.location.hash = "";
+      });
+    }
 
-  /* ── 7. Notification toggles ─────────────────────────────────── */
-  const notifIds = ['notif-orders', 'notif-price', 'notif-marketing', 'notif-messages'];
-  notifIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('change', (e) => {
-      console.info(`[ReHome] Notification "${id}" →`, e.target.checked);
-      // TODO: PATCH /users/me/notifications { [id]: e.target.checked }
-    });
-  });
-
-  /* ── 8. Activity buttons ─────────────────────────────────────── */
-  const activityRoutes = {
-    'btn-purchase-hist': '/profile/purchases',
-    'btn-saved-items':   '/profile/saved',
-    'btn-manage-reviews':'/profile/reviews',
-  };
-  Object.entries(activityRoutes).forEach(([btnId, route]) => {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      if (window.router?.navigate) {
-        window.router.navigate(route);
-      } else {
-        console.info(`[ReHome] Navigate → ${route}`);
-      }
-    });
-  });
-
-  /* ── Private helpers ──────────────────────────────────────────── */
-  function _showSaveFeedback() {
-    if (!saveFeedback) return;
-    saveFeedback.classList.add('show');
-    clearTimeout(saveFeedback._timer);
-    saveFeedback._timer = setTimeout(() => {
-      saveFeedback.classList.remove('show');
-    }, 2800);
+  } catch (err) {
+    console.error("Error memuat halaman profil:", err);
   }
 }
