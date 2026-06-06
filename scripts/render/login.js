@@ -82,6 +82,10 @@ export function bindLoginPage() {
         await loginUser(email, password);
         document.getElementById("login").hidden = true;
         document.getElementById("app").hidden = false;
+        if (email.length > 100 || password.length > 50) {
+            errorMsg.textContent = "Data input terlalu panjang!";
+            return;
+        }
         
         // Panggil lencana keranjang
         if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();

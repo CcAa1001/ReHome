@@ -3,8 +3,18 @@ import { getRouteParams, navigate } from "../router.js";
 import { getSupabaseClient } from "../supabaseClient.js";
 import { showToast } from "../ui.js";
 
+// ==========================================
+// MESIN PEMBERSIH ANTI-HACKER (XSS SANITIZER)
+// ==========================================
+function sanitize(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+}
+
 let productImages = [];
-// Baca memori favorit
+// Baca memori favorit dari local storage
 let favoriteIds = JSON.parse(localStorage.getItem("rehome_favorites") || "[]");
 
 export async function renderProductDetail() {
@@ -20,19 +30,31 @@ export async function renderProductDetail() {
     if (error || !product) throw new Error("Item tidak ditemukan.");
 
     productImages = [product.image_url, product.image_url, product.image_url, product.image_url, product.image_url];
+    
+    // ==========================================
+    // CUCI SEMUA TEKS SEBELUM DITAMPILKAN KE LAYAR
+    // ==========================================
+    const safeTitle = sanitize(product.title);
+    const safeCategory = sanitize(product.category || "Living Room");
+    const safeCondition = sanitize(product.condition || "Excellent");
+    const safeMaker = sanitize(product.maker || 'Elena Studio');
+    const safeDescription = sanitize(product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.');
+
+    // Inisialisasi status stok dan favorit
     const stockTersedia = product.stock !== undefined ? product.stock : 1;
-    const condLabel = product.condition || "Excellent";
     const isActiveClass = favoriteIds.includes(product.id) ? "active" : "";
 
     container.innerHTML = `
       <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: var(--sans);">
+        
         <div style="margin-bottom: 24px; font-size: 13px; color: #78716c;">
           <span style="cursor:pointer;" onclick="document.dispatchEvent(new CustomEvent('nav-shop'))">Shop</span> / 
-          <span>${product.category || "Living Room"}</span> / 
-          <span style="color:#1c1917; font-weight:600;">${product.title}</span>
+          <span>${safeCategory}</span> / 
+          <span style="color:#1c1917; font-weight:600;">${safeTitle}</span>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+          
           <div>
             <div style="position: relative; width: 100%; aspect-ratio: 4/5; background: #f5f5f4; border-radius: 16px; overflow: hidden;">
               <button class="btn-favorite ${isActiveClass}" style="width: 44px; height: 44px; top: 16px; right: 16px; position: absolute; z-index: 10;">
@@ -55,19 +77,19 @@ export async function renderProductDetail() {
               Sustainably Sourced
             </div>
             
-            <h1 style="font-family: var(--serif); font-size: 42px; color: #1c1917; margin: 0 0 16px 0; line-height: 1.1;">${product.title}</h1>
+            <h1 style="font-family: var(--serif); font-size: 42px; color: #1c1917; margin: 0 0 16px 0; line-height: 1.1;">${safeTitle}</h1>
             <div style="font-size: 28px; color: #78716c; font-weight: 500; margin-bottom: 32px;">$${product.price.toFixed(2)}</div>
             
             <div style="margin-bottom: 24px;">
               <span style="font-size: 13px; color: #78716c; display: block; margin-bottom: 8px;">Condition</span>
               <div style="display: flex; gap: 12px;">
-                <div class="pd-condition-pill" style="background: #fbfaf9; border-color: #3d5a30; color: #3d5a30;">${condLabel} (Pre-owned)</div>
+                <div class="pd-condition-pill" style="background: #fbfaf9; border-color: #3d5a30; color: #3d5a30;">${safeCondition} (Pre-owned)</div>
                 <div class="pd-condition-pill">Refurbished</div>
               </div>
             </div>
 
             <p style="color: #57534e; line-height: 1.6; margin-bottom: 32px; font-size: 15px;">
-              ${product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.'}
+              ${safeDescription}
             </p>
 
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
@@ -92,7 +114,7 @@ export async function renderProductDetail() {
                   <img src="assets/elena.png" onerror="this.src='https://ui-avatars.com/api/?name=Elena+Studio&background=1c1917&color=fff'" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div>
-                  <div style="font-weight: 600; font-size: 15px; color: #1c1917;">${product.maker || 'Elena Studio'}</div>
+                  <div style="font-weight: 600; font-size: 15px; color: #1c1917;">${safeMaker}</div>
                   <div style="font-size: 12px; color: #78716c; margin-top: 2px;">★ 4.9 (124 reviews)</div>
                 </div>
               </div>
@@ -134,6 +156,7 @@ export async function renderProductDetail() {
       localStorage.setItem("rehome_favorites", JSON.stringify(favoriteIds));
     });
 
+    // LOGIKA MINUS PLUS (QUANTITY)
     const btnMin = document.getElementById("btn-min");
     const btnPlus = document.getElementById("btn-plus");
     const qtyInput = document.getElementById("qty-val");
@@ -145,6 +168,7 @@ export async function renderProductDetail() {
       else { showToast(`Hanya tersisa ${stockTersedia} stok!`); }
     });
 
+    // LOGIKA ADD TO CART (SUPABASE)
     const btnCart = document.getElementById("add-to-cart-btn");
     btnCart.addEventListener("click", async (e) => {
       e.preventDefault(); e.stopPropagation();
@@ -171,7 +195,7 @@ export async function renderProductDetail() {
              await supabase.from('cart_items').insert({ user_id: user.id, product_id: product.id, quantity: requestedQty });
           }
              
-          showToast(`Added ${requestedQty}x ${product.title} to cart.`);
+          showToast(`Added ${requestedQty}x ${safeTitle} to cart.`);
           if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
 
       } catch (err) { console.error(err); showToast("Gagal menyimpan ke database.");
@@ -184,6 +208,9 @@ export async function renderProductDetail() {
   }
 }
 
+// ==========================================
+// ANIMASI TERBANG (ADD TO CART)
+// ==========================================
 function flyToCart(startX, startY, imageUrl) {
   const cartIcon = document.querySelector('nav [data-route="cart"], header [data-route="cart"], .app-nav [data-route="cart"]');
   if (!cartIcon) return;

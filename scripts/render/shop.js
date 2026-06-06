@@ -3,6 +3,14 @@ import { getSupabaseClient } from "../supabaseClient.js";
 import { navigate, setRouteParams } from "../router.js";
 import { showToast } from "../ui.js";
 
+// Fungsi untuk mematikan tag HTML jahat dari database
+function sanitize(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag]));
+}
+
 let allProducts = [], filteredProducts = [], currentView = "grid", page = 0;
 const PAGE_SIZE = 9;
 let favoriteIds = JSON.parse(localStorage.getItem("rehome_favorites") || "[]");
@@ -34,7 +42,8 @@ function renderPage(catalog, countEl) {
       <img class="prod-img" src="${p.image_url || 'assets/chair.jpg'}" loading="lazy" style="border-radius:12px;">
       <div class="prod-info" style="margin-top:12px;">
         <span style="font-size:12px;color:#78716c;font-weight:600;">${p.condition ?? "Excellent"} · ${p.category ?? "Furniture"}</span>
-        <h3 style="font-size:16px;margin:4px 0;">${p.title}</h3>
+        <h3 style="font-size:16px;margin:4px 0;">${sanitize(p.title)}</h3>
+        <span style="font-size:12px;">${sanitize(p.condition)} · ${sanitize(p.category)}</span>
         <strong style="color:#3d5a30;">$${p.price}</strong>
       </div>
     </div>`;
