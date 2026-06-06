@@ -90,6 +90,73 @@ alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.user_settings enable row level security;
 
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'profiles_role_allowed') then
+    alter table public.profiles
+    add constraint profiles_role_allowed check (role in ('buyer', 'seller', 'admin'));
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'profiles_text_size_guard') then
+    alter table public.profiles
+    add constraint profiles_text_size_guard check (
+      length(full_name) <= 120
+      and length(email) <= 254
+      and length(coalesce(location, '')) <= 160
+      and length(coalesce(avatar_url, '')) <= 2048
+    );
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'products_size_and_price_guard') then
+    alter table public.products
+    add constraint products_size_and_price_guard check (
+      length(title) between 1 and 120
+      and length(coalesce(maker, '')) <= 120
+      and length(coalesce(description, '')) <= 1000
+      and length(category) between 1 and 80
+      and length(condition) between 1 and 80
+      and length(currency) between 3 and 8
+      and length(coalesce(image_url, '')) <= 2048
+      and price >= 0
+      and carbon_offset >= 0
+    );
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'cart_items_quantity_guard') then
+    alter table public.cart_items
+    add constraint cart_items_quantity_guard check (quantity between 1 and 99);
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'orders_status_and_amount_guard') then
+    alter table public.orders
+    add constraint orders_status_and_amount_guard check (
+      status in ('pending', 'transit', 'shipped', 'delivered', 'completed', 'cancelled')
+      and subtotal >= 0
+      and shipping >= 0
+      and carbon_credit >= 0
+      and total >= 0
+    );
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'order_items_size_and_amount_guard') then
+    alter table public.order_items
+    add constraint order_items_size_and_amount_guard check (
+      length(title) between 1 and 120
+      and quantity between 1 and 99
+      and price >= 0
+    );
+  end if;
+
+  if not exists (select 1 from pg_constraint where conname = 'user_settings_allowed_values') then
+    alter table public.user_settings
+    add constraint user_settings_allowed_values check (
+      currency in ('USD', 'IDR', 'EUR')
+      and theme in ('light', 'soft')
+    );
+  end if;
+end;
+$$;
+
 drop policy if exists "Profiles are viewable by everyone" on public.profiles;
 create policy "Profiles are viewable by everyone"
 on public.profiles for select

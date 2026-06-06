@@ -1,28 +1,48 @@
 // scripts/auth.js
 import { getSupabaseClient, isSupabaseConfigured } from "./supabaseClient.js";
 import state from "./state.js";
-import { setSession, updateSession } from "./storage.js";
+import { setSession } from "./storage.js";
+import {
+  assertLoginAllowed,
+  clearLoginFailures,
+  normalizeEmail,
+  recordLoginFailure,
+  sanitizeShortText,
+  validateName,
+  validatePassword
+} from "./security.js";
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 
 export async function loginUser(email, password) {
+  const safeEmail = normalizeEmail(email);
+  const safePassword = validatePassword(password);
+  assertLoginAllowed(safeEmail);
+
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured.");
   }
 
   const supabase = await getSupabaseClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: safeEmail,
+    password: safePassword
+  });
 
-  if (error) throw error;
+  if (error) {
+    recordLoginFailure(safeEmail);
+    throw error;
+  }
 
   const user = data.user;
   const session = {
     userId: user.id,
     email: user.email,
-    name: user.user_metadata?.full_name ?? user.email,
-    role: user.user_metadata?.role ?? "buyer"
+    name: sanitizeShortText(user.user_metadata?.full_name ?? user.email),
+    role: sanitizeShortText(user.user_metadata?.role ?? "buyer")
   };
 
+  clearLoginFailures(safeEmail);
   setSession(session);
   state.publish("authChanged", session);
 
@@ -34,16 +54,20 @@ export async function loginUser(email, password) {
 // ── REGISTER ──────────────────────────────────────────────────────────────────
 
 export async function registerUser(email, password, name) {
+  const safeEmail = normalizeEmail(email);
+  const safePassword = validatePassword(password);
+  const safeName = validateName(name);
+
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured.");
   }
 
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+    email: safeEmail,
+    password: safePassword,
     options: {
-      data: { full_name: name, role: "buyer" }
+      data: { full_name: safeName, role: "buyer" }
     }
   });
 
@@ -58,7 +82,7 @@ export async function registerUser(email, password, name) {
   const session = {
     userId: data.user.id,
     email: data.user.email,
-    name,
+    name: safeName,
     role: "buyer"
   };
 
@@ -84,6 +108,10 @@ export async function logoutUser() {
 
 // --- LOGIN DENGAN GOOGLE / APPLE ---
 export async function loginWithProvider(provider) {
+  const allowedProviders = new Set(["google", "apple"]);
+  if (!allowedProviders.has(provider)) throw new Error("Unsupported provider.");
+  if (!isSupabaseConfigured) throw new Error("Supabase is not configured.");
+
   const supabase = await getSupabaseClient();
   
   // Ambil URL bersih tanpa tanda '#' apapun di belakangnya
@@ -104,12 +132,14 @@ export async function loginWithProvider(provider) {
 // ── RESET PASSWORD ────────────────────────────────────────────────────────────
 
 export async function resetPassword(email) {
+  const safeEmail = normalizeEmail(email);
+
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured.");
   }
   
   const supabase = await getSupabaseClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(safeEmail, {
     redirectTo: window.location.origin + '/#reset-password',
   });
 

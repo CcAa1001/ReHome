@@ -1,17 +1,8 @@
 // scripts/render/product-detail.js
 import { getRouteParams, navigate } from "../router.js";
 import { getSupabaseClient } from "../supabaseClient.js";
+import { clampInteger, isUuid, sanitize, sanitizeShortText, sanitizeUrl, toSafeMoney } from "../security.js";
 import { showToast } from "../ui.js";
-
-// ==========================================
-// MESIN PEMBERSIH ANTI-HACKER (XSS SANITIZER)
-// ==========================================
-function sanitize(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>'"]/g, tag => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-  }[tag] || tag));
-}
 
 let productImages = [];
 // Baca memori favorit dari local storage
@@ -23,32 +14,35 @@ export async function renderProductDetail() {
 
   const { productId } = getRouteParams();
   if (!productId) { navigate("shop"); return; }
+  if (!isUuid(productId)) { navigate("shop"); return; }
 
   try {
     const supabase = await getSupabaseClient();
     const { data: product, error } = await supabase.from('products').select('*').eq('id', productId).single();
     if (error || !product) throw new Error("Item tidak ditemukan.");
 
-    productImages = [product.image_url, product.image_url, product.image_url, product.image_url, product.image_url];
+    const safeImageUrl = sanitizeUrl(product.image_url);
+    productImages = [safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl];
     
     // ==========================================
     // CUCI SEMUA TEKS SEBELUM DITAMPILKAN KE LAYAR
     // ==========================================
-    const safeTitle = sanitize(product.title);
-    const safeCategory = sanitize(product.category || "Living Room");
-    const safeCondition = sanitize(product.condition || "Excellent");
-    const safeMaker = sanitize(product.maker || 'Elena Studio');
+    const safeTitle = sanitizeShortText(product.title, "Untitled item");
+    const safeCategory = sanitizeShortText(product.category || "Living Room");
+    const safeCondition = sanitizeShortText(product.condition || "Excellent");
+    const safeMaker = sanitizeShortText(product.maker || 'Elena Studio');
     const safeDescription = sanitize(product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.');
+    const safePrice = toSafeMoney(product.price);
 
     // Inisialisasi status stok dan favorit
-    const stockTersedia = product.stock !== undefined ? product.stock : 1;
+    const stockTersedia = clampInteger(product.stock ?? 1, 1, 999, 1);
     const isActiveClass = favoriteIds.includes(product.id) ? "active" : "";
 
     container.innerHTML = `
       <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: var(--sans);">
         
         <div style="margin-bottom: 24px; font-size: 13px; color: #78716c;">
-          <span style="cursor:pointer;" onclick="document.dispatchEvent(new CustomEvent('nav-shop'))">Shop</span> / 
+          <button type="button" id="product-back-shop" style="cursor:pointer; border:0; background:transparent; color:inherit; padding:0; font:inherit;">Shop</button> / 
           <span>${safeCategory}</span> / 
           <span style="color:#1c1917; font-weight:600;">${safeTitle}</span>
         </div>
@@ -60,7 +54,7 @@ export async function renderProductDetail() {
               <button class="btn-favorite ${isActiveClass}" style="width: 44px; height: 44px; top: 16px; right: 16px; position: absolute; z-index: 10;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
               </button>
-              <img src="${productImages[0]}" style="width: 100%; height: 100%; object-fit: cover;" id="main-image">
+              <img src="${productImages[0]}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover;" id="main-image">
               <div style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 99px;">
                 <div style="width: 6px; height: 6px; border-radius: 50%; background: white;"></div>
                 <div style="width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5);"></div>
@@ -78,7 +72,7 @@ export async function renderProductDetail() {
             </div>
             
             <h1 style="font-family: var(--serif); font-size: 42px; color: #1c1917; margin: 0 0 16px 0; line-height: 1.1;">${safeTitle}</h1>
-            <div style="font-size: 28px; color: #78716c; font-weight: 500; margin-bottom: 32px;">$${product.price.toFixed(2)}</div>
+            <div style="font-size: 28px; color: #78716c; font-weight: 500; margin-bottom: 32px;">$${safePrice}</div>
             
             <div style="margin-bottom: 24px;">
               <span style="font-size: 13px; color: #78716c; display: block; margin-bottom: 8px;">Condition</span>
@@ -111,7 +105,7 @@ export async function renderProductDetail() {
             <div class="seller-box">
               <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 48px; height: 48px; background: #e7e5e4; border-radius: 50%; overflow: hidden;">
-                  <img src="assets/elena.png" onerror="this.src='https://ui-avatars.com/api/?name=Elena+Studio&background=1c1917&color=fff'" style="width:100%; height:100%; object-fit:cover;">
+                  <img src="assets/elena.png" alt="${safeMaker}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div>
                   <div style="font-weight: 600; font-size: 15px; color: #1c1917;">${safeMaker}</div>
@@ -125,7 +119,7 @@ export async function renderProductDetail() {
       </div>
     `;
 
-    document.addEventListener('nav-shop', () => navigate('shop'), { once: true });
+    document.getElementById("product-back-shop")?.addEventListener("click", () => navigate("shop"));
 
     const thumbGallery = document.getElementById("thumb-gallery");
     if (thumbGallery) {
@@ -172,7 +166,7 @@ export async function renderProductDetail() {
     const btnCart = document.getElementById("add-to-cart-btn");
     btnCart.addEventListener("click", async (e) => {
       e.preventDefault(); e.stopPropagation();
-      const requestedQty = parseInt(qtyInput.value);
+      const requestedQty = clampInteger(qtyInput.value, 1, stockTersedia, 1);
       btnCart.disabled = true; btnCart.style.opacity = "0.7";
       const originalText = btnCart.innerHTML;
       btnCart.querySelector("span").textContent = "Checking...";
@@ -187,7 +181,7 @@ export async function renderProductDetail() {
           if (qtyInDb + requestedQty > stockTersedia) { showToast(`Gagal! Sisa kuota beli untuk item ini: ${stockTersedia - qtyInDb}`); return; }
           
           btnCart.querySelector("span").textContent = "Syncing...";
-          flyToCart(e.clientX, e.clientY, product.image_url);
+          flyToCart(e.clientX, e.clientY, safeImageUrl);
 
           if (existingCarts && existingCarts.length > 0) {
              await supabase.from('cart_items').update({ quantity: existingCarts[0].quantity + requestedQty }).eq('id', existingCarts[0].id);

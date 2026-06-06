@@ -1,6 +1,7 @@
 // scripts/render/login.js
 import { showApp } from "../router.js";
 import { loginUser, registerUser, loginWithProvider, resetPassword } from "../auth.js";
+import { normalizeEmail, validateName, validatePassword } from "../security.js";
 
 let isLoginBound = false;
 
@@ -79,13 +80,9 @@ export function bindLoginPage() {
       if (errorMsg) { errorMsg.textContent = ""; errorMsg.style.color = "#dc2626"; }
       
       try {
-        await loginUser(email, password);
+        await loginUser(normalizeEmail(email), validatePassword(password));
         document.getElementById("login").hidden = true;
         document.getElementById("app").hidden = false;
-        if (email.length > 100 || password.length > 50) {
-            errorMsg.textContent = "Data input terlalu panjang!";
-            return;
-        }
         
         // Panggil lencana keranjang
         if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
@@ -113,7 +110,7 @@ export function bindLoginPage() {
       if (errorMsg) errorMsg.textContent = "";
 
       try {
-        const result = await registerUser(email, password, name);
+        const result = await registerUser(normalizeEmail(email), validatePassword(password), validateName(name));
         
         // Jika butuh konfirmasi email (Supabase Email Confirm = ON)
         if (result && result.needsEmailConfirmation) {
@@ -155,7 +152,7 @@ export function bindLoginPage() {
       if (errorMsg) { errorMsg.textContent = ""; }
 
       try {
-        await resetPassword(email);
+        await resetPassword(normalizeEmail(email));
         if (errorMsg) {
             errorMsg.style.color = "#3d5a30"; 
             errorMsg.textContent = "Reset link sent! Please check your email.";

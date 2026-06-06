@@ -88,6 +88,11 @@ async function boot() {
   bindLoginPage();
 
   const supabase = await getSupabaseClient();
+  if (!supabase) {
+      document.getElementById("app").hidden = true;
+      document.getElementById("login").hidden = false;
+      return;
+  }
 
   // ==============================================================
   // TRIK SULAP: CEGAT TOKEN DARI GOOGLE LALU HAPUS DARI LINK

@@ -1,16 +1,14 @@
-// Paste your Supabase Project URL here.
-// Example: https://abcdefghijklmnop.supabase.co
-const supabaseUrl = "https://wrwevyhqcitoafmqtzyf.supabase.co";
-
-// Browser-safe publishable key. Never put a secret/service-role key in this file.
-const supabasePublishableKey = "sb_publishable_XygYJpObFhGp3yyUT6aGRA_Ybfi91HL";
+const config = window.REHOME_CONFIG || {};
+const supabaseUrl = String(config.supabaseUrl || "").trim();
+const supabasePublishableKey = String(config.supabasePublishableKey || "").trim();
 
 let clientPromise;
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
   supabasePublishableKey &&
-  supabaseUrl.startsWith("https://")
+  supabaseUrl.startsWith("https://") &&
+  supabasePublishableKey.startsWith("sb_publishable_")
 );
 
 export async function getSupabaseClient() {

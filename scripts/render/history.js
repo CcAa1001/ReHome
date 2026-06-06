@@ -1,39 +1,60 @@
 // scripts/render/history.js
-import { elements }                            from "../dom.js";
-import { loadDatabase, getSession }            from "../storage.js";
-import { getPurchaseHistory, getSalesHistory, updateOrderStatus } from "../supabaseDatabase.js";
-import { showToast }                           from "../ui.js";
-import { navigate }                            from "../router.js";
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+import { getSession } from "../storage.js";
+import { sanitizeShortText, sanitizeUrl, toSafeMoney, toSafeNumber, isUuid } from "../security.js";
+import { getSupabaseClient } from "../supabaseClient.js";
+import { showToast } from "../ui.js";
 
 function formatMoney(value) {
-  return `$${Number(value).toLocaleString("en-US", {
-    minimumFractionDigits: 0, maximumFractionDigits: 2
-  })}`;
+  return `$${toSafeMoney(value)}`;
 }
 
 function formatDate(iso) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric", month: "short", day: "numeric"
+  if (!iso) return "-";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
   });
 }
 
 function statusPill(status = "pending") {
+  const safeStatus = sanitizeShortText(status, "pending").toLowerCase();
   const styles = {
-    pending:   "color: #d97706;", // Orange
-    transit:   "color: #d97706;", // Orange
-    shipped:   "color: #2563eb;", // Biru
-    delivered: "color: #3d5a30;", // Hijau
-    completed: "color: #3d5a30;", // Hijau
-    cancelled: "color: #dc2626;"  // Merah
+    pending: "color: #d97706;",
+    transit: "color: #d97706;",
+    shipped: "color: #2563eb;",
+    delivered: "color: #3d5a30;",
+    completed: "color: #3d5a30;",
+    cancelled: "color: #dc2626;"
   };
-  const s = styles[status.toLowerCase()] ?? styles.pending;
-  return `<span style="${s}">${status}</span>`;
+  const style = styles[safeStatus] ?? styles.pending;
+  return `<span style="${style}">${safeStatus}</span>`;
 }
 
-// ── PURCHASE HISTORY (PROFILE PAGE) ───────────────────────────────────────────
+async function getSalesHistory() {
+  const supabase = await getSupabaseClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) return [];
+
+  const { data, error } = await supabase
+    .from("order_items")
+    .select("id, quantity, price, orders(id, status, created_at), product:products(id, title, image_url, seller_id)")
+    .order("id", { ascending: false });
+
+  if (error) return [];
+  return (data || []).filter((item) => item.product?.seller_id === user.id);
+}
+
+async function updateOrderStatus(orderId, status) {
+  if (!isUuid(orderId)) throw new Error("Invalid order id.");
+  const safeStatus = sanitizeShortText(status, "pending").toLowerCase();
+  const supabase = await getSupabaseClient();
+  const { error } = await supabase.from("orders").update({ status: safeStatus }).eq("id", orderId);
+  if (error) throw error;
+}
 
 export async function renderPurchaseHistory() {
   const container = document.querySelector("[data-history-list]");
@@ -68,32 +89,33 @@ export async function renderPurchaseHistory() {
   `;
 }
 
-// ── SALES HISTORY (SELLER DASHBOARD) ──────────────────────────────────────────
-
 function renderSaleRow(item) {
   const order = item.orders ?? {};
+  const product = item.product ?? {};
   const isPending = !order.status || order.status === "pending";
+  const safeOrderId = sanitizeShortText(order.id);
+  const safeTitle = sanitizeShortText(product.title, "Product");
+  const safeImage = sanitizeUrl(product.image_url);
+  const safeQty = toSafeNumber(item.quantity, 1);
+  const safeTotal = toSafeNumber(item.price) * safeQty;
 
   return `
     <article class="history-card" style="margin-bottom:16px;">
       <div style="display:flex; align-items:center; gap:24px; width:100%;">
-        ${item.product?.image_url
-          ? `<img src="${item.product.image_url}" alt="${item.product?.title ?? ""}" style="width:88px;height:88px;object-fit:cover;border-radius:12px;background:#f0ede8;flex-shrink:0;">`
-          : `<div style="width:88px;height:88px;border-radius:12px;background:#f0ede8;flex-shrink:0;"></div>`
-        }
+        <img src="${safeImage}" alt="${safeTitle}" style="width:88px;height:88px;object-fit:cover;border-radius:12px;background:#f0ede8;flex-shrink:0;">
         <div style="flex:1;">
           <header style="margin-bottom:8px;">
             <time>${formatDate(order.created_at)}</time>
             ${statusPill(order.status || "Pending")}
           </header>
-          <h3 style="font-size:20px; margin:0 0 4px;">${item.product?.title ?? "Product"}</h3>
-          <p style="margin:0;">Qty: ${item.quantity}</p>
+          <h3 style="font-size:20px; margin:0 0 4px;">${safeTitle}</h3>
+          <p style="margin:0;">Qty: ${safeQty}</p>
         </div>
         <div style="text-align:right;">
-          <strong style="font-size:28px;">${formatMoney(Number(item.price) * Number(item.quantity))}</strong>
+          <strong style="font-size:28px;">${formatMoney(safeTotal)}</strong>
           ${isPending ? `
             <div style="margin-top:12px;">
-              <button class="ghost-button ship-button" data-order-id="${order.id}" style="padding:8px 16px;font-size:12px;">Mark as Shipped</button>
+              <button class="ghost-button ship-button" data-order-id="${safeOrderId}" style="padding:8px 16px;font-size:12px;">Mark as Shipped</button>
             </div>` : ""}
         </div>
       </div>
@@ -107,47 +129,44 @@ export async function renderSalesHistory(container) {
   if (role !== "seller" && role !== "admin") {
     container.innerHTML = `
       <div style="padding: 48px; text-align: center; border: 1px dashed rgba(197, 200, 188, 0.5); border-radius: 16px;">
-        <h3>🔒 Seller access only</h3>
+        <h3>Seller access only</h3>
         <p style="color: #78716c;">Switch to a Seller role in your profile settings to view this section.</p>
       </div>`;
     return;
   }
 
-  const sales = await getSalesHistory() ?? [];
+  const sales = await getSalesHistory();
 
   if (!sales.length) {
     container.innerHTML = `
       <div style="padding: 48px; text-align: center; border: 1px dashed rgba(197, 200, 188, 0.5); border-radius: 16px;">
-        <h3>📊 No sales yet</h3>
+        <h3>No sales yet</h3>
         <p style="color: #78716c;">Sales will appear here once buyers check out your listings.</p>
       </div>`;
     return;
   }
 
-  // Generate baris sales history
   container.innerHTML = sales.map(renderSaleRow).join("");
 
-  // Bind "Mark as Shipped" buttons
   container.querySelectorAll(".ship-button").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const orderId = btn.dataset.orderId;
       if (!orderId) return;
 
-      btn.disabled    = true;
+      btn.disabled = true;
       btn.textContent = "Processing...";
 
       try {
         await updateOrderStatus(orderId, "shipped");
-        showToast("Order marked as shipped! 📦");
-        btn.closest("div").remove(); // Hilangkan tombol setelah sukses di-update
+        showToast("Order marked as shipped!");
+        btn.closest("div")?.remove();
       } catch {
         showToast("Could not update order. Please try again.");
-        btn.disabled    = false;
+        btn.disabled = false;
         btn.textContent = "Mark as Shipped";
       }
     });
   });
 }
 
-// Menghubungkan fungsi utama agar bisa dipanggil app.js
 export const renderHistory = renderPurchaseHistory;
