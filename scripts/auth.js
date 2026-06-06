@@ -83,15 +83,27 @@ export async function logoutUser() {
 // ── SOCIAL LOGIN (OAUTH) ──────────────────────────────────────────────────────
 
 // Tambahkan ini di scripts/auth.js
+// --- LOGIN DENGAN GOOGLE / APPLE ---
 export async function loginWithProvider(provider) {
-  if (!isSupabaseConfigured) throw new Error("Supabase is not configured.");
-  
+  // Cek apakah supabase sudah terpasang
+  if (typeof window.isSupabaseConfigured !== 'undefined' && !window.isSupabaseConfigured) {
+    throw new Error("Supabase is not configured.");
+  }
+
   const supabase = await getSupabaseClient();
+  
+  // KECERDASAN DETEKSI LOKASI (Localhost vs GitHub Pages)
+  const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  
+  // Paksa URL bersih tanpa tanda pagar (#home) agar Supabase tidak error
+  const redirectUrl = isLocalhost
+      ? window.location.origin + window.location.pathname
+      : "https://ccaa1001.github.io/rehome/"; // Alamat mutlak di GitHub Pages
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
-      // Pastikan Supabase mengembalikan user ke halaman utama setelah sukses
-      redirectTo: window.location.origin + '/#home'
+      redirectTo: redirectUrl
     }
   });
 
