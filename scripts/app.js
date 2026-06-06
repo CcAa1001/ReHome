@@ -83,16 +83,36 @@ window.updateGlobalCartBadge = async function() {
     });
   } catch (err) { console.error("Gagal update badge:", err); }
 };
-
+// FUNGSI UTAMA: Booting Aplikasi
 async function boot() {
   bindLoginPage();
+
   const supabase = await getSupabaseClient();
+
+  // ==============================================================
+  // TRIK SULAP: CEGAT TOKEN DARI GOOGLE LALU HAPUS DARI LINK
+  // ==============================================================
+  if (window.location.hash.includes('access_token')) {
+      // 1. Biarkan Supabase memproses dan menelan tokennya
+      await supabase.auth.getSession();
+      
+      // 2. Sapu bersih link-nya! (Hapus teks panjang dari address bar)
+      // Ini akan membuat link kembali menjadi elegan: /ReHome/
+      window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+      
+      // 3. Paksa aplikasi mengingat bahwa kita harus masuk ke "home"
+      localStorage.setItem('rehome_current_route', 'home');
+  }
+  // ==============================================================
+
+  // Cek apakah user sudah punya sesi (termasuk yang baru saja disedot di atas)
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {
       document.getElementById("login").hidden = true;
       document.getElementById("app").hidden = false;
       await window.updateGlobalCartBadge();
+      
       const lastRoute = localStorage.getItem('rehome_current_route') || "home";
       navigate(lastRoute);
   } else {
@@ -105,11 +125,13 @@ async function boot() {
     logoutBtn.addEventListener("click", async (e) => {
       e.preventDefault();
       await logoutUser();
+      
       localStorage.removeItem('rehome_current_route');
       document.getElementById("app").hidden = true;
       document.getElementById("login").hidden = false;
-      window.location.hash = "";
+      window.history.replaceState(null, document.title, window.location.pathname);
     });
   }
 }
+
 boot();
