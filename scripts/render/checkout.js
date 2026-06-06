@@ -1,4 +1,3 @@
-// scripts/render/checkout.js
 import { navigate } from "../router.js";
 import state from "../state.js";
 import { clampInteger, sanitizeShortText, toSafeNumber } from "../security.js";

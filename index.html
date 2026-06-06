@@ -9,9 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Serif:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   
-  <!-- ⚡ CSS KHUSUS LOGIN & HEADER (100% PIXEL PERFECT, KEBAL DARI CSS LAMA) ⚡ -->
   <style>
-    /* --- HEADER (GAMBAR 25019c) --- */
     .site-header-new {
       background: #fbfaf9;
       border-bottom: 1px solid rgba(197, 200, 188, 0.4);
@@ -43,10 +41,9 @@
       width: 18px; height: 18px; border-radius: 50%; font-size: 10px; font-weight: 800; 
       display: flex; align-items: center; justify-content: center; border: 2px solid #fbfaf9;
     }
-    .hidden-item { display: none !important; } /* Sembunyikan elemen yg merusak UI */
+    .hidden-item { display: none !important; }
     [hidden] { display: none !important; }
 
-    /* --- LOGIN (GAMBAR 250500) --- */
     .login-screen-new {
       display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; background: #ffffff;
     }
@@ -93,7 +90,6 @@
     .trust-badges-new { position: absolute; bottom: 40px; display: flex; gap: 32px; color: #a8a29e; font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
     .trust-badges-new div { display: flex; align-items: center; gap: 8px; }
     
-    /* Global fixes untuk footer sebelumnya */
     .footer-new { background: #f4f3ef; padding: 64px 80px; font-family: var(--sans, sans-serif); color: #78716c; border-top: 1px solid rgba(197, 200, 188, 0.4); }
     .footer-new-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; max-width: 1440px; margin: 0 auto; }
     .footer-new h2 { font-size: 24px; font-weight: 800; color: #3d5a30; margin-bottom: 24px; font-family: var(--sans, sans-serif); }
@@ -113,7 +109,6 @@
 </head>
 <body>
   
-  <!-- ── 1. FORM LOGIN BARU (GAMBAR 250500) ── -->
  <main id="login" class="login-screen-new">
     <section class="login-visual-new">
       <div class="visual-content"><span class="brand-logo-white">ReHome</span></div>
@@ -237,7 +232,6 @@
       </form>
     </section>
   </main>
-  <!-- ── 2. APLIKASI UTAMA & HEADER BARU (GAMBAR 25019c) ── -->
   <main id="app" class="app-shell" hidden>
     
     <header class="site-header-new">
@@ -260,7 +254,6 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           </button>
 
-          <!-- Dibiarkan tersembunyi agar fungsi klik JS Router tetap jalan di background tanpa merusak UI -->
           <button type="button" class="hidden-item" data-route="admin" data-role-nav="admin"></button>
           <button type="button" class="hidden-item" data-route="settings"></button>
           <button type="button" class="hidden-item" data-logout></button>
@@ -268,20 +261,16 @@
       </nav>
     </header>
 
-    <!-- ⚡⚡ WADAH HALAMAN (HOME, SHOP, DLL AKAN MUNCUL DI SINI) ⚡⚡ -->
     <div id="router-view" class="view is-active"></div>
 
-    <!-- FOOTER PREMIUM TERANG -->
     <footer class="footer-new">
       <div class="footer-new-grid">
-        <!-- Kolom 1 -->
         <div>
           <h2>ReHome</h2>
           <p>Redefining the secondary market with intentionality, luxury, and care for the planet.</p>
           <div class="copy-text">© 2024 ReHome. Conscious Luxury Marketplace.</div>
         </div>
         
-        <!-- Kolom 2 -->
         <div>
           <h3>Shop</h3>
           <ul>
@@ -292,7 +281,6 @@
           </ul>
         </div>
 
-        <!-- Kolom 3 -->
         <div>
           <h3>Support</h3>
           <ul>
@@ -303,7 +291,6 @@
           </ul>
         </div>
 
-        <!-- Kolom 4 -->
         <div>
           <h3>Newsletter</h3>
           <form class="newsletter-box" onsubmit="event.preventDefault();">

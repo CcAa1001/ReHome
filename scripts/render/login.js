@@ -1,4 +1,3 @@
-// scripts/render/login.js
 import { showApp } from "../router.js";
 import { loginUser, registerUser, loginWithProvider, resetPassword } from "../auth.js";
 import { normalizeEmail, validateName, validatePassword } from "../security.js";
@@ -9,12 +8,8 @@ export function bindLoginPage() {
   if (isLoginBound) return;
   isLoginBound = true;
 
-  // ==========================================
-  // 1. NAVIGASI KLIK GLOBAL (Event Delegation)
-  // ==========================================
   document.addEventListener("click", async (e) => {
     
-    // Pindah menu antara Login <-> Register <-> Forgot Password
     const navBtn = e.target.closest("[data-nav-to]");
     if (navBtn) {
       e.preventDefault();
@@ -25,13 +20,11 @@ export function bindLoginPage() {
         forgot: document.getElementById("forgot") 
       };
       
-      // Tutup semua, lalu buka yang dituju
       Object.values(sections).forEach(sec => { if (sec) sec.hidden = true; });
       if (sections[target]) sections[target].hidden = false;
       return;
     }
 
-    // Tombol Lupa Password text link
     if (e.target.closest(".forgot-link-new")) {
       e.preventDefault();
       document.getElementById("login").hidden = true;
@@ -39,7 +32,6 @@ export function bindLoginPage() {
       return;
     }
 
-    // Tombol Login via Google / Apple
     const providerBtn = e.target.closest("[data-provider]");
     if (providerBtn) {
       e.preventDefault();
@@ -62,12 +54,8 @@ export function bindLoginPage() {
     }
   });
 
-  // ==========================================
-  // 2. EKSEKUSI FORM SUBMIT
-  // ==========================================
   document.addEventListener("submit", async (e) => {
     
-    // --- FORM LOGIN ---
     if (e.target.matches("[data-login-form]")) {
       e.preventDefault();
       const form = e.target;
@@ -84,7 +72,6 @@ export function bindLoginPage() {
         document.getElementById("login").hidden = true;
         document.getElementById("app").hidden = false;
         
-        // Panggil lencana keranjang
         if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
         
         const lastRoute = localStorage.getItem('rehome_current_route') || "home";
@@ -96,7 +83,6 @@ export function bindLoginPage() {
       }
     }
 
-    // --- FORM REGISTER ---
     if (e.target.matches("[data-register-form]")) {
       e.preventDefault();
       const form = e.target;
@@ -112,7 +98,6 @@ export function bindLoginPage() {
       try {
         const result = await registerUser(normalizeEmail(email), validatePassword(password), validateName(name));
         
-        // Jika butuh konfirmasi email (Supabase Email Confirm = ON)
         if (result && result.needsEmailConfirmation) {
             if (errorMsg) {
                 errorMsg.style.color = "#3d5a30"; 
@@ -125,7 +110,6 @@ export function bindLoginPage() {
                if (btn) { btn.textContent = "Create Account"; btn.disabled = false; }
             }, 3000);
         } else {
-            // Jika konfirmasi mati, langsung masuk
             if (errorMsg) { errorMsg.style.color = "#3d5a30"; errorMsg.textContent = "Success! Redirecting..."; }
             setTimeout(async () => {
                document.getElementById("register").hidden = true;
@@ -140,7 +124,6 @@ export function bindLoginPage() {
       }
     }
 
-    // --- FORM FORGOT PASSWORD ---
     if (e.target.matches("[data-forgot-form]")) {
       e.preventDefault();
       const form = e.target;

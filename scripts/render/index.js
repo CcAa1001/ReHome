@@ -1,4 +1,3 @@
-// scripts/render/index.js
 import { renderAccount }  from "./account.js";
 import { renderCart }     from "./cart.js";
 import { renderHistory }  from "./history.js";

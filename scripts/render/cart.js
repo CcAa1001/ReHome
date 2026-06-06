@@ -1,4 +1,3 @@
-// scripts/render/cart.js
 import { isUuid, sanitizeShortText, sanitizeUrl, toSafeMoney, toSafeNumber } from "../security.js";
 import { getSupabaseClient } from "../supabaseClient.js";
 import { showToast } from "../ui.js";

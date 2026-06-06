@@ -1,14 +1,11 @@
-// scripts/app.js
 import { bindLoginPage } from "./render/login.js";
 import { navigate } from "./router.js";
 import { logoutUser } from "./auth.js";
 import { getSupabaseClient } from "./supabaseClient.js";
 
 const premiumCSS = `
-  /* Highlight Hijau di atas Header */
   header, .app-header { border-top: 4px solid #3d5a30 !important; }
 
-  /* Header Green Shadow - FIX: Bayangan hanya ke bawah, tidak bocor ke samping */
   nav, header, .app-header {
     border-bottom: none !important;
     box-shadow: 0 12px 16px -12px rgba(82, 100, 66, 0.25) !important;
@@ -16,27 +13,22 @@ const premiumCSS = `
     z-index: 100;
   }
 
-  /* Tombol Favorite (Heart) */
   .btn-favorite { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: white; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.2s ease; z-index: 10; }
   .btn-favorite:hover { transform: scale(1.1); }
   .btn-favorite.active { color: #dc2626; fill: #dc2626; }
   .btn-favorite svg { width: 18px; height: 18px; color: #78716c; transition: 0.2s; }
   .btn-favorite.active svg { color: #dc2626; fill: #dc2626; }
 
-  /* Dropdown "Sort By" Premium */
   select.sort-select, .sort-select { appearance: none; -webkit-appearance: none; border: none !important; background: transparent !important; font-size: 15px !important; font-weight: 700 !important; color: #1c1917 !important; padding-right: 18px !important; cursor: pointer; outline: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22%231C1917%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right center !important; }
 
-  /* List View UI (Menu Shop) */
   .product-grid.list-view { display: flex !important; flex-direction: column !important; gap: 32px !important; }
   .product-grid.list-view .prod-card { display: flex !important; flex-direction: row !important; gap: 24px !important; align-items: center; max-width: 100%; }
   .product-grid.list-view .prod-card img.prod-img { width: 250px !important; height: 250px !important; object-fit: cover !important; flex-shrink: 0; }
   .product-grid.list-view .prod-card .prod-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
 
-  /* Floating Action Button (FAB) */
   .fab-add { position: fixed; bottom: 40px; right: 40px; width: 64px; height: 64px; border-radius: 50%; background-color: #526442; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(82,100,66,0.3); border: none; cursor: pointer; z-index: 999; transition: 0.2s; }
   .fab-add:hover { transform: scale(1.05); }
 
-  /* Multi-Range Slider */
   .multi-range-slider { position: relative !important; width: 100% !important; height: 6px !important; background: #e7e5e4 !important; border-radius: 4px !important; margin: 20px 0 40px 0 !important; display: block !important; }
   .multi-range-slider .slider-track { position: absolute !important; height: 100% !important; background: #3d5a30 !important; border-radius: 4px !important; top: 0 !important; z-index: 1 !important; pointer-events: none !important; }
   .multi-range-slider input[type="range"] { position: absolute !important; width: 100% !important; height: 6px !important; top: 0 !important; left: 0 !important; background: transparent !important; pointer-events: none !important; -webkit-appearance: none !important; margin: 0 !important; z-index: 2 !important; border: none !important; }
@@ -47,15 +39,12 @@ if(!document.getElementById('rehome-premium-css')) {
   const style = document.createElement('style'); style.id = 'rehome-premium-css'; style.innerHTML = premiumCSS; document.head.appendChild(style);
 }
 
-// MEMBERSIHKAN MENU "SELL" DI HEADER
 document.addEventListener("DOMContentLoaded", () => {
    document.querySelectorAll('nav a, header a').forEach(a => {
-      // Jika menunya adalah "Sell an item" (atau route sell), ubah tulisannya jadi "Sell"
       if(a.textContent.toLowerCase().includes('sell an item') || a.getAttribute('data-route') === 'sell') {
           a.textContent = 'Sell';
           a.setAttribute('data-route', 'sell');
       } 
-      // Hapus menu "Sell" palsu lama yang tidak punya route "sell"
       else if (a.textContent.toLowerCase().trim() === 'sell' && a.getAttribute('data-route') !== 'sell') {
           a.remove();
       }
@@ -83,7 +72,6 @@ window.updateGlobalCartBadge = async function() {
     });
   } catch (err) { console.error("Gagal update badge:", err); }
 };
-// FUNGSI UTAMA: Booting Aplikasi
 async function boot() {
   bindLoginPage();
 
@@ -94,23 +82,14 @@ async function boot() {
       return;
   }
 
-  // ==============================================================
-  // TRIK SULAP: CEGAT TOKEN DARI GOOGLE LALU HAPUS DARI LINK
-  // ==============================================================
   if (window.location.hash.includes('access_token')) {
-      // 1. Biarkan Supabase memproses dan menelan tokennya
       await supabase.auth.getSession();
       
-      // 2. Sapu bersih link-nya! (Hapus teks panjang dari address bar)
-      // Ini akan membuat link kembali menjadi elegan: /ReHome/
       window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
       
-      // 3. Paksa aplikasi mengingat bahwa kita harus masuk ke "home"
       localStorage.setItem('rehome_current_route', 'home');
   }
-  // ==============================================================
 
-  // Cek apakah user sudah punya sesi (termasuk yang baru saja disedot di atas)
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {

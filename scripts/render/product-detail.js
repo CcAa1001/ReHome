@@ -1,11 +1,9 @@
-// scripts/render/product-detail.js
 import { getRouteParams, navigate } from "../router.js";
 import { getSupabaseClient } from "../supabaseClient.js";
 import { clampInteger, isUuid, sanitize, sanitizeShortText, sanitizeUrl, toSafeMoney } from "../security.js";
 import { showToast } from "../ui.js";
 
 let productImages = [];
-// Baca memori favorit dari local storage
 let favoriteIds = JSON.parse(localStorage.getItem("rehome_favorites") || "[]");
 
 export async function renderProductDetail() {
@@ -24,9 +22,6 @@ export async function renderProductDetail() {
     const safeImageUrl = sanitizeUrl(product.image_url);
     productImages = [safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl];
     
-    // ==========================================
-    // CUCI SEMUA TEKS SEBELUM DITAMPILKAN KE LAYAR
-    // ==========================================
     const safeTitle = sanitizeShortText(product.title, "Untitled item");
     const safeCategory = sanitizeShortText(product.category || "Living Room");
     const safeCondition = sanitizeShortText(product.condition || "Excellent");
@@ -34,7 +29,6 @@ export async function renderProductDetail() {
     const safeDescription = sanitize(product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.');
     const safePrice = toSafeMoney(product.price);
 
-    // Inisialisasi status stok dan favorit
     const stockTersedia = clampInteger(product.stock ?? 1, 1, 999, 1);
     const isActiveClass = favoriteIds.includes(product.id) ? "active" : "";
 
@@ -134,7 +128,6 @@ export async function renderProductDetail() {
       }).join('');
     }
 
-    // EVENT LISTENER FAVORITE (Simpan ke memori permanen)
     const favBtn = container.querySelector(".btn-favorite");
     favBtn.addEventListener("click", () => {
       favBtn.classList.toggle("active");
@@ -150,7 +143,6 @@ export async function renderProductDetail() {
       localStorage.setItem("rehome_favorites", JSON.stringify(favoriteIds));
     });
 
-    // LOGIKA MINUS PLUS (QUANTITY)
     const btnMin = document.getElementById("btn-min");
     const btnPlus = document.getElementById("btn-plus");
     const qtyInput = document.getElementById("qty-val");
@@ -162,7 +154,6 @@ export async function renderProductDetail() {
       else { showToast(`Hanya tersisa ${stockTersedia} stok!`); }
     });
 
-    // LOGIKA ADD TO CART (SUPABASE)
     const btnCart = document.getElementById("add-to-cart-btn");
     btnCart.addEventListener("click", async (e) => {
       e.preventDefault(); e.stopPropagation();
@@ -202,9 +193,6 @@ export async function renderProductDetail() {
   }
 }
 
-// ==========================================
-// ANIMASI TERBANG (ADD TO CART)
-// ==========================================
 function flyToCart(startX, startY, imageUrl) {
   const cartIcon = document.querySelector('nav [data-route="cart"], header [data-route="cart"], .app-nav [data-route="cart"]');
   if (!cartIcon) return;

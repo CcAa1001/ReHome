@@ -1,4 +1,3 @@
-// scripts/render/curated.js
 import { showToast } from "../ui.js";
 
 export async function renderCurated() {

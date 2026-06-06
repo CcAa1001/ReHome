@@ -1,4 +1,3 @@
-// scripts/render/sell.js
 export async function renderSell() {
   const container = document.getElementById("router-view");
   if (!container) return;

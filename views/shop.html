@@ -1,9 +1,7 @@
 <style>
-  /* ── CSS KHUSUS SHOP (GAMBAR 24f963 & 24f69c) ── */
   .shop-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
   .shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 64px; align-items: start; }
   
-  /* Sidebar */
   .shop-sidebar { position: sticky; top: 120px; }
   .shop-sidebar h2 { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #1c1917; margin: 32px 0 16px; font-family: var(--sans, sans-serif); }
   .shop-sidebar h2:first-child { margin-top: 0; }
@@ -30,7 +28,6 @@
   .eco-card-sidebar { margin-top: 40px; padding: 24px; background: #3d5a30; color: white; border-radius: 16px; }
   .eco-card-sidebar span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.8); display: block; margin-bottom: 8px; }
   
-  /* Catalog Header */
   .shop-header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid rgba(197, 200, 188, 0.5); margin-bottom: 32px; }
   .shop-header h1 { font-family: var(--serif, serif); font-size: 40px; margin: 0 0 8px; }
   .shop-header p { color: #78716c; font-size: 16px; margin: 0; }
@@ -40,7 +37,6 @@
   .view-toggles button.active { background: #f0ede8; color: #1c1917; }
   .sort-select { border: none; background: none; font-weight: 700; color: #1c1917; font-size: 14px; outline: none; cursor: pointer; }
 
-  /* Product Cards - Grid View */
   .product-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
   .prod-card { border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 16px; overflow: hidden; background: white; cursor: pointer; transition: transform 0.2s; display: flex; flex-direction: column; }
   .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.04); }
@@ -50,7 +46,6 @@
   .prod-info h3 { font-family: var(--serif, serif); font-size: 20px; font-weight: 600; margin: 0; color: #1c1917; }
   .prod-info strong { color: #3d5a30; font-size: 16px; font-weight: 700; margin-top: 8px; }
 
-  /* Product Cards - List View (Gambar 24f69c) */
   .product-container.list-view { display: flex; flex-direction: column; gap: 20px; }
   .product-container.list-view .prod-card { flex-direction: row; height: 220px; align-items: center; }
   .product-container.list-view .prod-img { width: 280px; height: 100%; border-right: 1px solid rgba(197, 200, 188, 0.5); }

@@ -1,4 +1,3 @@
-// scripts/render/history.js
 import { getSession } from "../storage.js";
 import { sanitizeShortText, sanitizeUrl, toSafeMoney, toSafeNumber, isUuid } from "../security.js";
 import { getSupabaseClient } from "../supabaseClient.js";

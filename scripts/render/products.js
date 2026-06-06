@@ -1,4 +1,3 @@
-// scripts/render/products.js
 import { navigate } from "../router.js";
 
 export async function renderProducts() {
@@ -6,7 +5,6 @@ export async function renderProducts() {
   const toggles = document.querySelectorAll("#shop-view-toggles button");
   if (!container) return;
 
-  // Data statis yang fotokopi 100% dari gambar 24f963
   const dummyProducts = [
     { brand: "HAY DESIGN", title: "About A Chair 22", price: "$185", img: "assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" },
     { brand: "MUUTO", title: "Pull Floor Lamp", price: "$420", img: "assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png" },
@@ -16,7 +14,6 @@ export async function renderProducts() {
     { brand: "MENU", title: "Offset Stool", price: "$240", img: "assets/figma-export/2c599988de934055ead448b9abf9204292e752e2.png" }
   ];
 
-  // Fungsi Cetak Kartu
   function renderCards() {
     container.innerHTML = dummyProducts.map(p => `
       <article class="prod-card">
@@ -34,10 +31,8 @@ export async function renderProducts() {
     });
   }
 
-  // Tampilkan data pertama kali
   renderCards();
 
-  // Fungsi Toggle Grid / List
   toggles.forEach(btn => {
     btn.addEventListener("click", () => {
       toggles.forEach(b => b.classList.remove("active"));

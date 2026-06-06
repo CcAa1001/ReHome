@@ -1,20 +1,16 @@
 <style>
   .curated-wrapper { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
 
-  /* Hero */
   .ai-hero { text-align: center; max-width: 680px; margin: 0 auto 56px; }
   .eyebrow-pill { display: inline-block; padding: 5px 16px; background: transparent; border: 1px solid #c8c4bc; border-radius: 999px; font-size: 12px; font-weight: 600; color: #78716c; margin-bottom: 20px; }
   .ai-hero h1 { font-family: var(--serif, Georgia, serif); font-size: 52px; line-height: 1.1; margin: 0 0 16px; color: #1c1917; font-weight: 400; }
   .ai-hero p { font-size: 15px; color: #78716c; line-height: 1.65; margin: 0; }
 
-  /* Two-panel grid */
   .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 80px; align-items: start; }
 
-  /* ── LEFT PANEL ── */
   .ai-panel-left { background: white; border: 1px solid #e8e6e1; border-radius: 20px; padding: 32px; }
   .panel-heading { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: #1c1917; margin-bottom: 28px; }
 
-  /* Upload box */
   .upload-box { border: 2px dashed #c8c6c0; border-radius: 14px; background: #f5f4f1; padding: 44px 24px; text-align: center; margin-bottom: 24px; }
   .upload-icon-wrap { width: 60px; height: 60px; background: #eceae5; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px; }
   .upload-box strong { display: block; font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1c1917; }
@@ -22,7 +18,6 @@
   .btn-select { background: #3d5a30; color: white; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
   .btn-select:hover { background: #2e4424; }
 
-  /* Form fields */
   .ai-field { margin-bottom: 18px; }
   .ai-field label { display: block; font-size: 12px; font-weight: 600; color: #78716c; margin-bottom: 7px; }
   .ai-input { width: 100%; padding: 13px 16px; border: 1px solid #dddbd6; border-radius: 10px; background: white; font-size: 14px; font-weight: 500; color: #1c1917; outline: none; box-sizing: border-box; appearance: none; -webkit-appearance: none; }
@@ -35,29 +30,24 @@
   .btn-green-full { width: 100%; background: #3d5a30; color: white; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .btn-green-full:hover { background: #2e4424; }
 
-  /* ── RIGHT PANEL — no card, raw background ── */
   .result-col { display: flex; flex-direction: column; gap: 16px; }
 
-  /* Topbar row: pill badge left, circle-check right */
   .result-topbar { display: flex; align-items: center; justify-content: space-between; background: #eceae5; border-radius: 12px; padding: 10px 16px; }
   .result-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #57534e; }
   .result-dot { width: 7px; height: 7px; background: #3d5a30; border-radius: 50%; flex-shrink: 0; }
   .result-check-btn { width: 30px; height: 30px; border-radius: 50%; background: #dddbd6; display: flex; align-items: center; justify-content: center; }
 
-  /* Price block — no card bg, just white page bg shows through */
   .price-block { padding: 4px 0 0; }
   .price-caption { font-size: 14px; color: #78716c; margin: 0 0 4px; }
   .price-large { display: flex; align-items: baseline; gap: 10px; margin: 0; }
   .price-number { font-size: 62px; font-weight: 800; color: #1c1917; line-height: 1; letter-spacing: -1px; }
   .price-currency { font-size: 16px; font-weight: 600; color: #a8a29e; letter-spacing: 0.06em; margin-top: 4px; }
 
-  /* Excellent badge — full-width card, icon left, two lines stacked right */
   .badge-fair { display: flex; align-items: center; gap: 16px; background: #edf2e8; border-radius: 14px; padding: 16px 20px; }
   .badge-icon { width: 44px; height: 44px; background: #3d5a30; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .badge-fair strong { display: block; font-size: 15px; font-weight: 700; color: #1c1917; margin-bottom: 3px; }
   .badge-fair span { font-size: 13px; color: #57534e; }
 
-  /* Sentiment — no card, just label row + bar */
   .sentiment-block { padding: 0; }
   .sentiment-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 9px; }
   .sentiment-row span { color: #78716c; font-weight: 500; }
@@ -65,7 +55,6 @@
   .bar-bg { height: 6px; background: #dddbd6; border-radius: 999px; overflow: hidden; }
   .bar-fill { height: 100%; background: #3d5a30; border-radius: 999px; width: 86%; }
 
-  /* Market Insights card */
   .insights-card { background: white; border: 1px solid #e8e6e1; border-radius: 16px; padding: 22px 22px 18px; }
   .insights-title { font-size: 17px; font-weight: 700; color: #1c1917; margin: 0 0 18px; }
   .insight-item { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
@@ -74,7 +63,6 @@
   .insight-item strong { display: block; font-size: 14px; font-weight: 700; color: #1c1917; margin-bottom: 2px; }
   .insight-item span { font-size: 12px; color: #78716c; }
 
-  /* Experts row inside insights card */
   .experts-row { display: flex; align-items: center; gap: 12px; padding-top: 16px; border-top: 1px solid #f0ede8; margin-top: 16px; }
   .avatar-stack { display: flex; align-items: center; }
   .av { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; overflow: hidden; margin-left: -8px; background: #c8b9a8; display: flex; align-items: center; justify-content: center; }
@@ -84,13 +72,11 @@
   .av-count { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; background: #e5e3de; margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #57534e; }
   .experts-row p { font-size: 12px; color: #78716c; margin: 0; }
 
-  /* Eco-check card */
   .eco-check { background: #1a2e1f; color: white; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; gap: 16px; }
   .eco-icon { width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .eco-check strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
   .eco-check span { font-size: 12px; color: rgba(255,255,255,0.6); }
 
-  /* Curatorial approach */
   .approach-section { text-align: center; }
   .approach-title { font-family: var(--serif, Georgia, serif); font-size: 38px; font-weight: 400; color: #1c1917; margin: 0 0 48px; }
   .approach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
@@ -102,20 +88,16 @@
 
 <div class="page-shell curated-wrapper">
 
-  <!-- HERO -->
   <section class="ai-hero">
     <span class="eyebrow-pill">Artificial Intelligence</span>
     <h1>AI Price Checker</h1>
     <p>Our advanced neural network analyzes thousands of marketplace listings to give you the most accurate, fair-market valuation for your pre-loved luxury goods.</p>
   </section>
 
-  <!-- TWO-PANEL GRID -->
   <section class="ai-grid">
 
-    <!-- LEFT: Analyze Item (white card) -->
     <article class="ai-panel-left">
       <div class="panel-heading">
-        <!-- sparkle icon (✦✦) -->
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="1.8">
           <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
         </svg>
@@ -175,10 +157,8 @@
       </button>
     </article>
 
-    <!-- RIGHT: Valuation Result (no card — elements float on page bg) -->
     <div class="result-col">
 
-      <!-- 1. Topbar pill -->
       <div class="result-topbar">
         <div class="result-pill">
           <span class="result-dot"></span>
@@ -189,7 +169,6 @@
         </div>
       </div>
 
-      <!-- 2. Price block -->
       <div class="price-block">
         <p class="price-caption">Estimated Fair Price</p>
         <div class="price-large">
@@ -198,7 +177,6 @@
         </div>
       </div>
 
-      <!-- 3. Excellent Fair Price badge -->
       <div class="badge-fair">
         <div class="badge-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -209,7 +187,6 @@
         </div>
       </div>
 
-      <!-- 4. Market Sentiment + bar -->
       <div class="sentiment-block">
         <div class="sentiment-row">
           <span>Market Sentiment</span>
@@ -218,7 +195,6 @@
         <div class="bar-bg"><div class="bar-fill"></div></div>
       </div>
 
-      <!-- 5. Market Insights card -->
       <div class="insights-card">
         <p class="insights-title">Market Insights</p>
 
@@ -242,10 +218,8 @@
           </div>
         </div>
 
-        <!-- Expert avatars row -->
         <div class="experts-row">
           <div class="avatar-stack">
-            <!-- Two photo-style avatars using colored circles as placeholder -->
             <div class="av" style="background: #8b7355;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#c8a882"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
             </div>
@@ -258,7 +232,6 @@
         </div>
       </div>
 
-      <!-- 6. Eco-check card -->
       <div class="eco-check">
         <div class="eco-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6aab72" stroke-width="2">
@@ -274,10 +247,9 @@
         </div>
       </div>
 
-    </div><!-- end result-col -->
+    </div>
   </section>
 
-  <!-- CURATORIAL APPROACH -->
   <section class="approach-section">
     <h2 class="approach-title">The Curatorial Approach</h2>
     <div class="approach-grid">

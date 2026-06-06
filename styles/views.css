@@ -1,8 +1,4 @@
-/* ==========================================================================
-   REHOME - VIEWS CSS (FINAL FIGMA PERFECT & OPTIMIZED)
-   ========================================================================== */
 
-/* ── 1. LOGIN & GLOBAL ───────────────────────────────────────────────────── */
 .login-screen {
   display: grid;
   min-height: 100vh;
@@ -180,7 +176,6 @@
   text-transform: uppercase;
 }
 
-/* ── 2. HEADER NAV & ICONS ───────────────────────────────────────────────── */
 .site-header {
   border-bottom: 1px solid var(--line);
   background: white;
@@ -231,7 +226,6 @@
   border: 2px solid white;
 }
 
-/* ── 3. HOME & FEATURE CARDS ─────────────────────────────────────────────── */
 .greeting { margin-bottom: 64px; }
 .greeting h1 em { font-style: italic; color: #1c1917; }
 
@@ -277,7 +271,6 @@
 .feature-card h2 { margin-top: 22px; font-size: 24px; }
 .feature-card p { flex: 1; margin-bottom: 24px; }
 
-/* Grid 2 Kolom Home */
 .feature-grid-2col {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
@@ -322,7 +315,6 @@
   font-size: 36px;
 }
 
-/* ── 4. SHOP & CATALOG (FIGMA PERFECT) ──────────────────────────────────── */
 .split-page {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -350,7 +342,6 @@
   margin-top: 0;
 }
 
-/* Sidebar Checkbox Custom */
 .filter-group {
   display: flex;
   flex-direction: column;
@@ -399,7 +390,6 @@
 
 .custom-checkbox input:checked ~ .checkmark:after { display: block; }
 
-/* Price Slider */
 .price-slider-container { margin-bottom: 48px; }
 .slider-track { position: relative; height: 4px; background: #f0ede8; border-radius: 4px; margin: 24px 0 32px 0; }
 .slider-fill { position: absolute; left: 0; right: 0; height: 100%; background: #3d5a30; border-radius: 4px; }
@@ -433,7 +423,6 @@
 .eco-card span { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px; }
 .eco-card p { margin: 0; font-size: 15px; line-height: 1.6; }
 
-/* Shop Header Controls */
 .catalog-header {
   display: flex; justify-content: space-between; align-items: flex-end;
   margin-bottom: 32px; border-bottom: 1px solid rgba(197, 200, 188, 0.5); padding-bottom: 24px;
@@ -449,7 +438,6 @@
 .sort-dropdown { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #78716c; }
 .sort-dropdown select { border: none; background: transparent; font-weight: 700; color: #1c1917; outline: none; cursor: pointer; font-size: 14px; font-family: var(--sans, 'Manrope', sans-serif); }
 
-/* Catalog Grid & List View */
 .catalog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .catalog-card { overflow: hidden; border-radius: 16px; border: 1px solid rgba(197, 200, 188, 0.5); background: white; cursor: pointer; transition: 0.2s; }
 .catalog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(82,100,66,0.12); }
@@ -462,7 +450,6 @@
 .outline-wide { display: block; width: 100%; margin-top: 48px; padding: 18px; background: white; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 14px; font-size: 15px; font-weight: 700; text-align: center; color: #1c1917; cursor: pointer; transition: 0.2s; }
 .outline-wide:hover { border-color: #3d5a30; color: #3d5a30; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-/* Toggle List Mode */
 .catalog-grid.list-view { display: flex; flex-direction: column; }
 .catalog-grid.list-view .catalog-card { display: flex; flex-direction: row; height: 240px; align-items: center; }
 .catalog-grid.list-view .catalog-card img { width: 280px; height: 100%; border-right: 1px solid rgba(197, 200, 188, 0.5); border-radius: 16px 0 0 16px; }
@@ -471,7 +458,6 @@
 .catalog-grid.list-view .catalog-card span { font-size: 13px; margin-bottom: 8px; }
 .catalog-grid.list-view .catalog-card strong { float: none; font-size: 24px; margin-top: auto; align-self: flex-start; }
 
-/* ── 5. CURATED PAGE (PRODUCT DETAIL) ────────────────────────────────────── */
 .product-detail { align-items: start; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 64px; }
 .main-product-image { width: 100%; aspect-ratio: 1 / 1; border-radius: 18px; object-fit: cover; background: white; }
 .thumb-row { margin-top: 16px; display: flex; gap: 16px; }
@@ -500,7 +486,6 @@
 .service-grid article p { color: #78716c; line-height: 1.6; margin: 0; font-size: 15px; }
 
 
-/* ── 6. SELLER DASHBOARD (FIGMA PERFECT TABLE) ───────────────────────────── */
 .seller-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
 .seller-metrics article { padding: 32px; border-radius: 20px; border: 1px solid rgba(197, 200, 188, 0.5); background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .seller-metrics span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; display: block; margin-bottom: 12px;}
@@ -518,7 +503,6 @@
 .segment-control button { padding: 8px 24px; border-radius: 999px; background: transparent; border: none; color: #78716c; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 .segment-control button.active { background: white; color: #3d5a30; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-/* Listing Table */
 .table-container { background: white; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
 .listing-table { width: 100%; border-collapse: collapse; text-align: left; }
 .listing-table th { padding: 20px 24px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #78716c; border-bottom: 1px solid rgba(197, 200, 188, 0.5); background: #fafaf8; }
@@ -533,7 +517,6 @@
 .action-menu-btn:hover { background: #f0ede8; color: #1c1917; }
 
 
-/* ── 7. SETTINGS & OTHER PAGES ───────────────────────────────────────────── */
 .settings-layout > section:first-child { max-width: 760px; margin-bottom: 32px; }
 .settings-layout h1 { margin-top: 10px; font-size: 48px; }
 .settings-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr); gap: 24px; }
@@ -556,7 +539,6 @@
 .admin-grid span { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
 .admin-grid strong { display: block; margin: 10px 0; color: var(--sage); font-size: 38px; }
 
-/* Misc Checkout, Cart, Insight */
 .summary-card { align-self: start; position: sticky; top: 112px; padding: 28px; border-radius: 18px; }
 .cart-layout, .checkout-layout, .confirmation-layout { display: grid; grid-template-columns: 1fr 400px; gap: 64px; align-items: start; }
 .cart-item { display: grid; grid-template-columns: 112px 1fr auto; gap: 20px; align-items: center; padding: 18px; border: 1px solid rgba(197, 200, 188, 0.5); border-radius: 16px; background: white; }
@@ -572,7 +554,6 @@
 .profile-card { text-align: center; padding: 28px; border-radius: 18px;}
 .profile-card img { width: 104px; height: 104px; margin: 0 auto 18px; border-radius: 50%; }
 
-/* ── 8. AI PRICE CHECKER (CURATED UI) ────────────────────────────── */
 .ai-hero-copy { text-align: center; max-width: 680px; margin: 0 auto 64px; }
 .ai-hero-copy .eyebrow { display: inline-block; padding: 6px 16px; background: #f0ede8; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #78716c; margin-bottom: 20px; }
 .ai-hero-copy h1 { font-family: var(--serif, 'Noto Serif', serif); font-size: 52px; line-height: 1.1; color: #1c1917; margin: 0 0 16px; }
@@ -652,7 +633,6 @@
 .ai-approach-item p { font-size: 14px; color: #78716c; line-height: 1.65; margin: 0; max-width: 260px; }
 
 
-/* ── 9. PROFILE & PURCHASE HISTORY (FIGMA PERFECT) ──────────────────────── */
 .profile-layout {
   display: grid;
   grid-template-columns: 340px 1fr;
@@ -757,7 +737,6 @@
   color: #78716c;
 }
 
-/* History Card List */
 .history-card {
   display: flex;
   align-items: center;
@@ -827,16 +806,9 @@
 .status-pill.transit { background: rgba(217, 119, 6, 0.15); color: #d97706; }
 
 
-
-
-
-
-
-
-/* ── HOME SPECIFIC REFINEMENTS (FIGMA 2579a1) ── */
 .feature-grid-home {
   display: grid;
-  grid-template-columns: 1fr 1.9fr; /* Kiri lebih kecil, Kanan lebih lebar */
+  grid-template-columns: 1fr 1.9fr;
   gap: 24px;
   margin-bottom: 64px;
 }
@@ -882,7 +854,7 @@
 
 .smart-card-img { 
   position: relative; 
-  aspect-ratio: 3 / 4; /* Rasio tinggi/potret untuk kartu produk baru */
+  aspect-ratio: 3 / 4;
   border-radius: 16px; 
   overflow: hidden; 
   margin-bottom: 16px; 

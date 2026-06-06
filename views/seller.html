@@ -1,5 +1,4 @@
 <style>
-  /* ── Reset & Base ── */
   .seller-wrap *,
   .seller-wrap *::before,
   .seller-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,7 +11,6 @@
     min-height: 100vh;
   }
 
-  /* ── Page Header ── */
   .seller-page-header { margin-bottom: 36px; }
   .seller-page-header h1 {
     font-family: 'Playfair Display', Georgia, serif;
@@ -27,7 +25,6 @@
     color: #78716c;
   }
 
-  /* ── Top Row: Chart + Impact ── */
   .seller-top-row {
     display: grid;
     grid-template-columns: 1fr 340px;
@@ -36,7 +33,6 @@
     align-items: start;
   }
 
-  /* ── Cards ── */
   .s-card {
     background: #fff;
     border-radius: 20px;
@@ -44,7 +40,6 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
 
-  /* ── Sales Performance Card ── */
   .perf-card { }
   .perf-card-header {
     display: flex;
@@ -80,7 +75,6 @@
   }
   .btn-dl-report:hover { border-color: #3d5a30; background: #f9faf8; }
 
-  /* ── Bar Chart ── */
   .bar-chart-area {
     position: relative;
     height: 180px;
@@ -158,7 +152,6 @@
     color: #a8a29e;
   }
 
-  /* ── Sustainable Impact Card ── */
   .impact-card { }
   .impact-icon-wrap {
     width: 52px;
@@ -231,7 +224,6 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
 
-  /* ── Quick Action Cards ── */
   .seller-actions-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -267,7 +259,6 @@
   .action-card h3 { font-size: 16px; font-weight: 700; color: #1c1917; margin-bottom: 6px; }
   .action-card p  { font-size: 13px; color: #78716c; }
 
-  /* ── Active Listings Section ── */
   .listings-section-header {
     display: flex;
     justify-content: space-between;
@@ -307,7 +298,6 @@
   }
   .filter-tab:not(.active):hover { background: #f5f4f2; color: #1c1917; }
 
-  /* ── Listings Grid ── */
   .listings-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -402,7 +392,6 @@
   }
   .btn-edit-item:hover { color: #3d5a30; }
 
-  /* ── Add New Listing Card ── */
   .listing-card-new {
     border: 2px dashed #c8c4bc;
     border-radius: 16px;
@@ -435,16 +424,13 @@
 
 <div class="seller-wrap">
 
-  <!-- Page Header -->
   <div class="seller-page-header">
     <h1>Seller Dashboard</h1>
     <p>Manage your conscious listings and track your environmental impact.</p>
   </div>
 
-  <!-- Top Row: Performance Chart + Impact -->
   <div class="seller-top-row">
 
-    <!-- Sales Performance -->
     <div class="s-card perf-card">
       <div class="perf-card-header">
         <div>
@@ -456,7 +442,6 @@
 
       <div class="bar-chart-area">
         <div class="bar-chart-bars" id="seller-bar-chart">
-          <!-- Injected by seller.js -->
         </div>
       </div>
       <div class="bar-labels">
@@ -467,7 +452,6 @@
       </div>
     </div>
 
-    <!-- Sustainable Impact -->
     <div class="s-card impact-card">
       <div class="impact-icon-wrap">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -486,9 +470,8 @@
       </div>
     </div>
 
-  </div><!-- /seller-top-row -->
+  </div>
 
-  <!-- Quick Actions -->
   <div class="seller-actions-row">
 
     <div class="action-card" id="btn-upload-item">
@@ -523,9 +506,8 @@
       <p>Get help with shipping &amp; returns</p>
     </div>
 
-  </div><!-- /seller-actions-row -->
+  </div>
 
-  <!-- Active Listings -->
   <div class="listings-section-header">
     <h2>Active Listings</h2>
     <div class="filter-tabs" id="listing-filter-tabs">
@@ -536,7 +518,6 @@
   </div>
 
   <div class="listings-grid" id="listings-grid">
-    <!-- Injected by seller.js -->
   </div>
 
-</div><!-- /seller-wrap -->
+</div>

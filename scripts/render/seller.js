@@ -1,13 +1,8 @@
-// scripts/render/seller.js
-// Renderer untuk halaman Seller Dashboard — ReHome SPA
 
-/* ─────────────────────────────────────────
-   DATA (ganti dengan fetch ke API nyata)
-───────────────────────────────────────── */
 const CHART_DATA = [
   { week: "Week 1", value: 820,  active: false },
   { week: "Week 2", value: 640,  active: false },
-  { week: "Week 3", value: 1850, active: true  },  // highlighted bar
+  { week: "Week 3", value: 1850, active: true  },
   { week: "Week 4", value: 1100, active: false },
 ];
 
@@ -46,15 +41,11 @@ const LISTINGS = [
 
 const SLOTS_REMAINING = 4;
 
-/* ─────────────────────────────────────────
-   HELPERS
-───────────────────────────────────────── */
 function badgeSVG(type) {
   if (type === "curated") {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="20 6 9 17 4 12"></polyline></svg>`;
   }
-  // zerowaste — leaf icon
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12"/></svg>`;
 }
@@ -64,9 +55,6 @@ function eyeSVG() {
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
-/* ─────────────────────────────────────────
-   RENDER: BAR CHART
-───────────────────────────────────────── */
 function renderBarChart() {
   const container = document.getElementById("seller-bar-chart");
   if (!container) return;
@@ -82,20 +70,15 @@ function renderBarChart() {
       </div>`;
   }).join("");
 
-  // Hover: show tooltip on any bar
   container.querySelectorAll(".bar-group").forEach(group => {
     group.addEventListener("mouseenter", () => group.classList.add("show-tip"));
     group.addEventListener("mouseleave", () => {
-      // keep the "active" bar tooltip always visible
       const bar = group.querySelector(".bar");
       if (!bar.classList.contains("active")) group.classList.remove("show-tip");
     });
   });
 }
 
-/* ─────────────────────────────────────────
-   RENDER: LISTING CARD
-───────────────────────────────────────── */
 function buildListingCard(item) {
   const badgeHTML = item.badge
     ? `<div class="listing-badge ${item.badge.type}">${badgeSVG(item.badge.type)}${item.badge.label}</div>`
@@ -149,9 +132,6 @@ function buildNewListingCard() {
   return card;
 }
 
-/* ─────────────────────────────────────────
-   RENDER: LISTINGS GRID
-───────────────────────────────────────── */
 function renderListings(filter = "all") {
   const grid = document.getElementById("listings-grid");
   if (!grid) return;
@@ -164,29 +144,22 @@ function renderListings(filter = "all") {
   filtered.forEach(item => grid.appendChild(buildListingCard(item)));
   grid.appendChild(buildNewListingCard());
 
-  // Edit button listeners
   grid.querySelectorAll(".btn-edit-item").forEach(btn => {
     btn.addEventListener("click", e => {
       e.stopPropagation();
       const id = btn.dataset.id;
       console.log(`[Seller] Edit listing: ${id}`);
-      // TODO: navigate ke form edit listing
     });
   });
 
-  // Create new listing
   const newCard = document.getElementById("btn-create-listing");
   if (newCard) {
     newCard.addEventListener("click", () => {
       console.log("[Seller] Create new listing clicked");
-      // TODO: navigate ke halaman tambah listing
     });
   }
 }
 
-/* ─────────────────────────────────────────
-   RENDER: FILTER TABS
-───────────────────────────────────────── */
 function bindFilterTabs() {
   const tabs = document.querySelectorAll("#listing-filter-tabs .filter-tab");
   tabs.forEach(tab => {
@@ -198,34 +171,24 @@ function bindFilterTabs() {
   });
 }
 
-/* ─────────────────────────────────────────
-   RENDER: QUICK ACTIONS
-───────────────────────────────────────── */
 function bindQuickActions() {
   document.getElementById("btn-upload-item")?.addEventListener("click", () => {
     console.log("[Seller] Upload Item clicked");
-    // TODO: navigasi ke form upload item
   });
 
   document.getElementById("btn-sales-history")?.addEventListener("click", () => {
     console.log("[Seller] Sales History clicked");
-    // TODO: navigasi ke halaman sales history
   });
 
   document.getElementById("btn-seller-support")?.addEventListener("click", () => {
     console.log("[Seller] Seller Support clicked");
-    // TODO: buka modal atau navigasi ke halaman support
   });
 
   document.getElementById("btn-download-report")?.addEventListener("click", () => {
     console.log("[Seller] Download Report clicked");
-    // TODO: trigger download PDF report
   });
 }
 
-/* ─────────────────────────────────────────
-   MAIN EXPORT
-───────────────────────────────────────── */
 export function renderSeller() {
   renderBarChart();
   renderListings("all");

@@ -1,8 +1,6 @@
-// scripts/storage.js
 import { sessionKey } from "./config.js";
 import state from "./state.js";
 
-// ── SESSION (Login & Auth) ────────────────────────────────────────────────────
 
 export function setSession(user) {
   localStorage.setItem(sessionKey, JSON.stringify({
@@ -33,7 +31,6 @@ export function updateSession(updates) {
   return next;
 }
 
-// ── CART (Sementara dialihkan ke LocalStorage) ────────────────────────────────
 const CART_KEY = "rehome.cart";
 
 function getCart() {
@@ -54,7 +51,6 @@ export function removeCartItem(index) {
   state.publish("cartUpdated", cart);
 }
 
-// ── SETTINGS (Sementara dialihkan ke LocalStorage) ────────────────────────────
 const SETTINGS_KEY = "rehome.settings";
 
 export function getSettings() {

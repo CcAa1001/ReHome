@@ -1,4 +1,3 @@
-// scripts/render/home.js
 import { navigate, setRouteParams } from "../router.js";
 import { sanitizeShortText, sanitizeUrl, toSafeMoney } from "../security.js";
 import { getSupabaseClient } from "../supabaseClient.js";
