@@ -1,4 +1,4 @@
 window.REHOME_CONFIG = {
-  supabaseUrl: "https://wrwevyhqcitoafmqtzyf.supabase.co",
-  supabasePublishableKey: "sb_publishable_XygYJpObFhGp3yyUT6aGRA_Ybfi91HL"
+  supabaseUrl: "https://gmetwwjxgqeclapbnyfo.supabase.co",
+  supabasePublishableKey: "sb_publishable_kiV3fz5LSjvuYgJlygZpsg_kiuOfuB7"
 };
