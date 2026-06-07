@@ -283,7 +283,12 @@ function bindShopControls(catalog, countEl) {
   const loadMoreBtn = document.querySelector('.load-more-btn');
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', () => {
-      showToast("All available treasures are already loaded!");
+      if ((page + 1) * PAGE_SIZE < filteredProducts.length) {
+        page++;
+        renderPage(catalog, countEl);
+      } else {
+        showToast("All available treasures are already loaded!");
+      }
     });
   }
 }
