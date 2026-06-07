@@ -103,6 +103,17 @@ async function boot() {
         document.getElementById("app").hidden = false;
         await window.updateGlobalCartBadge();
         
+        // Fetch profile to check role
+        try {
+          const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+          if (profile && profile.role === 'admin') {
+            document.querySelectorAll('[data-route="admin"]').forEach(el => {
+              el.classList.remove('hidden-item');
+              el.style.display = 'flex'; // Ensure it displays
+            });
+          }
+        } catch(e) { console.warn("Failed to fetch profile on boot", e); }
+        
         const lastRoute = localStorage.getItem('rehome_current_route') || "home";
         navigate(lastRoute);
     } else {
