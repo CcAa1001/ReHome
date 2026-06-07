@@ -278,7 +278,7 @@ export async function renderSell() {
               quantity: 1,
             }, { onConflict: 'user_id,product_id' });
             
-            showToast('Offer accepted! Item added to buyer\\'s cart.');
+            showToast("Offer accepted! Item added to buyer's cart.");
             loadOffers();
           } catch (err) { showToast('Error: ' + err.message); }
         });
