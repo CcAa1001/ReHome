@@ -7,20 +7,15 @@ export async function renderHome() {
   const container = document.getElementById("router-view");
   if (!container) return;
 
-  // ==============================================================
-  // PERBAIKAN POIN 4: Gambar Impact Report Agar Penuh & Melengkung
-  // ==============================================================
   const homeImages = container.querySelectorAll("img");
   homeImages.forEach(img => {
-    // Jika gambar ini adalah gambar Impact Report / Banner (Bukan Curated Card)
     if (!img.closest('.rec-grid') && (img.src.includes('interior') || img.src.includes('impact') || img.closest('section'))) {
       img.style.width = "100%";
       img.style.height = "100%";
-      img.style.objectFit = "cover"; // Ini kuncinya agar gambar memenuhi container tanpa sisa
+      img.style.objectFit = "cover"; 
       img.style.borderRadius = "inherit";
       img.style.display = "block";
       
-      // Paksa kotak luarnya agar memotong gambar yang tumpah
       if (img.parentElement) {
         img.parentElement.style.overflow = "hidden";
         img.parentElement.style.padding = "0";
@@ -48,9 +43,6 @@ export async function renderHome() {
           const safeTitle = sanitizeShortText(product.title, "Untitled item");
           const safePrice = toSafeMoney(product.price);
 
-          // ==============================================================
-          // PERBAIKAN POIN 4: Glow, Inner Shadow, dan Gambar Penuh
-          // ==============================================================
           return `
             <article class="rec-card" data-id="${safeId}" style="
                 cursor: pointer; 
