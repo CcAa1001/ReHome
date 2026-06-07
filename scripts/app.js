@@ -75,50 +75,60 @@ window.updateGlobalCartBadge = async function() {
 async function boot() {
   bindLoginPage();
 
-  const supabase = await getSupabaseClient();
-  const loader = document.getElementById("loader");
-  if (!supabase) {
-      if (loader) loader.hidden = true;
-      document.getElementById("app").hidden = true;
-      document.getElementById("login").hidden = false;
-      return;
-  }
+  try {
+    const supabase = await getSupabaseClient();
+    const loader = document.getElementById("loader");
+    if (!supabase) {
+        if (loader) loader.hidden = true;
+        document.getElementById("app").hidden = true;
+        document.getElementById("login").hidden = false;
+        return;
+    }
 
-  if (window.location.hash.includes('access_token')) {
-      await supabase.auth.getSession();
-      
-      window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
-      
-      localStorage.setItem('rehome_current_route', 'home');
-  }
+    if (window.location.hash.includes('access_token')) {
+        await supabase.auth.getSession();
+        
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        
+        localStorage.setItem('rehome_current_route', 'home');
+    }
 
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (session) {
-      if (loader) loader.hidden = true;
-      document.getElementById("login").hidden = true;
-      document.getElementById("app").hidden = false;
-      await window.updateGlobalCartBadge();
-      
-      const lastRoute = localStorage.getItem('rehome_current_route') || "home";
-      navigate(lastRoute);
-  } else {
-      if (loader) loader.hidden = true;
-      document.getElementById("app").hidden = true;
-      document.getElementById("login").hidden = false;
-  }
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error) throw error;
+    
+    if (session) {
+        if (loader) loader.hidden = true;
+        document.getElementById("login").hidden = true;
+        document.getElementById("app").hidden = false;
+        await window.updateGlobalCartBadge();
+        
+        const lastRoute = localStorage.getItem('rehome_current_route') || "home";
+        navigate(lastRoute);
+    } else {
+        if (loader) loader.hidden = true;
+        document.getElementById("app").hidden = true;
+        document.getElementById("login").hidden = false;
+    }
 
-  const logoutBtn = document.querySelector("[data-logout]");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await logoutUser();
-      
-      localStorage.removeItem('rehome_current_route');
-      document.getElementById("app").hidden = true;
-      document.getElementById("login").hidden = false;
-      window.history.replaceState(null, document.title, window.location.pathname);
-    });
+    const logoutBtn = document.querySelector("[data-logout]");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await logoutUser();
+        
+        localStorage.removeItem('rehome_current_route');
+        document.getElementById("app").hidden = true;
+        document.getElementById("login").hidden = false;
+        window.history.replaceState(null, document.title, window.location.pathname);
+      });
+    }
+  } catch (err) {
+    console.error("Boot error:", err);
+    const loader = document.getElementById("loader");
+    if (loader) loader.hidden = true;
+    document.getElementById("app").hidden = true;
+    document.getElementById("login").hidden = false;
   }
 }
 

@@ -12,6 +12,7 @@ export function getRouteParams() {
 }
 
 const viewCache = {};
+let isNavigating = false;
 
 document.addEventListener("click", (e) => {
   const navBtn = e.target.closest("[data-route]");
@@ -22,18 +23,21 @@ document.addEventListener("click", (e) => {
 });
 
 export async function navigate(route) {
-  const container = document.getElementById("router-view");
-  if (!container) return;
-
-  localStorage.setItem('rehome_current_route', route);
-
-  document.querySelectorAll("[data-route]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.route === route);
-  });
+  if (isNavigating) return;
+  isNavigating = true;
 
   try {
+    const container = document.getElementById("router-view");
+    if (!container) return;
+
+    localStorage.setItem('rehome_current_route', route);
+
+    document.querySelectorAll("[data-route]").forEach((button) => {
+      button.classList.toggle("active", button.dataset.route === route);
+    });
+
     if (!viewCache[route]) {
-      const response = await fetch(`views/${route}.html`);
+      const response = await fetch(`views/${route}.html`, { cache: 'no-store' });
       if (response.ok) viewCache[route] = await response.text();
       else viewCache[route] = `<div style="padding:100px;text-align:center;"><h2>Halaman belum dibuat</h2></div>`;
     }
@@ -50,6 +54,8 @@ export async function navigate(route) {
 
   } catch (error) {
     showToast("Gagal memuat halaman.");
+  } finally {
+    isNavigating = false;
   }
 }
 
