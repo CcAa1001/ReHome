@@ -200,9 +200,9 @@ export async function renderSell() {
   // ─── Fetch and render offers ───
   async function loadOffers() {
     try {
-      const { data: offers } = await supabase
+      const { data: offers, error: offersErr } = await supabase
         .from('offers')
-        .select('*, products(title, price, image_url), profiles:buyer_id(full_name, avatar_url)')
+        .select('*, products(title, price, image_url)')
         .eq('seller_id', user.id)
         .order('created_at', { ascending: false });
       
@@ -215,9 +215,20 @@ export async function renderSell() {
 
       if (offers.length === 0) return;
 
+      // Fetch buyer profiles manually to avoid PostgREST foreign key issues
+      const buyerIds = [...new Set(offers.map(o => o.buyer_id))];
+      let profilesMap = {};
+      if (buyerIds.length > 0) {
+        const { data: buyers } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', buyerIds);
+        if (buyers) {
+          buyers.forEach(b => { profilesMap[b.id] = b; });
+        }
+      }
+
       offersGrid.innerHTML = offers.map(offer => {
-        const buyerName = offer.profiles?.full_name || 'Anonymous';
-        const buyerAvatar = offer.profiles?.avatar_url || '';
+        const buyer = profilesMap[offer.buyer_id] || {};
+        const buyerName = buyer.full_name || 'Anonymous';
+        const buyerAvatar = buyer.avatar_url || '';
         const productTitle = offer.products?.title || 'Unknown';
         const productPrice = Number(offer.products?.price || 0);
         const offerPrice = Number(offer.amount || 0);
