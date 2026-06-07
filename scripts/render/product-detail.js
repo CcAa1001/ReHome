@@ -17,6 +17,14 @@ export async function renderProductDetail() {
   try {
     const supabase = await getSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+       const { data: favs } = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
+       if (favs) favoriteIds = favs.map(f => f.product_id);
+    } else {
+       favoriteIds = JSON.parse(localStorage.getItem("rehome_favorites") || "[]");
+    }
+
     const { data: product, error } = await supabase.from('products').select(`
       *,
       profiles:seller_id (shop_name, full_name, avatar_url)
@@ -205,18 +213,39 @@ export async function renderProductDetail() {
     });
 
     const favBtn = container.querySelector(".btn-favorite");
-    favBtn.addEventListener("click", () => {
+    favBtn.addEventListener("click", async () => {
       favBtn.classList.toggle("active");
       const isActive = favBtn.classList.contains("active");
+      favBtn.style.pointerEvents = "none";
       
-      if (isActive) {
-        if (!favoriteIds.includes(product.id)) favoriteIds.push(product.id);
-        showToast("Added to favorites!");
-      } else {
-        favoriteIds = favoriteIds.filter(id => id !== product.id);
-        showToast("Removed from favorites.");
+      try {
+        if (user) {
+          if (isActive) {
+            if (!favoriteIds.includes(product.id)) favoriteIds.push(product.id);
+            await supabase.from('favorites').insert({ user_id: user.id, product_id: product.id });
+            showToast("Added to favorites!");
+          } else {
+            favoriteIds = favoriteIds.filter(id => id !== product.id);
+            await supabase.from('favorites').delete().eq('user_id', user.id).eq('product_id', product.id);
+            showToast("Removed from favorites.");
+          }
+        } else {
+          if (isActive) {
+            if (!favoriteIds.includes(product.id)) favoriteIds.push(product.id);
+            showToast("Saved! (Login to keep permanently)");
+          } else {
+            favoriteIds = favoriteIds.filter(id => id !== product.id);
+            showToast("Removed from favorites.");
+          }
+          localStorage.setItem("rehome_favorites", JSON.stringify(favoriteIds));
+        }
+      } catch (err) {
+        console.error("Favorite error:", err);
+        favBtn.classList.toggle("active");
+        showToast("Error updating favorites.");
+      } finally {
+        favBtn.style.pointerEvents = "auto";
       }
-      localStorage.setItem("rehome_favorites", JSON.stringify(favoriteIds));
     });
 
     const btnMin = document.getElementById("btn-min");

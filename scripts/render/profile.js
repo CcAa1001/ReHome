@@ -147,6 +147,7 @@ export async function renderProfile() {
             <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No purchases yet</div>
             <div style="font-size:14px;">Your order history will appear here.</div>
           </div>`;
+      } else {
         tabPurchases.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">` + 
           orders.flatMap(order => {
             return (order.order_items || []).map(item => {

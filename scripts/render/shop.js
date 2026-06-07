@@ -66,7 +66,7 @@ async function fetchProductsAndRender(catalog, countEl) {
     let query = supabase.from('products').select('*').eq('status', 'active').order('created_at', { ascending: false });
 
     if (currentUser && !showMyItems) {
-      query = query.neq('seller_id', currentUser.id);
+      query = query.or(`seller_id.neq.${currentUser.id},seller_id.is.null`);
     }
 
     const { data } = await query;
