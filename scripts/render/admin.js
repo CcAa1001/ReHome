@@ -148,34 +148,52 @@ export async function renderAdmin() {
           <td><span style="font-weight:600; color:#3d5a30;">${p.impact_score ?? 0}</span></td>
           <td>${isMe
             ? '<span style="font-size:12px;color:#a8a29e;">You</span>'
-            : `<button class="adm-btn adm-btn-role" data-action="role" data-uid="${p.id}" data-role="${toggleRole}">${btnLabel}</button>`
+            : `<div style="display:flex;gap:8px;"><button class="adm-btn adm-btn-role" data-action="role" data-uid="${p.id}" data-role="${toggleRole}">${btnLabel}</button><button class="adm-btn adm-btn-delete" data-action="delete-user" data-uid="${p.id}">Delete</button></div>`
           }</td>
         </tr>`;
       }).join('');
     }
 
-    // Delegate role-change clicks
+    // Delegate clicks
     usersBody.addEventListener('click', async (e) => {
-      const btn = e.target.closest('[data-action="role"]');
-      if (!btn) return;
+      const roleBtn = e.target.closest('[data-action="role"]');
+      const delBtn = e.target.closest('[data-action="delete-user"]');
 
-      const uid  = btn.dataset.uid;
-      const role = btn.dataset.role;
-      btn.disabled = true;
-      btn.textContent = 'Updating…';
+      if (roleBtn) {
+        const uid  = roleBtn.dataset.uid;
+        const role = roleBtn.dataset.role;
+        roleBtn.disabled = true;
+        roleBtn.textContent = 'Updating…';
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role })
-        .eq('id', uid);
+        const { error } = await supabase.from('profiles').update({ role }).eq('id', uid);
 
-      if (error) {
-        showToast(`Failed to update role: ${error.message}`);
-        btn.disabled = false;
-        btn.textContent = role === 'admin' ? 'Make Admin' : 'Make Buyer';
-      } else {
-        showToast(`Role updated to ${role}.`);
-        renderAdmin(); // refresh
+        if (error) {
+          showToast(`Failed to update role: ${error.message}`);
+          roleBtn.disabled = false;
+          roleBtn.textContent = role === 'admin' ? 'Make Admin' : 'Make Buyer';
+        } else {
+          showToast(`Role updated to ${role}.`);
+          renderAdmin(); // refresh
+        }
+      }
+
+      if (delBtn) {
+        const uid = delBtn.dataset.uid;
+        if (!confirm('Are you sure you want to completely delete this user and all their data?')) return;
+        delBtn.disabled = true;
+        delBtn.textContent = 'Deleting…';
+        
+        // Due to Supabase restrictions, regular admins often cannot delete from auth.users directly via SQL unless using service_role.
+        // We will try to delete from profiles, and if it cascades or succeeds, great. If not, tell the user.
+        const { error } = await supabase.from('profiles').delete().eq('id', uid);
+        if (error) {
+           showToast(`Delete failed (You might need service_role privileges): ${error.message}`);
+           delBtn.disabled = false;
+           delBtn.textContent = 'Delete';
+        } else {
+           showToast('User profile deleted.');
+           renderAdmin(); // refresh
+        }
       }
     });
   }
@@ -248,9 +266,33 @@ export async function renderAdmin() {
           <td style="font-weight:600; color:#3d5a30;">$${formatMoney(o.total)}</td>
           <td>${statusBadge(o.status)}</td>
           <td style="color:#78716c; white-space:nowrap;">${formatDate(o.created_at)}</td>
+          <td><button class="adm-btn adm-btn-delete" data-action="delete-order" data-oid="${o.id}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14H7L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg> Delete
+          </button></td>
         </tr>`;
       }).join('');
     }
+
+    ordersBody.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-action="delete-order"]');
+      if (!btn) return;
+
+      const oid = btn.dataset.oid;
+      if (!confirm('Are you sure you want to delete this order?')) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Deleting…';
+
+      const { error } = await supabase.from('orders').delete().eq('id', oid);
+      if (error) {
+        showToast(`Delete failed: ${error.message}`);
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-2 14H7L5 6"></path></svg> Delete`;
+      } else {
+        showToast('Order deleted.');
+        renderAdmin();
+      }
+    });
   }
 
   /* ── 7. Wire tab switching ─────────────────────────────────────────── */

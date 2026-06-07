@@ -75,7 +75,8 @@ export function bindLoginPage() {
         if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
         
         const lastRoute = localStorage.getItem('rehome_current_route') || "home";
-        await showApp(lastRoute);
+        window.location.hash = lastRoute;
+        window.location.reload();
       } catch (error) {
         if (errorMsg) errorMsg.textContent = error.message;
         else alert(error.message);
