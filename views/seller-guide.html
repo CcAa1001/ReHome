@@ -1,0 +1,137 @@
+<style>
+  .sg-page { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  
+  .sg-hero { background: #f5f4f0; padding: 100px 24px; text-align: center; border-radius: 0 0 40px 40px; margin-bottom: 80px; position: relative; overflow: hidden; }
+  .sg-hero::before { content: ""; position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; background: #e2e6db; border-radius: 50%; opacity: 0.5; }
+  .sg-hero::after { content: ""; position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px; background: #e2e6db; border-radius: 50%; opacity: 0.5; }
+  .sg-hero-content { position: relative; z-index: 1; }
+  .sg-hero h1 { font-family: var(--serif, serif); font-size: 56px; margin: 0 0 24px; color: #3d5a30; }
+  .sg-hero p { font-size: 20px; color: #57534e; max-width: 640px; margin: 0 auto 40px; line-height: 1.6; }
+  .sg-hero-btn { background: #3d5a30; color: white; border: none; padding: 18px 40px; border-radius: 999px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 24px rgba(61,90,48,0.2); }
+  .sg-hero-btn:hover { background: #2f4525; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(61,90,48,0.3); }
+
+  .sg-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  
+  .sg-section-title { text-align: center; font-family: var(--serif, serif); font-size: 36px; margin: 0 0 64px; color: #1c1917; }
+  
+  .sg-steps { display: flex; flex-direction: column; gap: 40px; position: relative; margin-bottom: 100px; }
+  .sg-steps::before { content: ""; position: absolute; left: 40px; top: 0; bottom: 0; width: 2px; background: #e7e5e4; z-index: 0; }
+  @media(max-width: 768px) { .sg-steps::before { left: 24px; } }
+  
+  .sg-step { display: flex; gap: 40px; position: relative; z-index: 1; }
+  @media(max-width: 768px) { .sg-step { gap: 24px; } }
+  .sg-step-num { width: 80px; height: 80px; background: white; border: 2px solid #3d5a30; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--serif, serif); font-size: 32px; color: #3d5a30; flex-shrink: 0; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  @media(max-width: 768px) { .sg-step-num { width: 48px; height: 48px; font-size: 20px; } }
+  
+  .sg-step-content { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 12px 32px rgba(0,0,0,0.04); flex: 1; border: 1px solid #f5f5f4; }
+  .sg-step-content h3 { font-size: 24px; margin: 0 0 16px; font-weight: 700; color: #1c1917; }
+  .sg-step-content p { color: #57534e; line-height: 1.6; font-size: 16px; margin: 0; }
+  
+  .sg-tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 100px; }
+  @media(max-width: 768px) { .sg-tips-grid { grid-template-columns: 1fr; } }
+  .sg-tip-card { background: #fbfaf9; padding: 40px; border-radius: 24px; border: 1px solid #e7e5e4; }
+  .sg-tip-icon { width: 48px; height: 48px; background: #e2e6db; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #3d5a30; margin-bottom: 24px; }
+  .sg-tip-card h4 { font-size: 20px; margin: 0 0 16px; font-weight: 700; }
+  .sg-tip-card ul { margin: 0; padding-left: 20px; color: #57534e; line-height: 1.6; }
+  .sg-tip-card li { margin-bottom: 8px; }
+  
+  .sg-metrics { background: #3d5a30; color: white; border-radius: 32px; padding: 64px; display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 40px; text-align: center; }
+  .sg-metric-num { font-family: var(--serif, serif); font-size: 64px; font-weight: bold; margin-bottom: 8px; }
+  .sg-metric-label { font-size: 14px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.9; }
+</style>
+
+<div class="page-shell sg-page">
+  <section class="sg-hero">
+    <div class="sg-hero-content">
+      <h1>Turn Pre-Loved into Profit</h1>
+      <p>Join thousands of conscious curators on ReHome. Sell your high-quality furniture easily while making a positive impact on the planet.</p>
+      <button class="sg-hero-btn" data-route="sell">Start Selling Now</button>
+    </div>
+  </section>
+
+  <div class="sg-container">
+    <h2 class="sg-section-title">How It Works</h2>
+    
+    <div class="sg-steps">
+      <div class="sg-step">
+        <div class="sg-step-num">1</div>
+        <div class="sg-step-content">
+          <h3>Create Your Profile</h3>
+          <p>Set up your shop profile with a clear avatar, a short bio, and your location. Buyers love purchasing from sellers they can trust and relate to. A complete profile increases sales by up to 40%.</p>
+        </div>
+      </div>
+      
+      <div class="sg-step">
+        <div class="sg-step-num">2</div>
+        <div class="sg-step-content">
+          <h3>List Your Items</h3>
+          <p>Use our intuitive listing form. Upload multiple high-quality photos, write a detailed description including dimensions and flaws, and specify the brand or maker if known.</p>
+        </div>
+      </div>
+      
+      <div class="sg-step">
+        <div class="sg-step-num">3</div>
+        <div class="sg-step-content">
+          <h3>Set a Fair Price</h3>
+          <p>We recommend pricing items at 40-60% of their original retail value depending on the condition. You can also accept offers to negotiate directly with interested buyers.</p>
+        </div>
+      </div>
+      
+      <div class="sg-step">
+        <div class="sg-step-num">4</div>
+        <div class="sg-step-content">
+          <h3>Ship With Care</h3>
+          <p>Once sold, pack your item securely using eco-friendly materials whenever possible. We provide shipping labels for smaller items, while large furniture can be arranged for local pickup or professional freight.</p>
+        </div>
+      </div>
+    </div>
+    
+    <h2 class="sg-section-title">Pro Seller Tips</h2>
+    
+    <div class="sg-tips-grid">
+      <div class="sg-tip-card">
+        <div class="sg-tip-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </div>
+        <h4>Photography</h4>
+        <ul>
+          <li>Use natural daylight when possible</li>
+          <li>Clean the item before photographing</li>
+          <li>Take photos from multiple angles (front, side, back)</li>
+          <li>Include close-ups of textures, labels, and any flaws</li>
+          <li>Use a clean, uncluttered background</li>
+        </ul>
+      </div>
+      
+      <div class="sg-tip-card">
+        <div class="sg-tip-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </div>
+        <h4>Descriptions</h4>
+        <ul>
+          <li>Be honest about the condition (scratches, stains)</li>
+          <li>Include precise dimensions (W x D x H)</li>
+          <li>Mention the material (e.g., solid oak, top-grain leather)</li>
+          <li>Share the history of the item if it's vintage</li>
+          <li>Use relevant keywords so buyers can find it easily</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="sg-metrics">
+      <div>
+        <div class="sg-metric-num">24h</div>
+        <div class="sg-metric-label">Average Sale Time</div>
+      </div>
+      <div>
+        <div class="sg-metric-num">85%</div>
+        <div class="sg-metric-label">Sell-Through Rate</div>
+      </div>
+      <div>
+        <div class="sg-metric-num">$3M+</div>
+        <div class="sg-metric-label">Paid to Sellers</div>
+      </div>
+    </div>
+    
+  </div>
+</div>

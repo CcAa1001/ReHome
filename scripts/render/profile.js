@@ -101,11 +101,16 @@ export async function renderProfile() {
         `${sanitize(profile.description || "Curator & Sustainability Advocate")} &bull; <span id="profile-location">${sanitize(profile.location || "Earth")}</span>`;
     }
 
-    const impactEl =
-      document.querySelector(".impact-stats strong") ||
-      document.querySelector(".impact-score");
+    const impactEl = document.getElementById("profile-impact-score");
     if (impactEl) {
-      impactEl.textContent = (profile.impact_score || 0).toLocaleString();
+      const score = profile.impact_score || 0;
+      impactEl.textContent = score.toLocaleString();
+      
+      const treesEl = document.getElementById("profile-impact-trees");
+      if (treesEl) {
+        const trees = Math.floor(score / 175);
+        treesEl.textContent = `Equivalent to planting ${trees} trees through circular shopping.`;
+      }
     }
 
     const { data: orders, error: ordersError } = await supabase

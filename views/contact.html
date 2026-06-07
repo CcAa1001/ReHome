@@ -1,0 +1,114 @@
+<style>
+  .ct-page { font-family: var(--sans, sans-serif); color: #1c1917; padding-bottom: 80px; }
+  .ct-hero { background: #3d5a30; color: white; padding: 80px 24px; text-align: center; border-radius: 0 0 40px 40px; margin-bottom: 60px; }
+  .ct-hero h1 { font-family: var(--serif, serif); font-size: 48px; margin: 0 0 16px; font-weight: 500; }
+  .ct-hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+  
+  .ct-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  @media(max-width: 768px) { .ct-container { grid-template-columns: 1fr; gap: 48px; } }
+  
+  .ct-form-card { background: white; border-radius: 24px; padding: 48px; box-shadow: 0 12px 48px rgba(0,0,0,0.06); }
+  .ct-form-card h2 { font-family: var(--serif, serif); font-size: 32px; margin: 0 0 32px; color: #1c1917; }
+  .ct-label { display: block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #78716c; margin-bottom: 8px; }
+  .ct-input, .ct-select, .ct-textarea { width: 100%; padding: 16px; border: 1px solid #d6d3d1; border-radius: 12px; font-size: 15px; font-family: var(--sans, sans-serif); margin-bottom: 24px; box-sizing: border-box; transition: 0.2s; background: #fbfaf9; }
+  .ct-input:focus, .ct-select:focus, .ct-textarea:focus { border-color: #3d5a30; outline: none; background: white; }
+  .ct-textarea { min-height: 160px; resize: vertical; }
+  .ct-submit { background: #3d5a30; color: white; border: none; width: 100%; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .ct-submit:hover { background: #2f4525; transform: translateY(-2px); }
+  
+  .ct-info-wrapper { display: flex; flex-direction: column; gap: 32px; }
+  .ct-info-card { background: #f5f4f0; padding: 32px; border-radius: 20px; display: flex; gap: 20px; align-items: flex-start; }
+  .ct-icon-box { width: 56px; height: 56px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #3d5a30; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .ct-info-text h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; }
+  .ct-info-text p { margin: 0 0 4px; color: #57534e; line-height: 1.5; font-size: 15px; }
+  .ct-info-text a { color: #3d5a30; font-weight: 600; text-decoration: none; }
+  .ct-info-text a:hover { text-decoration: underline; }
+  
+  .ct-map { margin-top: 24px; width: 100%; height: 280px; background: #e7e5e4; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: #78716c; font-weight: 600; position: relative; overflow: hidden; }
+  .ct-map::before { content: ''; position: absolute; inset: 0; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgwLDAsMCwwLjEpIi8+PC9zdmc+') repeat; opacity: 0.5; }
+</style>
+
+<div class="page-shell ct-page">
+  <section class="ct-hero">
+    <h1>Get in Touch</h1>
+    <p>Whether you have a question about a piece, need help with shipping, or want to partner with us—we're here to help.</p>
+  </section>
+
+  <div class="ct-container">
+    <div class="ct-form-card">
+      <h2>Send a Message</h2>
+      <form onsubmit="event.preventDefault(); alert('Message sent! We will get back to you shortly.'); this.reset();">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label class="ct-label">First Name</label>
+            <input type="text" class="ct-input" required placeholder="Jane">
+          </div>
+          <div>
+            <label class="ct-label">Last Name</label>
+            <input type="text" class="ct-input" required placeholder="Doe">
+          </div>
+        </div>
+        
+        <label class="ct-label">Email Address</label>
+        <input type="email" class="ct-input" required placeholder="jane@example.com">
+        
+        <label class="ct-label">Subject</label>
+        <select class="ct-select" required>
+          <option value="" disabled selected>Select an option</option>
+          <option>Question about an item</option>
+          <option>Shipping & Delivery</option>
+          <option>Returns & Refunds</option>
+          <option>Seller Support</option>
+          <option>Other</option>
+        </select>
+        
+        <label class="ct-label">Message</label>
+        <textarea class="ct-textarea" required placeholder="How can we help you?"></textarea>
+        
+        <button type="submit" class="ct-submit">Send Message</button>
+      </form>
+    </div>
+    
+    <div class="ct-info-wrapper">
+      <div class="ct-info-card">
+        <div class="ct-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <div class="ct-info-text">
+          <h3>Email Us</h3>
+          <p>We typically reply within 24 hours.</p>
+          <a href="mailto:hello@rehome.co">hello@rehome.co</a>
+        </div>
+      </div>
+      
+      <div class="ct-info-card">
+        <div class="ct-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+        <div class="ct-info-text">
+          <h3>Call Us</h3>
+          <p>Mon-Fri, 9am - 6pm EST</p>
+          <a href="tel:+1800REHOME">+1-800-REHOME</a>
+        </div>
+      </div>
+      
+      <div class="ct-info-card" style="margin-bottom: 0;">
+        <div class="ct-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </div>
+        <div class="ct-info-text">
+          <h3>Our HQ</h3>
+          <p>123 Sustainable Ave</p>
+          <p>Copenhagen, Denmark</p>
+        </div>
+      </div>
+      
+      <div class="ct-map">
+        <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#3d5a30" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3" fill="white"></circle></svg>
+          ReHome HQ
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

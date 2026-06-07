@@ -133,3 +133,51 @@ async function boot() {
 }
 
 boot();
+
+// ─── GLOBAL SEARCH ───
+window.rehomeSearchQuery = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('global-search-toggle');
+  const box = document.getElementById('global-search-box');
+  const input = document.getElementById('global-search-input');
+  
+  if (toggle && box && input) {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = box.classList.contains('open');
+      if (isOpen) {
+        // If there's text, submit it
+        if (input.value.trim()) {
+          window.rehomeSearchQuery = input.value.trim();
+          navigate('shop');
+        }
+        box.classList.remove('open');
+      } else {
+        box.classList.add('open');
+        input.focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        window.rehomeSearchQuery = input.value.trim();
+        navigate('shop');
+        box.classList.remove('open');
+      }
+      if (e.key === 'Escape') {
+        box.classList.remove('open');
+        input.value = '';
+        window.rehomeSearchQuery = '';
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!box.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+        box.classList.remove('open');
+      }
+    });
+  }
+});

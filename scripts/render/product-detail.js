@@ -123,7 +123,33 @@ export async function renderProductDetail() {
 
             ${cartButtonHtml}
             
-            <button class="btn-outline">Make an Offer</button>
+            ${(product.status !== 'sold' && stockTersedia > 0 && (!user || user.id !== product.seller_id)) ? `<button class="btn-outline" id="make-offer-btn">Make an Offer</button>` : ''}
+
+            <!-- Offer Modal -->
+            <div id="offer-modal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+              <div style="background:white; border-radius:20px; padding:40px; max-width:440px; width:90%; box-shadow:0 24px 48px rgba(0,0,0,0.15); position:relative;">
+                <button id="offer-modal-close" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; color:#78716c; cursor:pointer;">×</button>
+                <h3 style="font-family:var(--serif); font-size:24px; margin:0 0 8px; color:#1c1917;">Make an Offer</h3>
+                <p style="color:#78716c; font-size:14px; margin:0 0 24px;">Submit your best price for <strong>${safeTitle}</strong></p>
+                
+                <div style="background:#f5f4f0; border-radius:12px; padding:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:13px; color:#78716c; font-weight:600;">Listed Price</span>
+                  <span style="font-size:20px; font-weight:700; color:#3d5a30;">$${safePrice}</span>
+                </div>
+                
+                <label style="display:block; margin-bottom:16px;">
+                  <span style="font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#1c1917; display:block; margin-bottom:8px;">Your Offer ($)</span>
+                  <input type="number" id="offer-amount" min="1" step="1" placeholder="Enter your offer" style="width:100%; padding:14px 16px; border:1px solid #d6d3d1; border-radius:12px; font-size:16px; font-weight:600; outline:none; box-sizing:border-box; transition:border-color 0.2s;" onfocus="this.style.borderColor='#3d5a30'" onblur="this.style.borderColor='#d6d3d1'">
+                </label>
+                
+                <label style="display:block; margin-bottom:24px;">
+                  <span style="font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#1c1917; display:block; margin-bottom:8px;">Message (Optional)</span>
+                  <textarea id="offer-message" rows="3" placeholder="Tell the seller why you love this item..." style="width:100%; padding:14px 16px; border:1px solid #d6d3d1; border-radius:12px; font-size:14px; outline:none; resize:none; font-family:var(--sans); box-sizing:border-box; transition:border-color 0.2s;" onfocus="this.style.borderColor='#3d5a30'" onblur="this.style.borderColor='#d6d3d1'"></textarea>
+                </label>
+                
+                <button id="offer-submit-btn" style="width:100%; padding:16px; background:#3d5a30; color:white; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:0.2s;">Submit Offer</button>
+              </div>
+            </div>
 
             <div class="seller-box">
               <div style="display: flex; align-items: center; gap: 12px;">
@@ -299,6 +325,56 @@ export async function renderProductDetail() {
             showToast("Gagal menyimpan ke database: " + err.message);
         } finally { 
             btnCart.innerHTML = originalText; btnCart.disabled = false; btnCart.style.opacity = "1"; 
+        }
+      });
+    }
+
+    // ─── MAKE AN OFFER LOGIC ───
+    const offerBtn = document.getElementById('make-offer-btn');
+    const offerModal = document.getElementById('offer-modal');
+    const offerClose = document.getElementById('offer-modal-close');
+    const offerSubmit = document.getElementById('offer-submit-btn');
+
+    if (offerBtn && offerModal) {
+      offerBtn.addEventListener('click', () => {
+        if (!user) { showToast('Please log in to make an offer.'); return; }
+        offerModal.style.display = 'flex';
+      });
+
+      offerClose?.addEventListener('click', () => { offerModal.style.display = 'none'; });
+      offerModal.addEventListener('click', (e) => { if (e.target === offerModal) offerModal.style.display = 'none'; });
+
+      offerSubmit?.addEventListener('click', async () => {
+        const amount = parseFloat(document.getElementById('offer-amount')?.value);
+        const message = document.getElementById('offer-message')?.value?.trim() || '';
+
+        if (!amount || amount <= 0) { showToast('Please enter a valid offer amount.'); return; }
+        if (amount >= product.price) { showToast('Your offer should be lower than the listed price. Otherwise, just buy it!'); return; }
+
+        offerSubmit.disabled = true;
+        offerSubmit.textContent = 'Submitting...';
+
+        try {
+          const { error } = await supabase.from('offers').insert({
+            product_id: product.id,
+            buyer_id: user.id,
+            seller_id: product.seller_id,
+            amount: amount,
+            message: message,
+            status: 'pending'
+          });
+
+          if (error) throw error;
+          showToast('Offer submitted! The seller will review it.');
+          offerModal.style.display = 'none';
+          document.getElementById('offer-amount').value = '';
+          document.getElementById('offer-message').value = '';
+        } catch (err) {
+          console.error('Offer error:', err);
+          showToast('Failed to submit offer: ' + err.message);
+        } finally {
+          offerSubmit.disabled = false;
+          offerSubmit.textContent = 'Submit Offer';
         }
       });
     }

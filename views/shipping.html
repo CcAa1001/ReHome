@@ -1,0 +1,406 @@
+<style>
+  .ship-page { background: #fbfaf9; min-height: 100vh; padding-bottom: 80px; }
+  .ship-hero {
+    background: linear-gradient(135deg, #3d5a30 0%, #526442 60%, #6b7f5a 100%);
+    padding: 72px 24px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ship-hero::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .ship-hero-title {
+    font-family: var(--serif, serif);
+    font-size: 2.6rem;
+    color: #fff;
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .ship-hero-sub {
+    font-family: var(--sans, sans-serif);
+    color: rgba(255,255,255,0.85);
+    font-size: 1.08rem;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .ship-container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+  .ship-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 32px 0 0;
+    padding: 10px 20px;
+    background: #fff;
+    border: 1px solid #e7e5e0;
+    border-radius: 12px;
+    font-family: var(--sans, sans-serif);
+    font-size: 0.92rem;
+    color: #1c1917;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .ship-back:hover { background: #f4f3ef; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+
+  /* Section titles */
+  .ship-section { margin-top: 56px; }
+  .ship-section-title {
+    font-family: var(--serif, serif);
+    font-size: 1.55rem;
+    color: #1c1917;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .ship-section-desc {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.97rem;
+    line-height: 1.65;
+    margin: 0 0 28px;
+  }
+
+  /* Shipping table */
+  .ship-table-wrap {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.03);
+    border: 1px solid #eae8e4;
+  }
+  .ship-table { width: 100%; border-collapse: collapse; }
+  .ship-table thead { background: #f4f3ef; }
+  .ship-table th {
+    font-family: var(--sans, sans-serif);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #78716c;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 16px 24px;
+    text-align: left;
+  }
+  .ship-table td {
+    font-family: var(--sans, sans-serif);
+    font-size: 0.95rem;
+    color: #1c1917;
+    padding: 20px 24px;
+    border-top: 1px solid #f0eeea;
+    vertical-align: middle;
+  }
+  .ship-table tr:last-child td { border-bottom: none; }
+  .ship-method-name { font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .ship-method-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .ship-method-icon.standard { background: #e8f0e4; color: #3d5a30; }
+  .ship-method-icon.express { background: #fef3c7; color: #92400e; }
+  .ship-method-icon.pickup { background: #ede9fe; color: #5b21b6; }
+  .ship-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .ship-badge.free { background: #e8f0e4; color: #3d5a30; }
+  .ship-badge.paid { background: #fef3c7; color: #92400e; }
+
+  /* Eco section */
+  .ship-eco-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .ship-eco-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    border: 1px solid #eae8e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .ship-eco-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+  .ship-eco-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #e8f0e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    color: #3d5a30;
+  }
+  .ship-eco-card h3 {
+    font-family: var(--serif, serif);
+    font-size: 1.1rem;
+    color: #1c1917;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .ship-eco-card p {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Tracking section */
+  .ship-tracking {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px;
+    border: 1px solid #eae8e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+  .ship-tracking-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #3d5a30, #526442);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .ship-tracking-text h3 {
+    font-family: var(--serif, serif);
+    font-size: 1.25rem;
+    color: #1c1917;
+    margin: 0 0 8px;
+  }
+  .ship-tracking-text p {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.93rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* FAQ */
+  .ship-faq-item {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #eae8e4;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .ship-faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: var(--sans, sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1c1917;
+    text-align: left;
+  }
+  .ship-faq-q:hover { background: #fafaf8; }
+  .ship-faq-chevron {
+    transition: transform 0.25s;
+    flex-shrink: 0;
+    color: #78716c;
+  }
+  .ship-faq-item.open .ship-faq-chevron { transform: rotate(180deg); }
+  .ship-faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  .ship-faq-item.open .ship-faq-a { max-height: 300px; }
+  .ship-faq-a-inner {
+    padding: 0 28px 22px;
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.93rem;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 700px) {
+    .ship-hero-title { font-size: 2rem; }
+    .ship-eco-grid { grid-template-columns: 1fr; }
+    .ship-tracking { flex-direction: column; text-align: center; }
+    .ship-table th, .ship-table td { padding: 14px 16px; font-size: 0.88rem; }
+  }
+</style>
+
+<div class="page-shell">
+  <div class="ship-page">
+    <!-- Hero -->
+    <div class="ship-hero">
+      <h1 class="ship-hero-title">Shipping & Delivery</h1>
+      <p class="ship-hero-sub">We deliver your pre-loved treasures with care — using eco-friendly packaging that's gentle on the planet.</p>
+    </div>
+
+    <div class="ship-container">
+      <a class="ship-back" data-route="home">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Home
+      </a>
+
+      <!-- Shipping Methods -->
+      <div class="ship-section">
+        <h2 class="ship-section-title">Shipping Methods</h2>
+        <p class="ship-section-desc">Choose the delivery option that works best for you. All orders are carefully packaged to ensure your furniture arrives in perfect condition.</p>
+        <div class="ship-table-wrap">
+          <table class="ship-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Delivery Time</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="ship-method-name">
+                    <div class="ship-method-icon standard">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    </div>
+                    Standard Shipping
+                  </div>
+                </td>
+                <td>5–7 business days</td>
+                <td><span class="ship-badge free">Free over $100</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="ship-method-name">
+                    <div class="ship-method-icon express">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    Express Shipping
+                  </div>
+                </td>
+                <td>2–3 business days</td>
+                <td><span class="ship-badge paid">$15.00</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="ship-method-name">
+                    <div class="ship-method-icon pickup">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    Local Pickup
+                  </div>
+                </td>
+                <td>Same day</td>
+                <td><span class="ship-badge free">Free</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Eco Packaging -->
+      <div class="ship-section">
+        <h2 class="ship-section-title">Eco-Friendly Packaging</h2>
+        <p class="ship-section-desc">Sustainability doesn't stop at the furniture. Every shipment from ReHome is packaged with the environment in mind.</p>
+        <div class="ship-eco-grid">
+          <div class="ship-eco-card">
+            <div class="ship-eco-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
+            <h3>Recycled Materials</h3>
+            <p>All our packaging is made from 100% post-consumer recycled cardboard and paper products.</p>
+          </div>
+          <div class="ship-eco-card">
+            <div class="ship-eco-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Biodegradable Peanuts</h3>
+            <p>We use starch-based packing peanuts that dissolve in water — no styrofoam, ever.</p>
+          </div>
+          <div class="ship-eco-card">
+            <div class="ship-eco-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </div>
+            <h3>Reusable Boxes</h3>
+            <p>Our sturdy shipping boxes are designed to be reused. Pass them on or recycle when done.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking -->
+      <div class="ship-section">
+        <h2 class="ship-section-title">Order Tracking</h2>
+        <p class="ship-section-desc">Stay informed every step of the way with real-time tracking updates.</p>
+        <div class="ship-tracking">
+          <div class="ship-tracking-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="ship-tracking-text">
+            <h3>Real-Time Tracking</h3>
+            <p>Once your order ships, you'll receive a confirmation email with a tracking number. Use it to follow your package from our warehouse to your doorstep. You can also track your order anytime from your account dashboard under "My Orders."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="ship-section">
+        <h2 class="ship-section-title">Frequently Asked Questions</h2>
+        <p class="ship-section-desc">Common questions about our shipping process.</p>
+
+        <div class="ship-faq-item">
+          <button class="ship-faq-q" onclick="this.parentElement.classList.toggle('open')">
+            Can I change my shipping method after placing an order?
+            <svg class="ship-faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ship-faq-a">
+            <div class="ship-faq-a-inner">Yes, you can change your shipping method within 2 hours of placing your order. Simply go to "My Orders" in your account and select "Edit Shipping." After the 2-hour window, please contact our support team for assistance.</div>
+          </div>
+        </div>
+
+        <div class="ship-faq-item">
+          <button class="ship-faq-q" onclick="this.parentElement.classList.toggle('open')">
+            Do you ship internationally?
+            <svg class="ship-faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ship-faq-a">
+            <div class="ship-faq-a-inner">Currently, ReHome ships within the United States and select European countries. International shipping rates and delivery times vary by destination. We're actively working to expand our shipping network to more regions.</div>
+          </div>
+        </div>
+
+        <div class="ship-faq-item">
+          <button class="ship-faq-q" onclick="this.parentElement.classList.toggle('open')">
+            What happens if my item arrives damaged?
+            <svg class="ship-faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="ship-faq-a">
+            <div class="ship-faq-a-inner">We take great care in packaging, but if your item arrives damaged, please contact us within 48 hours with photos of the damage. We'll arrange a free return and either send a replacement or issue a full refund — whichever you prefer.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

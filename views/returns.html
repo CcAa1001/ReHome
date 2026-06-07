@@ -1,0 +1,423 @@
+<style>
+  .ret-page { background: #fbfaf9; min-height: 100vh; padding-bottom: 80px; }
+  .ret-hero {
+    background: linear-gradient(135deg, #3d5a30 0%, #526442 60%, #6b7f5a 100%);
+    padding: 72px 24px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ret-hero::before {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -8%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .ret-hero-title {
+    font-family: var(--serif, serif);
+    font-size: 2.6rem;
+    color: #fff;
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .ret-hero-sub {
+    font-family: var(--sans, sans-serif);
+    color: rgba(255,255,255,0.85);
+    font-size: 1.08rem;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .ret-container { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+  .ret-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 32px 0 0;
+    padding: 10px 20px;
+    background: #fff;
+    border: 1px solid #e7e5e0;
+    border-radius: 12px;
+    font-family: var(--sans, sans-serif);
+    font-size: 0.92rem;
+    color: #1c1917;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .ret-back:hover { background: #f4f3ef; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .ret-section { margin-top: 56px; }
+  .ret-section-title {
+    font-family: var(--serif, serif);
+    font-size: 1.55rem;
+    color: #1c1917;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .ret-section-desc {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.97rem;
+    line-height: 1.65;
+    margin: 0 0 28px;
+  }
+
+  /* Policy highlight */
+  .ret-policy-banner {
+    background: linear-gradient(135deg, #e8f0e4 0%, #f0f4ed 100%);
+    border: 1px solid #c8d8c0;
+    border-radius: 16px;
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 40px;
+  }
+  .ret-policy-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #3d5a30, #526442);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    flex-direction: column;
+  }
+  .ret-policy-badge .ret-num {
+    font-family: var(--serif, serif);
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .ret-policy-badge .ret-label {
+    font-family: var(--sans, sans-serif);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+  .ret-policy-text h3 {
+    font-family: var(--serif, serif);
+    font-size: 1.3rem;
+    color: #1c1917;
+    margin: 0 0 6px;
+  }
+  .ret-policy-text p {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Steps */
+  .ret-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .ret-step {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    border: 1px solid #eae8e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .ret-step:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+  .ret-step-num {
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    font-family: var(--serif, serif);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #3d5a30;
+    background: #e8f0e4;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ret-step-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #f4f3ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    color: #3d5a30;
+  }
+  .ret-step h3 {
+    font-family: var(--serif, serif);
+    font-size: 1.08rem;
+    color: #1c1917;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .ret-step p {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Conditions */
+  .ret-conditions-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px;
+    border: 1px solid #eae8e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .ret-condition {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0eeea;
+  }
+  .ret-condition:last-child { border-bottom: none; }
+  .ret-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e8f0e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #3d5a30;
+    margin-top: 1px;
+  }
+  .ret-condition span {
+    font-family: var(--sans, sans-serif);
+    font-size: 0.95rem;
+    color: #1c1917;
+    line-height: 1.5;
+  }
+
+  /* Refund timeline */
+  .ret-timeline {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px;
+    border: 1px solid #eae8e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .ret-timeline-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f0eeea;
+  }
+  .ret-timeline-row:last-child { border-bottom: none; }
+  .ret-timeline-method {
+    font-family: var(--sans, sans-serif);
+    font-weight: 600;
+    color: #1c1917;
+    font-size: 0.95rem;
+  }
+  .ret-timeline-time {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.93rem;
+  }
+
+  /* Non-returnable */
+  .ret-noreturn {
+    background: #fef7ed;
+    border: 1px solid #fde1b0;
+    border-radius: 16px;
+    padding: 32px 36px;
+  }
+  .ret-noreturn h3 {
+    font-family: var(--serif, serif);
+    font-size: 1.1rem;
+    color: #92400e;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ret-noreturn ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .ret-noreturn li {
+    font-family: var(--sans, sans-serif);
+    color: #78716c;
+    font-size: 0.93rem;
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ret-noreturn li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e0a060;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 700px) {
+    .ret-hero-title { font-size: 2rem; }
+    .ret-steps { grid-template-columns: 1fr; }
+    .ret-policy-banner { flex-direction: column; text-align: center; padding: 28px 24px; }
+  }
+</style>
+
+<div class="page-shell">
+  <div class="ret-page">
+    <!-- Hero -->
+    <div class="ret-hero">
+      <h1 class="ret-hero-title">Returns & Exchanges</h1>
+      <p class="ret-hero-sub">Your satisfaction matters. We've made returns simple, fair, and hassle-free.</p>
+    </div>
+
+    <div class="ret-container">
+      <a class="ret-back" data-route="home">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Home
+      </a>
+
+      <!-- 30-Day Policy -->
+      <div class="ret-policy-banner">
+        <div class="ret-policy-badge">
+          <span class="ret-num">30</span>
+          <span class="ret-label">Days</span>
+        </div>
+        <div class="ret-policy-text">
+          <h3>30-Day Return Window</h3>
+          <p>Changed your mind? No problem. You have 30 days from the date of delivery to initiate a return or exchange for any item purchased on ReHome. Items must meet our return conditions outlined below.</p>
+        </div>
+      </div>
+
+      <!-- Return Process -->
+      <div class="ret-section">
+        <h2 class="ret-section-title">How to Return an Item</h2>
+        <p class="ret-section-desc">Our return process is designed to be as smooth as possible. Just follow these three steps.</p>
+        <div class="ret-steps">
+          <div class="ret-step">
+            <div class="ret-step-num">1</div>
+            <div class="ret-step-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <h3>Start Your Request</h3>
+            <p>Log in to your account, go to "My Orders," and select the item you'd like to return. Fill out the reason for return.</p>
+          </div>
+          <div class="ret-step">
+            <div class="ret-step-num">2</div>
+            <div class="ret-step-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            </div>
+            <h3>Ship It Back</h3>
+            <p>We'll email you a prepaid shipping label. Pack the item securely in its original packaging and drop it off at any carrier location.</p>
+          </div>
+          <div class="ret-step">
+            <div class="ret-step-num">3</div>
+            <div class="ret-step-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3>Get Your Refund</h3>
+            <p>Once we receive and inspect the item, your refund will be processed. You'll receive confirmation via email.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conditions -->
+      <div class="ret-section">
+        <h2 class="ret-section-title">Return Conditions</h2>
+        <p class="ret-section-desc">To qualify for a return, items must meet the following criteria:</p>
+        <div class="ret-conditions-card">
+          <div class="ret-condition">
+            <div class="ret-check">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Item must be in its original, unused condition with no signs of wear or damage</span>
+          </div>
+          <div class="ret-condition">
+            <div class="ret-check">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Original packaging, tags, and labels must be intact and included</span>
+          </div>
+          <div class="ret-condition">
+            <div class="ret-check">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Return request must be initiated within 30 days of delivery date</span>
+          </div>
+          <div class="ret-condition">
+            <div class="ret-check">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Proof of purchase (order confirmation or receipt) must be provided</span>
+          </div>
+          <div class="ret-condition">
+            <div class="ret-check">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>Items must be returned via the prepaid label provided by ReHome</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Refund Timeline -->
+      <div class="ret-section">
+        <h2 class="ret-section-title">Refund Timeline</h2>
+        <p class="ret-section-desc">After we receive and inspect your returned item, refunds are processed as follows:</p>
+        <div class="ret-timeline">
+          <div class="ret-timeline-row">
+            <span class="ret-timeline-method">Original Credit/Debit Card</span>
+            <span class="ret-timeline-time">5–10 business days</span>
+          </div>
+          <div class="ret-timeline-row">
+            <span class="ret-timeline-method">PayPal</span>
+            <span class="ret-timeline-time">3–5 business days</span>
+          </div>
+          <div class="ret-timeline-row">
+            <span class="ret-timeline-method">ReHome Store Credit</span>
+            <span class="ret-timeline-time">Instant</span>
+          </div>
+          <div class="ret-timeline-row">
+            <span class="ret-timeline-method">Bank Transfer</span>
+            <span class="ret-timeline-time">7–14 business days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Non-Returnable -->
+      <div class="ret-section">
+        <div class="ret-noreturn">
+          <h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Non-Returnable Items
+          </h3>
+          <ul>
+            <li>Custom-made or personalized furniture pieces</li>
+            <li>Items marked as "Final Sale" or "As-Is"</li>
+            <li>Assembled flat-pack furniture (if assembly instructions were followed)</li>
+            <li>Items with hygiene seals that have been broken (mattresses, cushions)</li>
+            <li>Gift cards and store credit vouchers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

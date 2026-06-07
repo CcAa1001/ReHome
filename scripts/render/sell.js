@@ -179,8 +179,115 @@ export async function renderSell() {
        <div id="listings-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
        </div>
 
+       <!-- ═══ INCOMING OFFERS ═══ -->
+       <div style="margin-top: 60px;">
+         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+           <h2 style="font-family: var(--serif); font-size: 28px; margin: 0; color: #1c1917;">Incoming Offers</h2>
+           <span id="offers-count" style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 700;">0 pending</span>
+         </div>
+         <div id="offers-grid" style="display: grid; gap: 16px;">
+           <div style="text-align: center; padding: 48px; color: #78716c; background: #f5f4f0; border-radius: 16px;">
+             <div style="font-size: 32px; margin-bottom: 8px;">💬</div>
+             <div style="font-weight: 600;">No offers yet</div>
+             <div style="font-size: 13px; margin-top: 4px;">Offers from buyers will appear here.</div>
+           </div>
+         </div>
+       </div>
+
     </div>
   `;
+
+  // ─── Fetch and render offers ───
+  async function loadOffers() {
+    try {
+      const { data: offers } = await supabase
+        .from('offers')
+        .select('*, products(title, price, image_url), profiles:buyer_id(full_name, avatar_url)')
+        .eq('seller_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      const offersGrid = document.getElementById('offers-grid');
+      const offersCount = document.getElementById('offers-count');
+      if (!offersGrid || !offers) return;
+
+      const pendingCount = offers.filter(o => o.status === 'pending').length;
+      if (offersCount) offersCount.textContent = pendingCount + ' pending';
+
+      if (offers.length === 0) return;
+
+      offersGrid.innerHTML = offers.map(offer => {
+        const buyerName = offer.profiles?.full_name || 'Anonymous';
+        const buyerAvatar = offer.profiles?.avatar_url || '';
+        const productTitle = offer.products?.title || 'Unknown';
+        const productPrice = Number(offer.products?.price || 0);
+        const offerPrice = Number(offer.amount || 0);
+        const discount = productPrice > 0 ? Math.round((1 - offerPrice / productPrice) * 100) : 0;
+        const statusMap = {
+          pending: { bg: '#fef9c3', color: '#854d0e', label: 'Pending' },
+          accepted: { bg: '#dcfce7', color: '#166534', label: 'Accepted' },
+          rejected: { bg: '#fecaca', color: '#991b1b', label: 'Rejected' },
+        };
+        const st = statusMap[offer.status] || statusMap.pending;
+        const isPending = offer.status === 'pending';
+
+        return \`
+          <div style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 20px; transition: 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.05)'" onmouseout="this.style.boxShadow='none'">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: #f5f4f0; overflow: hidden; flex-shrink: 0;">
+              \${buyerAvatar ? \`<img src="\${sanitize(buyerAvatar)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">\` : \`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#78716c;font-size:18px;">\${buyerName.charAt(0)}</div>\`}
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <strong style="font-size:15px; color:#1c1917;">\${sanitize(buyerName)}</strong>
+                <span style="background:\${st.bg}; color:\${st.color}; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800; text-transform:uppercase;">\${st.label}</span>
+              </div>
+              <div style="font-size:13px; color:#78716c; margin-bottom:4px;">offered <strong style="color:#3d5a30;">$\${offerPrice.toLocaleString()}</strong> for <strong>\${sanitize(productTitle)}</strong> <span style="color:#c2410c; font-size:12px;">(-\${discount}%)</span></div>
+              \${offer.message ? \`<div style="font-size:13px; color:#78716c; font-style:italic; margin-top:4px;">"\${sanitize(offer.message)}"</div>\` : ''}
+            </div>
+            <div style="display:flex; gap:8px; flex-shrink:0;">
+              \${isPending ? \`
+                <button class="btn-accept-offer" data-offer-id="\${offer.id}" data-product-id="\${offer.product_id}" data-buyer-id="\${offer.buyer_id}" data-amount="\${offer.amount}" style="background:#3d5a30; color:white; border:none; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Accept</button>
+                <button class="btn-reject-offer" data-offer-id="\${offer.id}" style="background:white; color:#dc2626; border:1px solid #fca5a5; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Reject</button>
+              \` : ''}
+            </div>
+          </div>\`;
+      }).join('');
+
+      // Wire accept/reject buttons
+      offersGrid.querySelectorAll('.btn-accept-offer').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true; btn.textContent = '...';
+          try {
+            await supabase.from('offers').update({ status: 'accepted', updated_at: new Date().toISOString() }).eq('id', btn.dataset.offerId);
+            
+            // Add to buyer's cart at offer price
+            const { error: cartErr } = await supabase.from('cart_items').upsert({
+              user_id: btn.dataset.buyerId,
+              product_id: btn.dataset.productId,
+              quantity: 1,
+            }, { onConflict: 'user_id,product_id' });
+            
+            showToast('Offer accepted! Item added to buyer\\'s cart.');
+            loadOffers();
+          } catch (err) { showToast('Error: ' + err.message); }
+        });
+      });
+
+      offersGrid.querySelectorAll('.btn-reject-offer').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true; btn.textContent = '...';
+          try {
+            await supabase.from('offers').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', btn.dataset.offerId);
+            showToast('Offer rejected.');
+            loadOffers();
+          } catch (err) { showToast('Error: ' + err.message); }
+        });
+      });
+    } catch (err) {
+      console.error('Offers error:', err);
+    }
+  }
+
+  loadOffers();
 
   // ─── Render listings into grid ───
   function renderListings(filter) {

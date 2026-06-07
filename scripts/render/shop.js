@@ -51,6 +51,26 @@ export async function renderShop() {
 
   await fetchProductsAndRender(catalog, countEl);
   bindShopControls(catalog, countEl);
+
+  // Show search indicator if global search is active
+  const searchBar = document.getElementById('shop-search-bar');
+  const searchTerm = document.getElementById('shop-search-term');
+  const clearBtn = document.getElementById('shop-clear-search');
+  if (searchBar && window.rehomeSearchQuery) {
+    searchBar.style.display = 'flex';
+    if (searchTerm) searchTerm.textContent = window.rehomeSearchQuery;
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        window.rehomeSearchQuery = '';
+        const globalInput = document.getElementById('global-search-input');
+        if (globalInput) globalInput.value = '';
+        searchBar.style.display = 'none';
+        applyFilters(catalog, countEl);
+      });
+    }
+  } else if (searchBar) {
+    searchBar.style.display = 'none';
+  }
 }
 
 async function fetchProductsAndRender(catalog, countEl) {
@@ -297,6 +317,18 @@ function bindShopControls(catalog, countEl) {
 
 function applyFilters(catalog, countEl) {
   let res = [...allProducts];
+  
+  // TEXT SEARCH (from global search bar or shop search)
+  const searchQuery = (window.rehomeSearchQuery || '').toLowerCase().trim();
+  if (searchQuery) {
+    res = res.filter(p => 
+      (p.title || '').toLowerCase().includes(searchQuery) ||
+      (p.maker || '').toLowerCase().includes(searchQuery) ||
+      (p.description || '').toLowerCase().includes(searchQuery) ||
+      (p.category || '').toLowerCase().includes(searchQuery)
+    );
+  }
+  
   const cats = Array.from(document.querySelectorAll(".custom-checkbox input:checked")).map(cb => cb.closest("label").textContent.trim());
   if (cats.length && !cats.includes("All Furniture")) res = res.filter(p => cats.some(c => p.category?.toLowerCase() === c.toLowerCase()));
   const conds = Array.from(document.querySelectorAll(".chip.active")).map(c => c.textContent.trim());

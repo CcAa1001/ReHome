@@ -35,15 +35,22 @@ export async function renderHome() {
       if (session) {
         try {
           const { data: profile } = await supabase.from('profiles').select('impact_score').eq('id', session.user.id).single();
-          const { data: orders } = await supabase.from('orders').select('id', { count: 'exact' }).eq('user_id', session.user.id);
+          const { data: orders } = await supabase.from('orders').select('id, order_items(quantity)').eq('user_id', session.user.id);
           
           const impactScore = profile?.impact_score || 0;
-          const itemsRehomed = orders ? orders.length : 0;
+          let itemsRehomed = 0;
+          if (orders) {
+            orders.forEach(o => {
+              if (o.order_items) {
+                o.order_items.forEach(oi => itemsRehomed += (oi.quantity || 1));
+              }
+            });
+          }
           
           const impactStats = container.querySelector(".impact-stats");
           if (impactStats) {
             impactStats.innerHTML = `
-              <div><strong>${impactScore}kg</strong><span>Carbon Offset</span></div>
+              <div><strong>${impactScore}</strong><span>Impact Points</span></div>
               <div><strong>${itemsRehomed}</strong><span>Items ReHomed</span></div>
             `;
           }
