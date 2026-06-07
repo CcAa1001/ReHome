@@ -46,6 +46,25 @@ export async function renderCart() {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+
+      // Check for accepted offers to apply discounts
+      const { data: offers } = await supabase
+        .from("offers")
+        .select("product_id, amount")
+        .eq("buyer_id", session.user.id)
+        .eq("status", "accepted");
+        
+      if (cartItems && offers && offers.length > 0) {
+        cartItems.forEach(item => {
+          const offer = offers.find(o => o.product_id === item.product_id);
+          if (offer && item.products) {
+            item.products.original_price = item.products.price;
+            item.products.price = offer.amount; // Override with accepted offer price
+            item.has_offer_discount = true;
+          }
+        });
+      }
+
       return cartItems || [];
     };
 
@@ -85,6 +104,18 @@ export async function renderCart() {
         const safeQty = toSafeNumber(item.quantity, 1);
         const safeCartId = sanitizeShortText(item.id);
 
+        let priceHtml = `<div class="cart-item-price">$${safePrice}</div>`;
+        if (item.has_offer_discount) {
+          const origPrice = toSafeNumber(product.original_price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          priceHtml = `
+            <div class="cart-item-price" style="display:flex; flex-direction:column; align-items:flex-end;">
+              <span style="font-size:12px; color:#a8a29e; text-decoration:line-through;">$${origPrice}</span>
+              <span style="color:#3d5a30;">$${safePrice}</span>
+              <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; margin-top:4px;">Offer Accepted</span>
+            </div>
+          `;
+        }
+
         return `
         <article class="cart-item">
           <img src="${safeImage}" alt="${safeTitle}">
@@ -100,7 +131,7 @@ export async function renderCart() {
               <button class="remove-btn" data-id="${safeCartId}">Remove</button>
             </div>
           </div>
-          <div class="cart-item-price">$${safePrice}</div>
+          ${priceHtml}
         </article>`;
       }).join("");
 

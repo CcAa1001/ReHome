@@ -169,29 +169,22 @@ export async function renderSell() {
 
        <!-- ═══ LISTINGS SECTION ═══ -->
        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <h2 style="font-family: var(--serif); font-size: 28px; margin: 0; color: #1c1917;">Active Listings</h2>
+          <h2 id="section-title" style="font-family: var(--serif); font-size: 28px; margin: 0; color: #1c1917;">My Listings</h2>
           <div id="listing-filter-tabs" style="display: flex; background: #f5f5f4; border-radius: 8px; padding: 4px; border: 1px solid #e7e5e4; gap: 2px;">
              <button class="sell-filter-tab active" data-filter="all" style="border: none; background: white; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; color: #1c1917;">All <span style="background: #e7e5e4; padding: 1px 6px; border-radius: 99px; font-size: 11px; margin-left: 4px;">${allProducts.length}</span></button>
              <button class="sell-filter-tab" data-filter="draft" style="border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer;">Drafts <span style="background: #e7e5e4; padding: 1px 6px; border-radius: 99px; font-size: 11px; margin-left: 4px;">${draftCount}</span></button>
              <button class="sell-filter-tab" data-filter="sold" style="border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer;">Sold <span style="background: #e7e5e4; padding: 1px 6px; border-radius: 99px; font-size: 11px; margin-left: 4px;">${soldCount}</span></button>
+             <button class="sell-filter-tab" data-filter="offers" style="border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer;">Offers <span id="offers-badge" style="background: #dcfce7; color: #166534; padding: 1px 6px; border-radius: 99px; font-size: 11px; margin-left: 4px;">0</span></button>
           </div>
        </div>
 
-       <div id="listings-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
-       </div>
-
-       <!-- ═══ INCOMING OFFERS ═══ -->
-       <div style="margin-top: 60px;">
-         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-           <h2 style="font-family: var(--serif); font-size: 28px; margin: 0; color: #1c1917;">Incoming Offers</h2>
-           <span id="offers-count" style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 700;">0 pending</span>
-         </div>
-         <div id="offers-grid" style="display: grid; gap: 16px;">
-           <div style="text-align: center; padding: 48px; color: #78716c; background: #f5f4f0; border-radius: 16px;">
-             <div style="font-size: 32px; margin-bottom: 8px;">💬</div>
-             <div style="font-weight: 600;">No offers yet</div>
-             <div style="font-size: 13px; margin-top: 4px;">Offers from buyers will appear here.</div>
-           </div>
+       <div id="listings-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;"></div>
+       
+       <div id="offers-grid" style="display: none; gap: 16px; flex-direction: column;">
+         <div style="text-align: center; padding: 48px; color: #78716c; background: #f5f4f0; border-radius: 16px;">
+           <div style="font-size: 32px; margin-bottom: 8px;">💬</div>
+           <div style="font-weight: 600;">No offers yet</div>
+           <div style="font-size: 13px; margin-top: 4px;">Offers from buyers will appear here.</div>
          </div>
        </div>
 
@@ -208,11 +201,11 @@ export async function renderSell() {
         .order('created_at', { ascending: false });
       
       const offersGrid = document.getElementById('offers-grid');
-      const offersCount = document.getElementById('offers-count');
+      const offersBadge = document.getElementById('offers-badge');
       if (!offersGrid || !offers) return;
 
       const pendingCount = offers.filter(o => o.status === 'pending').length;
-      if (offersCount) offersCount.textContent = pendingCount + ' pending';
+      if (offersBadge) offersBadge.textContent = pendingCount;
 
       if (offers.length === 0) return;
 
@@ -389,7 +382,18 @@ export async function renderSell() {
       tab.style.background = 'white';
       tab.style.color = '#1c1917';
       tab.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-      renderListings(tab.dataset.filter);
+      
+      const filter = tab.dataset.filter;
+      if (filter === 'offers') {
+        document.getElementById('listings-grid').style.display = 'none';
+        document.getElementById('offers-grid').style.display = 'grid';
+        document.getElementById('section-title').textContent = 'Incoming Offers';
+      } else {
+        document.getElementById('offers-grid').style.display = 'none';
+        document.getElementById('listings-grid').style.display = 'grid';
+        document.getElementById('section-title').textContent = 'My Listings';
+        renderListings(filter);
+      }
     });
   });
 
