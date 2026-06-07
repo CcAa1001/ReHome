@@ -1,4 +1,4 @@
-import { getRouteParams, navigate } from "../router.js";
+import { getRouteParams, navigate, setRouteParams } from "../router.js";
 import { getSupabaseClient } from "../supabaseClient.js";
 import { clampInteger, isUuid, sanitize, sanitizeShortText, sanitizeUrl, toSafeMoney } from "../security.js";
 import { showToast } from "../ui.js";
@@ -16,6 +16,7 @@ export async function renderProductDetail() {
 
   try {
     const supabase = await getSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
     const { data: product, error } = await supabase.from('products').select(`
       *,
       profiles:seller_id (shop_name, full_name, avatar_url)
@@ -41,6 +42,17 @@ export async function renderProductDetail() {
 
     const stockTersedia = clampInteger(product.stock ?? 1, 1, 999, 1);
     const isActiveClass = favoriteIds.includes(product.id) ? "active" : "";
+
+    let cartButtonHtml = '';
+    if (user && user.id === product.seller_id) {
+       cartButtonHtml = `<div style="width: 100%; padding: 16px; background-color: #f5f5f4; color: #78716c; border-radius: 12px; font-size: 16px; font-weight: 600; text-align: center;">You own this item</div>`;
+    } else {
+       cartButtonHtml = `
+            <button id="add-to-cart-btn" style="width: 100%; padding: 16px; background-color: #556b45; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              <span>Add to Cart</span>
+            </button>`;
+    }
 
     container.innerHTML = `
       <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: var(--sans);">
@@ -99,10 +111,7 @@ export async function renderProductDetail() {
               <span style="color: #c2410c; font-size: 13px; font-weight: 500;">Only ${stockTersedia} in stock</span>
             </div>
 
-            <button id="add-to-cart-btn" style="width: 100%; padding: 16px; background-color: #556b45; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-              <span>Add to Cart</span>
-            </button>
+            ${cartButtonHtml}
             
             <button class="btn-outline">Make an Offer</button>
 
@@ -116,12 +125,25 @@ export async function renderProductDetail() {
                   <div style="font-size: 12px; color: #78716c; margin-top: 2px;">★ 4.9 (124 reviews)</div>
                 </div>
               </div>
-              <span style="font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer;">View Shop</span>
+              <span id="view-shop-btn" style="font-size: 13px; font-weight: 600; color: #78716c; cursor: pointer;">View Shop</span>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Lightbox Overlay -->
+      <div id="pd-lightbox" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column;">
+        <div style="position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer;" id="lightbox-close">×</div>
+        <div style="position: absolute; left: 20px; top: 50%; color: white; font-size: 40px; cursor: pointer; transform: translateY(-50%);" id="lightbox-prev">‹</div>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain;">
+        <div style="position: absolute; right: 20px; top: 50%; color: white; font-size: 40px; cursor: pointer; transform: translateY(-50%);" id="lightbox-next">›</div>
+      </div>
     `;
+
+    document.getElementById("view-shop-btn")?.addEventListener("click", () => {
+      setRouteParams({ id: product.seller_id });
+      navigate("seller-profile");
+    });
 
     document.getElementById("product-back-shop")?.addEventListener("click", () => navigate("shop"));
 
@@ -130,13 +152,57 @@ export async function renderProductDetail() {
       thumbGallery.innerHTML = productImages.slice(0, 4).map((src, i) => {
         const isLast = i === 3 && productImages.length > 4;
         return `
-          <div style="position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; border: 2px solid ${i===0 ? '#3d5a30' : 'transparent'};">
+          <div class="thumb-item" data-index="${i}" style="position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer; border: 2px solid ${i===0 ? '#3d5a30' : 'transparent'};">
             <img src="${src}" style="width: 100%; height: 100%; object-fit: cover;">
             ${isLast ? `<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">+${productImages.length - 3} View</div>` : ''}
           </div>
         `;
       }).join('');
     }
+
+    // Lightbox Logic
+    let currentLbIndex = 0;
+    const lightbox = document.getElementById("pd-lightbox");
+    const lbImg = document.getElementById("lightbox-img");
+    const mainImgEl = document.getElementById("main-image");
+
+    const openLightbox = (index) => {
+      currentLbIndex = index;
+      lbImg.src = productImages[currentLbIndex];
+      lightbox.style.display = "flex";
+    };
+
+    mainImgEl?.addEventListener("click", () => openLightbox(0));
+    mainImgEl.style.cursor = "pointer";
+
+    document.querySelectorAll(".thumb-item").forEach(el => {
+      el.addEventListener("click", (e) => {
+        const idx = parseInt(el.getAttribute("data-index"), 10);
+        mainImgEl.src = productImages[idx];
+        document.querySelectorAll(".thumb-item").forEach(t => t.style.borderColor = 'transparent');
+        el.style.borderColor = '#3d5a30';
+        if (e.target.closest('div').innerHTML.includes('+')) {
+          openLightbox(idx);
+        } else {
+          currentLbIndex = idx; // update index for main image click
+        }
+      });
+    });
+
+    document.getElementById("lightbox-close")?.addEventListener("click", () => lightbox.style.display = "none");
+    document.getElementById("lightbox-prev")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentLbIndex = (currentLbIndex - 1 + productImages.length) % productImages.length;
+      lbImg.src = productImages[currentLbIndex];
+    });
+    document.getElementById("lightbox-next")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentLbIndex = (currentLbIndex + 1) % productImages.length;
+      lbImg.src = productImages[currentLbIndex];
+    });
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) lightbox.style.display = "none";
+    });
 
     const favBtn = container.querySelector(".btn-favorite");
     favBtn.addEventListener("click", () => {
@@ -165,37 +231,46 @@ export async function renderProductDetail() {
     });
 
     const btnCart = document.getElementById("add-to-cart-btn");
-    btnCart.addEventListener("click", async (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const requestedQty = clampInteger(qtyInput.value, 1, stockTersedia, 1);
-      btnCart.disabled = true; btnCart.style.opacity = "0.7";
-      const originalText = btnCart.innerHTML;
-      btnCart.querySelector("span").textContent = "Checking...";
-      
-      try {
-          const { data: { user }, error: authErr } = await supabase.auth.getUser();
-          if (authErr || !user) { alert("Sesi login belum aktif. Silakan Login."); return; }
+    if (btnCart) {
+      btnCart.addEventListener("click", async (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const requestedQty = clampInteger(qtyInput.value, 1, stockTersedia, 1);
+        btnCart.disabled = true; btnCart.style.opacity = "0.7";
+        const originalText = btnCart.innerHTML;
+        btnCart.querySelector("span").textContent = "Checking...";
+        
+        try {
+            if (!user) { alert("Sesi login belum aktif. Silakan Login."); return; }
 
-          const { data: existingCarts } = await supabase.from('cart_items').select('id, quantity').eq('user_id', user.id).eq('product_id', product.id);
-          let qtyInDb = existingCarts && existingCarts.length > 0 ? existingCarts.reduce((sum, item) => sum + item.quantity, 0) : 0;
+            const { data: existingCarts, error: checkErr } = await supabase.from('cart_items').select('id, quantity').eq('user_id', user.id).eq('product_id', product.id);
+            if (checkErr) throw new Error(checkErr.message);
 
-          if (qtyInDb + requestedQty > stockTersedia) { showToast(`Gagal! Sisa kuota beli untuk item ini: ${stockTersedia - qtyInDb}`); return; }
-          
-          btnCart.querySelector("span").textContent = "Syncing...";
-          flyToCart(e.clientX, e.clientY, safeImageUrl);
+            let qtyInDb = existingCarts && existingCarts.length > 0 ? existingCarts[0].quantity : 0;
 
-          if (existingCarts && existingCarts.length > 0) {
-             await supabase.from('cart_items').update({ quantity: existingCarts[0].quantity + requestedQty }).eq('id', existingCarts[0].id);
-          } else {
-             await supabase.from('cart_items').insert({ user_id: user.id, product_id: product.id, quantity: requestedQty });
-          }
-             
-          showToast(`Added ${requestedQty}x ${safeTitle} to cart.`);
-          if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
+            if (qtyInDb + requestedQty > stockTersedia) { showToast(`Gagal! Sisa kuota beli untuk item ini: ${stockTersedia - qtyInDb}`); return; }
+            
+            btnCart.querySelector("span").textContent = "Syncing...";
+            flyToCart(e.clientX, e.clientY, productImages[0]);
 
-      } catch (err) { console.error(err); showToast("Gagal menyimpan ke database.");
-      } finally { btnCart.innerHTML = originalText; btnCart.disabled = false; btnCart.style.opacity = "1"; }
-    });
+            if (existingCarts && existingCarts.length > 0) {
+               const { error: updErr } = await supabase.from('cart_items').update({ quantity: qtyInDb + requestedQty }).eq('id', existingCarts[0].id);
+               if (updErr) throw new Error(updErr.message);
+            } else {
+               const { error: insErr } = await supabase.from('cart_items').insert({ user_id: user.id, product_id: product.id, quantity: requestedQty });
+               if (insErr) throw new Error(insErr.message);
+            }
+               
+            showToast(`Added ${requestedQty}x ${safeTitle} to cart.`);
+            if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
+
+        } catch (err) { 
+            console.error(err); 
+            showToast("Gagal menyimpan ke database: " + err.message);
+        } finally { 
+            btnCart.innerHTML = originalText; btnCart.disabled = false; btnCart.style.opacity = "1"; 
+        }
+      });
+    }
 
   } catch (err) {
     console.warn("Gagal render produk:", err);

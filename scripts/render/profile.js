@@ -128,7 +128,8 @@ export async function renderProfile() {
           title,
           quantity,
           price,
-          product_id
+          product_id,
+          products (image_url)
         )
       `)
       .eq('user_id', user.id)
@@ -146,46 +147,47 @@ export async function renderProfile() {
             <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No purchases yet</div>
             <div style="font-size:14px;">Your order history will appear here.</div>
           </div>`;
-      } else {
-        tabPurchases.innerHTML = orders.map(order => {
-          const itemsList = (order.order_items || []).map(item => `
-            <div style="display:flex;justify-content:space-between;align-items:center;
-                        padding:8px 0;border-bottom:1px solid #f5f5f4;font-size:14px;">
-              <span style="color:#1c1917;">
-                ${sanitize(item.title)}
-                ${item.quantity > 1 ? `<span style="color:#78716c;"> × ${item.quantity}</span>` : ''}
-              </span>
-              <span style="color:#3d5a30;font-weight:600;">
-                $${(item.price * item.quantity).toFixed(2)}
-              </span>
-            </div>`).join('');
-
-          return `
-            <div style="background:white;border:1px solid #e7e5e4;border-radius:12px;
-                        padding:20px;margin-bottom:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;
-                          margin-bottom:12px;">
-                <div>
-                  <div style="font-size:12px;color:#78716c;">Order ID</div>
-                  <div style="font-weight:700;font-size:14px;color:#1c1917;font-family:monospace;">
-                    #${sanitize(order.id.slice(0, 8).toUpperCase())}
+        tabPurchases.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">` + 
+          orders.flatMap(order => {
+            return (order.order_items || []).map(item => {
+              const statusDisplay = order.status === 'pending' ? 'Pending' : order.status === 'delivered' ? 'Delivered' : order.status;
+              const statusColor = order.status === 'delivered' ? '#15803d' : '#854d0e';
+              const statusBg = order.status === 'delivered' ? '#f0faf5' : '#fef9c3';
+              const imgUrl = item.products?.image_url || '';
+              
+              return `
+                <div style="background:white;border:1px solid #e7e5e4;border-radius:12px;
+                            overflow:hidden;cursor:pointer;"
+                     onclick="window.location.hash='product-detail?productId=${item.product_id}'">
+                  <div style="position:relative;">
+                    <img src="${sanitize(imgUrl)}"
+                         style="width:100%;aspect-ratio:4/3;object-fit:cover;"
+                         onerror="this.style.background='#f5f5f4';this.removeAttribute('src')">
+                    <div style="position:absolute;top:8px;right:8px;">
+                      <span style="background:${statusBg};color:${statusColor};padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid ${statusBg};text-transform:capitalize;">${sanitize(statusDisplay)}</span>
+                    </div>
                   </div>
-                </div>
-                <div style="text-align:right;">
-                  ${statusBadge(order.status)}
-                  <div style="font-size:12px;color:#78716c;margin-top:4px;">
-                    ${formatDate(order.created_at)}
+                  <div style="padding:12px;">
+                    <div style="font-weight:700;color:#1c1917;font-size:14px;
+                                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                      ${sanitize(item.title)}
+                    </div>
+                    <div style="display:flex;justify-content:space-between;
+                                align-items:center;margin-top:8px;">
+                      <span style="color:#3d5a30;font-weight:600;font-size:14px;">
+                        $${Number(item.price).toFixed(2)}
+                      </span>
+                      <span style="color:#78716c;font-size:12px;">
+                        Qty: ${item.quantity}
+                      </span>
+                    </div>
+                    <div style="color:#a8a29e;font-size:11px;margin-top:4px;">
+                      Order #${sanitize(order.id.slice(0, 8).toUpperCase())} &bull; ${formatDate(order.created_at)}
+                    </div>
                   </div>
-                </div>
-              </div>
-              ${itemsList}
-              <div style="display:flex;justify-content:flex-end;margin-top:12px;
-                          font-weight:700;font-size:15px;color:#1c1917;">
-                Total: <span style="color:#3d5a30;margin-left:8px;">$${Number(order.total).toFixed(2)}</span>
-              </div>
-            </div>`;
-        }).join('');
-      }
+                </div>`;
+            });
+          }).join('') + `</div>`;
     }
 
     // ==========================================
@@ -324,50 +326,8 @@ export async function renderProfile() {
       .find(b => b.textContent.trim().includes("Edit Profile"));
 
     if (editBtn) {
-      editBtn.addEventListener("click", async () => {
-        const newShop = prompt("Update your shop name:", profile.shop_name || profile.full_name);
-        const newDesc = prompt("Update your description:", profile.description);
-        const newLoc  = prompt("Update your location:",    profile.location);
-        if (newDesc !== null && newLoc !== null && newShop !== null) {
-          const original = editBtn.textContent;
-          editBtn.textContent = "Saving...";
-          await supabase
-            .from('profiles')
-            .update({ description: newDesc, location: newLoc, shop_name: newShop })
-            .eq('id', user.id);
-          showToast("Profile Updated!");
-          editBtn.textContent = original;
-          renderProfile();
-        }
-      });
-    }
-
-    const avatarUploadInput = document.getElementById('avatar-upload');
-    if (avatarUploadInput) {
-      avatarUploadInput.addEventListener('change', async (e) => {
-        if (!e.target.files || e.target.files.length === 0) return;
-        const file = e.target.files[0];
-        
-        showToast("Uploading avatar...");
-        const ext = file.name.split('.').pop();
-        const path = `${user.id}/avatar_${Date.now()}.${ext}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('product-images') // using the existing bucket for simplicity
-          .upload(path, file, { cacheControl: '3600', upsert: false });
-          
-        if (uploadError) {
-          showToast("Upload failed.");
-          return;
-        }
-        
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(path);
-          
-        await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
-        showToast("Avatar updated!");
-        renderProfile();
+      editBtn.addEventListener("click", () => {
+        navigate("edit-profile");
       });
     }
 

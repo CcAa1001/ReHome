@@ -18,14 +18,13 @@ const PAGE_SIZE = 9;
 
 // Menyimpan ID Favorit dari Database
 let favoriteIds = [];
+let cartMap = {};
 let currentUser = null;
 
 export async function renderShop() {
   const catalog = document.getElementById("shop-catalog") || document.querySelector(".product-grid");
   const countEl = document.querySelector(".shop-header p") || document.querySelector("p.sub");
   if (!catalog) return;
-  
-  catalog.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">Loading treasures...</div>`;
 
   try {
     const supabase = await getSupabaseClient();
@@ -38,25 +37,47 @@ export async function renderShop() {
         // Ambil favorit permanen dari Supabase
         const { data: favs } = await supabase.from('favorites').select('product_id').eq('user_id', currentUser.id);
         if (favs) favoriteIds = favs.map(f => f.product_id);
+
+        const { data: cartData } = await supabase.from('cart_items').select('product_id, quantity').eq('user_id', currentUser.id);
+        if (cartData) {
+            cartMap = {};
+            cartData.forEach(item => cartMap[item.product_id] = item.quantity);
+        }
     } else {
         // Jika belum login, simpan sementara di browser
         favoriteIds = JSON.parse(localStorage.getItem("rehome_favorites") || "[]");
+        cartMap = {};
     }
-
-    // 2. AMBIL SEMUA PRODUK
-    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-    allProducts = data || []; 
-    filteredProducts = [...allProducts];
-    
-  } catch (err) { 
-    catalog.innerHTML = `<div style="color:red; grid-column:1/-1; text-align:center;">Error loading products.</div>`; 
-    return; 
+  } catch (err) {
+    console.error("Error init shop:", err);
   }
 
-  page = 0; 
-  renderPage(catalog, countEl); 
+  await fetchProductsAndRender(catalog, countEl);
   bindShopControls(catalog, countEl);
 }
+
+async function fetchProductsAndRender(catalog, countEl) {
+  catalog.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;">Loading treasures...</div>`;
+  try {
+    const supabase = await getSupabaseClient();
+    const showMyItemsCheckbox = document.getElementById("filter-show-my-items");
+    const showMyItems = showMyItemsCheckbox ? showMyItemsCheckbox.checked : false;
+
+    let query = supabase.from('products').select('*').eq('status', 'active').order('created_at', { ascending: false });
+
+    if (currentUser && !showMyItems) {
+      query = query.neq('seller_id', currentUser.id);
+    }
+
+    const { data } = await query;
+    allProducts = data || [];
+    page = 0;
+    applyFilters(catalog, countEl);
+  } catch (err) {
+    catalog.innerHTML = `<div style="color:red; grid-column:1/-1; text-align:center;">Error loading products.</div>`;
+  }
+}
+
 
 function renderPage(catalog, countEl) {
   if (countEl) countEl.textContent = `Discover ${filteredProducts.length} preloved gems.`;
@@ -68,6 +89,21 @@ function renderPage(catalog, countEl) {
     const safeTitle = sanitize(p.title);
     const safeCategory = sanitize(p.category || "Furniture");
     const safeCondition = sanitize(p.condition || "Excellent");
+    const qty = cartMap[p.id] || 0;
+    let cartControls = "";
+    if (qty > 0) {
+      cartControls = `
+        <div class="cart-controls" style="display:flex; align-items:center; gap:12px; margin-top:12px;">
+          <button class="btn-qty-minus" data-id="${p.id}" style="flex:1; padding:6px 12px; border:1px solid rgba(197, 200, 188, 0.5); border-radius:8px; background:white; cursor:pointer; font-weight:700; color:#1c1917;">-</button>
+          <span style="font-weight:700; width: 20px; text-align:center;">${qty}</span>
+          <button class="btn-qty-plus" data-id="${p.id}" style="flex:1; padding:6px 12px; border:1px solid rgba(197, 200, 188, 0.5); border-radius:8px; background:white; cursor:pointer; font-weight:700; color:#1c1917;">+</button>
+        </div>
+      `;
+    } else {
+      cartControls = `
+        <button class="btn-add-cart" data-id="${p.id}" style="margin-top:12px; padding:8px 16px; background:#3d5a30; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; width:100%;">Add to Cart</button>
+      `;
+    }
     
     return `
     <div class="prod-card" data-id="${p.id}" style="cursor:pointer; position:relative; overflow:hidden;">
@@ -79,6 +115,7 @@ function renderPage(catalog, countEl) {
         <span style="font-size:12px;color:#78716c;font-weight:600;">${safeCondition} · ${safeCategory}</span>
         <h3 style="font-size:16px;margin:4px 0;">${safeTitle}</h3>
         <strong style="color:#3d5a30;">$${p.price}</strong>
+        ${cartControls}
       </div>
     </div>`;
   }).join("");
@@ -88,6 +125,30 @@ function renderPage(catalog, countEl) {
     card.addEventListener("click", () => { 
         setRouteParams({ productId: card.dataset.id }); 
         navigate("product-detail"); 
+    });
+  });
+
+  // CART BUTTONS
+  catalog.querySelectorAll(".btn-add-cart").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await updateCartItem(btn.dataset.id, 1, catalog, countEl);
+    });
+  });
+
+  catalog.querySelectorAll(".btn-qty-minus").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      await updateCartItem(id, (cartMap[id] || 1) - 1, catalog, countEl);
+    });
+  });
+
+  catalog.querySelectorAll(".btn-qty-plus").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      await updateCartItem(id, (cartMap[id] || 1) + 1, catalog, countEl);
     });
   });
 
@@ -212,7 +273,17 @@ function bindShopControls(catalog, countEl) {
     iMax.addEventListener("change", () => { rMax.value = iMax.value; updateTrack(); applyFilters(catalog, countEl); });
   }
   
-  document.querySelectorAll(".chip, .custom-checkbox input").forEach(el => el.addEventListener("change", () => applyFilters(catalog, countEl)));
+  const showMyItemsCheckbox = document.getElementById("filter-show-my-items");
+  if (showMyItemsCheckbox) {
+    showMyItemsCheckbox.addEventListener("change", () => {
+      fetchProductsAndRender(catalog, countEl);
+    });
+  }
+  
+  document.querySelectorAll(".chip, .custom-checkbox input").forEach(el => {
+    if (el.id === "filter-show-my-items") return;
+    el.addEventListener("change", () => applyFilters(catalog, countEl));
+  });
   document.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { el.classList.toggle("active"); applyFilters(catalog, countEl); }));
 }
 
@@ -227,4 +298,46 @@ function applyFilters(catalog, countEl) {
   const sort = document.querySelector(".sort-select")?.value;
   if (sort?.includes("Low to High")) res.sort((a, b) => a.price - b.price); else if (sort?.includes("High to Low")) res.sort((a, b) => b.price - a.price);
   filteredProducts = res; renderPage(catalog, countEl);
+}
+
+async function updateCartItem(productId, newQty, catalog, countEl) {
+  if (!currentUser) {
+    showToast("Please login to add to cart.");
+    return;
+  }
+  
+  const oldQty = cartMap[productId] || 0;
+  
+  // Optimistic UI update
+  if (newQty <= 0) {
+    delete cartMap[productId];
+  } else {
+    cartMap[productId] = newQty;
+  }
+  renderPage(catalog, countEl);
+  
+  try {
+    const supabase = await getSupabaseClient();
+    if (newQty <= 0) {
+      await supabase.from('cart_items').delete().eq('user_id', currentUser.id).eq('product_id', productId);
+      showToast("Removed from cart.");
+    } else {
+      if (oldQty > 0) {
+        await supabase.from('cart_items').update({ quantity: newQty }).eq('user_id', currentUser.id).eq('product_id', productId);
+      } else {
+        await supabase.from('cart_items').insert({ user_id: currentUser.id, product_id: productId, quantity: newQty });
+      }
+      showToast("Cart updated.");
+    }
+  } catch (err) {
+    console.error("Cart error:", err);
+    // Rollback
+    if (oldQty <= 0) {
+      delete cartMap[productId];
+    } else {
+      cartMap[productId] = oldQty;
+    }
+    renderPage(catalog, countEl);
+    showToast("Error updating cart.");
+  }
 }
