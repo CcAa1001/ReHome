@@ -76,7 +76,9 @@ async function boot() {
   bindLoginPage();
 
   const supabase = await getSupabaseClient();
+  const loader = document.getElementById("loader");
   if (!supabase) {
+      if (loader) loader.hidden = true;
       document.getElementById("app").hidden = true;
       document.getElementById("login").hidden = false;
       return;
@@ -93,6 +95,7 @@ async function boot() {
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {
+      if (loader) loader.hidden = true;
       document.getElementById("login").hidden = true;
       document.getElementById("app").hidden = false;
       await window.updateGlobalCartBadge();
@@ -100,6 +103,7 @@ async function boot() {
       const lastRoute = localStorage.getItem('rehome_current_route') || "home";
       navigate(lastRoute);
   } else {
+      if (loader) loader.hidden = true;
       document.getElementById("app").hidden = true;
       document.getElementById("login").hidden = false;
   }
