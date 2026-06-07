@@ -189,6 +189,7 @@ export async function renderProfile() {
                 </div>`;
             });
           }).join('') + `</div>`;
+      }
     }
 
     // ==========================================

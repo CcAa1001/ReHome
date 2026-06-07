@@ -261,7 +261,7 @@ function bindShopControls(catalog, countEl) {
 
   // SLIDER HARGA
   const rMin = document.querySelector(".range-min"), rMax = document.querySelector(".range-max"), iMin = document.getElementById("input-min"), iMax = document.getElementById("input-max"), track = document.querySelector(".slider-track");
-  function updateTrack() { if(track && rMin && rMax) { track.style.left = (rMin.value/5000)*100 + "%"; track.style.right = 100 - (rMax.value/5000)*100 + "%"; } }
+  function updateTrack() { if(track && rMin && rMax) { track.style.left = (rMin.value/20000)*100 + "%"; track.style.right = 100 - (rMax.value/20000)*100 + "%"; } }
   
   if (rMin && rMax) {
     updateTrack();
@@ -305,6 +305,14 @@ async function updateCartItem(productId, newQty, catalog, countEl) {
     showToast("Please login to add to cart.");
     return;
   }
+
+  const product = allProducts.find(p => p.id === productId);
+  const maxStock = product ? (product.stock !== null ? product.stock : 1) : 1;
+
+  if (newQty > maxStock) {
+    showToast(`Hanya tersisa ${maxStock} stok!`);
+    return;
+  }
   
   const oldQty = cartMap[productId] || 0;
   
@@ -328,6 +336,7 @@ async function updateCartItem(productId, newQty, catalog, countEl) {
         await supabase.from('cart_items').insert({ user_id: currentUser.id, product_id: productId, quantity: newQty });
       }
       showToast("Cart updated.");
+      if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
     }
   } catch (err) {
     console.error("Cart error:", err);
