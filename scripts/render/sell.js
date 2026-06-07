@@ -23,8 +23,9 @@ function statusColor(status) {
 }
 
 export async function renderSell() {
-  const container = document.getElementById("router-view");
-  if (!container) return;
+  try {
+    const container = document.getElementById("router-view");
+    if (!container) return;
 
   const supabase = await getSupabaseClient();
   if (!supabase) { showToast("Database not connected."); return; }
@@ -532,5 +533,9 @@ export async function renderSell() {
         renderSell(); // Re-render the whole page with fresh data
       }
     });
+  }
+  } catch (err) {
+    alert("Runtime error in renderSell: " + err.message + "\n" + err.stack);
+    console.error(err);
   }
 }
