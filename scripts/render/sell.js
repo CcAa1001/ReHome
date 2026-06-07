@@ -241,26 +241,26 @@ export async function renderSell() {
         const st = statusMap[offer.status] || statusMap.pending;
         const isPending = offer.status === 'pending';
 
-        return \`
+        return `
           <div style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 20px; transition: 0.2s;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.05)'" onmouseout="this.style.boxShadow='none'">
             <div style="width: 56px; height: 56px; border-radius: 50%; background: #f5f4f0; overflow: hidden; flex-shrink: 0;">
-              \${buyerAvatar ? \`<img src="\${sanitize(buyerAvatar)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">\` : \`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#78716c;font-size:18px;">\${buyerName.charAt(0)}</div>\`}
+              ${buyerAvatar ? `<img src="${sanitize(buyerAvatar)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#78716c;font-size:18px;">${buyerName.charAt(0)}</div>`}
             </div>
             <div style="flex:1; min-width:0;">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                <strong style="font-size:15px; color:#1c1917;">\${sanitize(buyerName)}</strong>
-                <span style="background:\${st.bg}; color:\${st.color}; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800; text-transform:uppercase;">\${st.label}</span>
+                <strong style="font-size:15px; color:#1c1917;">${sanitize(buyerName)}</strong>
+                <span style="background:${st.bg}; color:${st.color}; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:800; text-transform:uppercase;">${st.label}</span>
               </div>
-              <div style="font-size:13px; color:#78716c; margin-bottom:4px;">offered <strong style="color:#3d5a30;">$\${offerPrice.toLocaleString()}</strong> for <strong>\${sanitize(productTitle)}</strong> <span style="color:#c2410c; font-size:12px;">(-\${discount}%)</span></div>
-              \${offer.message ? \`<div style="font-size:13px; color:#78716c; font-style:italic; margin-top:4px;">"\${sanitize(offer.message)}"</div>\` : ''}
+              <div style="font-size:13px; color:#78716c; margin-bottom:4px;">offered <strong style="color:#3d5a30;">$${offerPrice.toLocaleString()}</strong> for <strong>${sanitize(productTitle)}</strong> <span style="color:#c2410c; font-size:12px;">(-${discount}%)</span></div>
+              ${offer.message ? `<div style="font-size:13px; color:#78716c; font-style:italic; margin-top:4px;">"${sanitize(offer.message)}"</div>` : ''}
             </div>
             <div style="display:flex; gap:8px; flex-shrink:0;">
-              \${isPending ? \`
-                <button class="btn-accept-offer" data-offer-id="\${offer.id}" data-product-id="\${offer.product_id}" data-buyer-id="\${offer.buyer_id}" data-amount="\${offer.amount}" style="background:#3d5a30; color:white; border:none; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Accept</button>
-                <button class="btn-reject-offer" data-offer-id="\${offer.id}" style="background:white; color:#dc2626; border:1px solid #fca5a5; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Reject</button>
-              \` : ''}
+              ${isPending ? `
+                <button class="btn-accept-offer" data-offer-id="${offer.id}" data-product-id="${offer.product_id}" data-buyer-id="${offer.buyer_id}" data-amount="${offer.amount}" style="background:#3d5a30; color:white; border:none; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Accept</button>
+                <button class="btn-reject-offer" data-offer-id="${offer.id}" style="background:white; color:#dc2626; border:1px solid #fca5a5; padding:8px 20px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:0.2s;">Reject</button>
+              ` : ''}
             </div>
-          </div>\`;
+          </div>`;
       }).join('');
 
       // Wire accept/reject buttons
