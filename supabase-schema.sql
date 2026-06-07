@@ -40,6 +40,7 @@ create table if not exists public.products (
   carbon_offset numeric(8,2) not null default 0,
   seller_id uuid references public.profiles(id) on delete set null,
   is_featured boolean not null default false,
+  status text not null default 'active',
   created_at timestamptz not null default now()
 );
 

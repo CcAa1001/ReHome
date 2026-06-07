@@ -1,6 +1,299 @@
-<div class="page-shell">
-  <section class="section-heading"><div><span class="eyebrow">Seller Tools</span><h1>Sales History</h1></div></section>
-  <div class="history-list">
-    <article class="history-card"><div><header><time>May 14, 2026</time><span>Paid out</span></header><h3>Artisan Clay Vase</h3></div><strong>$85</strong></article>
+<style>
+  .sh-wrapper {
+    font-family: var(--sans, 'DM Sans', sans-serif);
+    color: #1c1917;
+    padding-bottom: 100px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .sh-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #78716c;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 32px;
+    transition: color 0.2s;
+  }
+  .sh-back-btn:hover { color: #3d5a30; }
+  .sh-back-btn svg { transition: transform 0.2s; }
+  .sh-back-btn:hover svg { transform: translateX(-3px); }
+
+  .sh-header { margin-bottom: 40px; }
+  .sh-eyebrow {
+    display: inline-block;
+    padding: 5px 16px;
+    background: transparent;
+    border: 1px solid #c8c4bc;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #78716c;
+    margin-bottom: 16px;
+  }
+  .sh-header h1 {
+    font-family: var(--serif, 'Playfair Display', Georgia, serif);
+    font-size: 40px;
+    font-weight: 600;
+    color: #1c1917;
+    line-height: 1.15;
+    margin: 0 0 10px;
+  }
+  .sh-header p {
+    font-size: 15px;
+    color: #78716c;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Summary stats bar */
+  .sh-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .sh-stat-card {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .sh-stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #a8a29e;
+    margin-bottom: 8px;
+  }
+  .sh-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1c1917;
+    letter-spacing: -0.5px;
+  }
+  .sh-stat-value.green { color: #3d5a30; }
+
+  /* List container */
+  .sh-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .sh-list-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 0;
+  }
+  .sh-list-header span {
+    font-size: 13px;
+    color: #a8a29e;
+    font-weight: 500;
+  }
+
+  .sh-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Transaction card (JS will inject these) */
+  .sh-txn-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .sh-txn-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+  .sh-txn-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: #eae8e3;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .sh-txn-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .sh-txn-info h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sh-txn-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #78716c;
+  }
+  .sh-txn-meta time {
+    font-weight: 500;
+  }
+  .sh-txn-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .sh-txn-status.paid {
+    background: #edf2e8;
+    color: #3d5a30;
+  }
+  .sh-txn-status.pending {
+    background: #fef3e2;
+    color: #b45309;
+  }
+  .sh-txn-status.refunded {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+  .sh-txn-amount {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1c1917;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Empty state */
+  .sh-empty {
+    text-align: center;
+    padding: 72px 24px;
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .sh-empty-icon {
+    width: 72px;
+    height: 72px;
+    background: #f2f0eb;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .sh-empty h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 0 0 10px;
+  }
+  .sh-empty p {
+    font-size: 14px;
+    color: #78716c;
+    line-height: 1.6;
+    margin: 0 0 28px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .sh-empty-btn {
+    background: #3d5a30;
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sh-empty-btn:hover { background: #2e4424; }
+
+  @media (max-width: 640px) {
+    .sh-wrapper { padding: 0 16px 80px; }
+    .sh-stats-bar { grid-template-columns: 1fr; }
+    .sh-txn-card { flex-wrap: wrap; }
+  }
+</style>
+
+<div class="page-shell sh-wrapper">
+
+  <button class="sh-back-btn" data-route="sell">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    Back to Seller Dashboard
+  </button>
+
+  <div class="sh-header">
+    <span class="sh-eyebrow">Seller Tools</span>
+    <h1>Sales History</h1>
+    <p>All your past transactions in one place. Track payouts, review sold items, and keep an eye on your earnings.</p>
   </div>
+
+  <!-- Summary Stats -->
+  <div class="sh-stats-bar" id="sh-stats-bar">
+    <div class="sh-stat-card">
+      <div class="sh-stat-label">Total Sales</div>
+      <div class="sh-stat-value" id="sh-total-sales">—</div>
+    </div>
+    <div class="sh-stat-card">
+      <div class="sh-stat-label">Items Sold</div>
+      <div class="sh-stat-value" id="sh-items-sold">—</div>
+    </div>
+    <div class="sh-stat-card">
+      <div class="sh-stat-label">CO₂ Offset</div>
+      <div class="sh-stat-value green" id="sh-co2-offset">—</div>
+    </div>
+  </div>
+
+  <!-- Transaction List -->
+  <div class="sh-list-header">
+    <h2>Transactions</h2>
+    <span id="sh-transaction-count"></span>
+  </div>
+
+  <div class="sh-list" id="sales-history-list">
+
+    <!-- Empty State (shown by default, hidden when cards are injected) -->
+    <div class="sh-empty" id="sh-empty-state">
+      <div class="sh-empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="18" rx="3"></rect>
+          <path d="M2 9h20"></path>
+          <path d="M9 21V9"></path>
+        </svg>
+      </div>
+      <h3>No sales yet</h3>
+      <p>Once you sell your first item, your transaction history will appear here with all the details.</p>
+      <button class="sh-empty-btn" data-route="new-listing">Create Your First Listing</button>
+    </div>
+
+  </div>
+
 </div>

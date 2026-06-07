@@ -1,8 +1,473 @@
-<div class="page-shell form-page">
-  <section><span class="eyebrow">Seller Tools</span><h1>Create New Listing</h1></section>
-  <form class="settings-card" data-new-listing-form>
-    <label><span>Item title</span><input name="title" value="Scandinavian Oak Sideboard" required></label>
-    <label><span>Price</span><input name="price" value="$980" required></label>
-    <button class="primary-button" type="submit" data-action="submit-listing">Submit for Review</button>
+<style>
+  .nl-wrapper {
+    font-family: var(--sans, 'DM Sans', sans-serif);
+    color: #1c1917;
+    padding-bottom: 100px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .nl-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #78716c;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 32px;
+    transition: color 0.2s;
+  }
+  .nl-back-btn:hover { color: #3d5a30; }
+  .nl-back-btn svg { transition: transform 0.2s; }
+  .nl-back-btn:hover svg { transform: translateX(-3px); }
+
+  .nl-header { margin-bottom: 40px; }
+  .nl-eyebrow {
+    display: inline-block;
+    padding: 5px 16px;
+    background: transparent;
+    border: 1px solid #c8c4bc;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #78716c;
+    margin-bottom: 16px;
+  }
+  .nl-header h1 {
+    font-family: var(--serif, 'Playfair Display', Georgia, serif);
+    font-size: 40px;
+    font-weight: 600;
+    color: #1c1917;
+    line-height: 1.15;
+    margin: 0 0 10px;
+  }
+  .nl-header p {
+    font-size: 15px;
+    color: #78716c;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .nl-card {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .nl-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 0 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nl-card-title svg { color: #3d5a30; flex-shrink: 0; }
+
+  /* Upload area */
+  .nl-upload-area {
+    border: 2px dashed #c8c6c0;
+    border-radius: 16px;
+    background: #f5f4f1;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .nl-upload-area:hover,
+  .nl-upload-area.dragover {
+    border-color: #3d5a30;
+    background: #f0f2ed;
+  }
+  .nl-upload-icon {
+    width: 64px;
+    height: 64px;
+    background: #eceae5;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    transition: background 0.25s;
+  }
+  .nl-upload-area:hover .nl-upload-icon,
+  .nl-upload-area.dragover .nl-upload-icon {
+    background: #dde5d8;
+  }
+  .nl-upload-area strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1c1917;
+  }
+  .nl-upload-area p {
+    font-size: 13px;
+    color: #78716c;
+    margin: 0 0 20px;
+    line-height: 1.55;
+  }
+  .nl-upload-btn {
+    background: #3d5a30;
+    color: white;
+    border: none;
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .nl-upload-btn:hover { background: #2e4424; }
+  .nl-upload-hint {
+    font-size: 11px;
+    color: #a8a29e;
+    margin-top: 14px;
+  }
+  .nl-preview-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nl-preview-thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #e7e5e4;
+  }
+
+  /* Form fields */
+  .nl-field {
+    margin-bottom: 22px;
+  }
+  .nl-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #78716c;
+    margin-bottom: 8px;
+  }
+  .nl-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #dddbd6;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1c1917;
+    outline: none;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+  }
+  .nl-input::placeholder { color: #b8b5af; }
+  .nl-input:focus {
+    border-color: #3d5a30;
+    box-shadow: 0 0 0 3px rgba(61,90,48,0.08);
+  }
+  textarea.nl-input {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .nl-select-wrap {
+    position: relative;
+  }
+  .nl-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #78716c;
+    pointer-events: none;
+  }
+
+  .nl-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .nl-price-wrap {
+    position: relative;
+  }
+  .nl-price-prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    font-weight: 700;
+    color: #78716c;
+    pointer-events: none;
+  }
+  .nl-price-wrap .nl-input {
+    padding-left: 34px;
+  }
+
+  .nl-carbon-wrap {
+    position: relative;
+  }
+  .nl-carbon-suffix {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: #a8a29e;
+    pointer-events: none;
+  }
+  .nl-carbon-wrap .nl-input {
+    padding-right: 40px;
+  }
+
+  /* Eco info bar */
+  .nl-eco-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #edf2e8;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 4px;
+  }
+  .nl-eco-icon {
+    width: 36px;
+    height: 36px;
+    background: #3d5a30;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .nl-eco-bar span {
+    font-size: 13px;
+    color: #57534e;
+    line-height: 1.45;
+  }
+
+  /* Buttons */
+  .nl-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .nl-btn-draft {
+    flex: 1;
+    padding: 16px 24px;
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1917;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: inherit;
+  }
+  .nl-btn-draft:hover {
+    border-color: #3d5a30;
+    background: #f9faf8;
+  }
+  .nl-btn-publish {
+    flex: 1;
+    padding: 16px 24px;
+    background: #3d5a30;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+  }
+  .nl-btn-publish:hover {
+    background: #2e4424;
+    box-shadow: 0 4px 16px rgba(61,90,48,0.2);
+  }
+
+  @media (max-width: 640px) {
+    .nl-wrapper { padding: 0 16px 80px; }
+    .nl-card { padding: 24px; }
+    .nl-row { grid-template-columns: 1fr; }
+    .nl-actions { flex-direction: column; }
+  }
+</style>
+
+<div class="page-shell nl-wrapper">
+
+  <button class="nl-back-btn" data-route="sell">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    Back to Seller Dashboard
+  </button>
+
+  <div class="nl-header">
+    <span class="nl-eyebrow">Seller Tools</span>
+    <h1>Create New Listing</h1>
+    <p>List your curated piece for the conscious marketplace. Quality photos and honest descriptions lead to faster sales.</p>
+  </div>
+
+  <form id="new-listing-form" autocomplete="off">
+
+    <!-- Photo Upload Card -->
+    <div class="nl-card">
+      <div class="nl-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        Photos
+      </div>
+
+      <div class="nl-upload-area" id="nl-upload-area">
+        <div class="nl-upload-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 16 12 12 8 16"></polyline>
+            <line x1="12" y1="12" x2="12" y2="21"></line>
+            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+          </svg>
+        </div>
+        <strong>Upload or drag photos here</strong>
+        <p>High-quality images from multiple angles help buyers<br>feel confident. Up to 8 photos.</p>
+        <button type="button" class="nl-upload-btn">Select Files</button>
+        <div class="nl-upload-hint">JPG, PNG or WebP · Max 10 MB each</div>
+        <div class="nl-preview-row" id="nl-preview-row"></div>
+      </div>
+      <input type="file" id="nl-file-input" accept="image/*" multiple hidden>
+    </div>
+
+    <!-- Details Card -->
+    <div class="nl-card">
+      <div class="nl-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        Item Details
+      </div>
+
+      <div class="nl-field">
+        <label for="nl-title">Title</label>
+        <input class="nl-input" type="text" id="nl-title" name="title" placeholder="e.g. Scandinavian Oak Sideboard" required>
+      </div>
+
+      <div class="nl-field">
+        <label for="nl-description">Description</label>
+        <textarea class="nl-input" id="nl-description" name="description" placeholder="Describe the item's history, materials, dimensions, and any unique character marks…" required></textarea>
+      </div>
+
+      <div class="nl-row">
+        <div class="nl-field">
+          <label for="nl-category">Category</label>
+          <div class="nl-select-wrap">
+            <select class="nl-input" id="nl-category" name="category" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="furniture">Furniture</option>
+              <option value="seating">Seating</option>
+              <option value="decor">Decor</option>
+              <option value="storage-tables">Storage & Tables</option>
+              <option value="lighting">Lighting</option>
+            </select>
+          </div>
+        </div>
+        <div class="nl-field">
+          <label for="nl-condition">Condition</label>
+          <div class="nl-select-wrap">
+            <select class="nl-input" id="nl-condition" name="condition" required>
+              <option value="" disabled selected>Select condition</option>
+              <option value="pristine">Pristine</option>
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Card -->
+    <div class="nl-card">
+      <div class="nl-card-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        Pricing & Sustainability
+      </div>
+
+      <div class="nl-row">
+        <div class="nl-field">
+          <label for="nl-price">Price</label>
+          <div class="nl-price-wrap">
+            <span class="nl-price-prefix">$</span>
+            <input class="nl-input" type="number" id="nl-price" name="price" placeholder="0.00" min="0" step="0.01" required>
+          </div>
+        </div>
+        <div class="nl-field">
+          <label for="nl-carbon">Carbon Offset</label>
+          <div class="nl-carbon-wrap">
+            <input class="nl-input" type="number" id="nl-carbon" name="carbon_offset" placeholder="0" min="0" step="0.1">
+            <span class="nl-carbon-suffix">kg</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nl-eco-bar">
+        <div class="nl-eco-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22c4-4 8-7.5 8-12a8 8 0 1 0-16 0c0 4.5 4 8 8 12z"></path>
+            <path d="M12 10v4"></path>
+            <path d="M10 12h4"></path>
+          </svg>
+        </div>
+        <span>Every resale on ReHome offsets carbon emissions. Add the estimated kg saved by giving this item a second life.</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="nl-actions">
+      <button type="button" class="nl-btn-draft" id="btn-save-draft">Save as Draft</button>
+      <button type="submit" class="nl-btn-publish" id="btn-publish-listing">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Publish Listing
+      </button>
+    </div>
+
   </form>
+
 </div>
