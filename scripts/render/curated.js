@@ -117,6 +117,25 @@ export function renderCurated() {
   }
 
   async function callGeminiAPI(key, base64Image) {
+    // Check available models first to avoid 404s depending on the user's region/key
+    let targetModel = "gemini-1.5-flash";
+    try {
+      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+      if (modelsRes.ok) {
+        const modelsData = await modelsRes.json();
+        const availableModels = modelsData.models.map(m => m.name);
+        console.log("Available Gemini models:", availableModels);
+        if (availableModels.includes("models/gemini-1.5-flash")) targetModel = "gemini-1.5-flash";
+        else if (availableModels.includes("models/gemini-1.5-pro")) targetModel = "gemini-1.5-pro";
+        else if (availableModels.includes("models/gemini-1.0-pro-vision-latest")) targetModel = "gemini-1.0-pro-vision-latest";
+        else if (availableModels.length > 0) targetModel = availableModels[0].replace("models/", "");
+      }
+    } catch (e) {
+      console.warn("Could not fetch models list, defaulting to gemini-1.5-flash");
+    }
+
+    console.log("Using model:", targetModel);
+
     const base64Data = base64Image.split(',')[1];
     const category = document.querySelectorAll(".ai-input")[0]?.value || 'Furniture';
     const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
@@ -133,7 +152,7 @@ export function renderCurated() {
       "condition": "${condition}"
     }`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${key}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
