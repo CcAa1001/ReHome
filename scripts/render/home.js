@@ -30,6 +30,28 @@ export async function renderHome() {
 
     if (products && products.length > 0) {
       const shuffled = [...products].sort(() => 0.5 - Math.random()).slice(0, 3);
+      // IMPACT REPORT SYNC
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        try {
+          const { data: profile } = await supabase.from('profiles').select('impact_score').eq('id', session.user.id).single();
+          const { data: orders } = await supabase.from('orders').select('id', { count: 'exact' }).eq('user_id', session.user.id);
+          
+          const impactScore = profile?.impact_score || 0;
+          const itemsRehomed = orders ? orders.length : 0;
+          
+          const impactStats = container.querySelector(".impact-stats");
+          if (impactStats) {
+            impactStats.innerHTML = `
+              <div><strong>${impactScore}kg</strong><span>Carbon Offset</span></div>
+              <div><strong>${itemsRehomed}</strong><span>Items ReHomed</span></div>
+            `;
+          }
+        } catch (e) {
+          console.warn("Failed to sync impact report", e);
+        }
+      }
+
       const recGrid = container.querySelector(".rec-grid");
 
       if (recGrid) {

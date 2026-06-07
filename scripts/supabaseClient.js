@@ -7,8 +7,7 @@ let clientPromise;
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
   supabasePublishableKey &&
-  supabaseUrl.startsWith("https://") &&
-  supabasePublishableKey.startsWith("sb_publishable_")
+  supabaseUrl.startsWith("https://")
 );
 
 export async function getSupabaseClient() {
