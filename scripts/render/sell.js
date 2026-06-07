@@ -23,7 +23,7 @@ function statusColor(status) {
 }
 
 export async function renderSell() {
-  const container = document.getElementById("router-view");
+  const container = document.getElementById("app-content");
   if (!container) return;
 
   const supabase = await getSupabaseClient();
