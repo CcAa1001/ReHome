@@ -1,3 +1,4 @@
+// scripts/render/home.js
 import { navigate, setRouteParams } from "../router.js";
 import { sanitizeShortText, sanitizeUrl, toSafeMoney } from "../security.js";
 import { getSupabaseClient } from "../supabaseClient.js";
@@ -5,6 +6,27 @@ import { getSupabaseClient } from "../supabaseClient.js";
 export async function renderHome() {
   const container = document.getElementById("router-view");
   if (!container) return;
+
+  // ==============================================================
+  // PERBAIKAN POIN 4: Gambar Impact Report Agar Penuh & Melengkung
+  // ==============================================================
+  const homeImages = container.querySelectorAll("img");
+  homeImages.forEach(img => {
+    // Jika gambar ini adalah gambar Impact Report / Banner (Bukan Curated Card)
+    if (!img.closest('.rec-grid') && (img.src.includes('interior') || img.src.includes('impact') || img.closest('section'))) {
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "cover"; // Ini kuncinya agar gambar memenuhi container tanpa sisa
+      img.style.borderRadius = "inherit";
+      img.style.display = "block";
+      
+      // Paksa kotak luarnya agar memotong gambar yang tumpah
+      if (img.parentElement) {
+        img.parentElement.style.overflow = "hidden";
+        img.parentElement.style.padding = "0";
+      }
+    }
+  });
 
   try {
     const supabase = await getSupabaseClient();
@@ -26,14 +48,32 @@ export async function renderHome() {
           const safeTitle = sanitizeShortText(product.title, "Untitled item");
           const safePrice = toSafeMoney(product.price);
 
+          // ==============================================================
+          // PERBAIKAN POIN 4: Glow, Inner Shadow, dan Gambar Penuh
+          // ==============================================================
           return `
-            <article class="rec-card" data-id="${safeId}" style="cursor: pointer;">
-              <div class="rec-img ${bgClass}">
-                <img src="${safeImgUrl}" alt="${safeTitle}" style="width: 80%; height: 80%; object-fit: contain;">
+            <article class="rec-card" data-id="${safeId}" style="
+                cursor: pointer; 
+                border-radius: 16px; 
+                overflow: hidden; 
+                box-shadow: inset 0 4px 15px rgba(0,0,0,0.03), 0 12px 30px rgba(61,90,48,0.12); 
+                transition: transform 0.3s ease, box-shadow 0.3s ease; 
+                background: white; 
+                border: 1px solid #e7e5e4;
+                display: flex;
+                flex-direction: column;
+            " onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='inset 0 4px 15px rgba(0,0,0,0.03), 0 20px 40px rgba(61,90,48,0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='inset 0 4px 15px rgba(0,0,0,0.03), 0 12px 30px rgba(61,90,48,0.12)'">
+              
+              <div class="rec-img ${bgClass}" style="width: 100%; aspect-ratio: 1; padding: 0; overflow: hidden;">
+                <img src="${safeImgUrl}" alt="${safeTitle}" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
               </div>
-              <div class="rec-info">
-                <div><span>${safeMaker}</span><h3>${safeTitle}</h3></div>
-                <strong>$${safePrice}</strong>
+              
+              <div class="rec-info" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1;">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: #78716c; letter-spacing: 0.5px; text-transform: uppercase;">${safeMaker}</span>
+                    <h3 style="font-size: 17px; margin: 6px 0 12px; color: #1c1917; font-weight: 700;">${safeTitle}</h3>
+                </div>
+                <strong style="color: #3d5a30; font-size: 18px;">$${safePrice}</strong>
               </div>
             </article>
           `;
