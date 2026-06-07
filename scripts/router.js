@@ -45,7 +45,7 @@ export async function navigate(route) {
     window.scrollTo({ top: 0, behavior: "auto" });
 
     try {
-      const module = await import(`./render/${route}.js`);
+      const module = await import(`./render/${route}.js?t=${Date.now()}`);
       const renderFunctionName = "render" + route.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
       if (module[renderFunctionName]) module[renderFunctionName]();
     } catch (e) {
