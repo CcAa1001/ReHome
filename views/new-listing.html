@@ -205,10 +205,15 @@
     pointer-events: none;
   }
 
-  .nl-row {
+  .nl-row, .nl-row-3 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 20px;
+  }
+  .nl-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .nl-row-3 {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   .nl-price-wrap {
@@ -319,7 +324,7 @@
   @media (max-width: 640px) {
     .nl-wrapper { padding: 0 16px 80px; }
     .nl-card { padding: 24px; }
-    .nl-row { grid-template-columns: 1fr; }
+    .nl-row, .nl-row-3 { grid-template-columns: 1fr; }
     .nl-actions { flex-direction: column; }
   }
 </style>
@@ -428,13 +433,17 @@
         Pricing & Sustainability
       </div>
 
-      <div class="nl-row">
+      <div class="nl-row-3">
         <div class="nl-field">
           <label for="nl-price">Price</label>
           <div class="nl-price-wrap">
             <span class="nl-price-prefix">$</span>
             <input class="nl-input" type="number" id="nl-price" name="price" placeholder="0.00" min="0" step="0.01" required>
           </div>
+        </div>
+        <div class="nl-field">
+          <label for="nl-stock">Stock Quantity</label>
+          <input class="nl-input" type="number" id="nl-stock" name="stock" placeholder="1" value="1" min="1" required>
         </div>
         <div class="nl-field">
           <label for="nl-carbon">Carbon Offset</label>

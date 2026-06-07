@@ -9,7 +9,13 @@
   .cart-item-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .cart-item-info h3 { font-size: 18px; margin: 0 0 8px; font-weight: 700; }
   .cart-item-info span { font-size: 14px; color: #78716c; display: block; margin-bottom: 12px; }
-  .cart-item-info button { align-self: flex-start; background: none; border: none; color: #dc2626; font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; }
+  .cart-item-controls { display: flex; gap: 16px; align-items: center; margin-top: auto; }
+  .cart-item-controls button.remove-btn { background: none; border: none; color: #dc2626; font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; }
+  
+  .qty-adjuster { display: flex; align-items: center; gap: 12px; border: 1px solid #e7e5e4; border-radius: 20px; padding: 4px 12px; width: max-content; }
+  .qty-adjuster button { background: none; border: none; font-size: 16px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; }
+  .qty-adjuster span { font-size: 14px; font-weight: 600; min-width: 12px; text-align: center; }
+
   .cart-item-price { font-size: 20px; font-weight: 700; }
 
   .summary-box { background: #fbfaf9; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; position: sticky; top: 120px; }
@@ -18,34 +24,57 @@
   .summary-row.total { font-size: 20px; font-weight: 800; color: #1c1917; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e7e5e4; }
   .btn-green { width: 100%; background: #3d5a30; color: white; padding: 18px; border-radius: 12px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; margin: 24px 0 16px; transition: 0.2s; }
   .btn-green:hover { background: #2e4424; }
+
+  .eco-badge { margin-top: 16px; padding: 12px; border-radius: 8px; background: #eef2eb; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600; color: #3d5a30; }
+
+  .hidden { display: none !important; }
 </style>
 
 <div class="page-shell cart-wrapper">
-  <div class="cart-layout">
+  <div id="cart-loading" style="padding: 100px; text-align: center; font-weight: bold; color: #78716c;">Syncing your cart...</div>
+
+  <div id="cart-unauth" class="hidden" style="padding: 100px; text-align: center;">
+    <h2 style="font-family: var(--serif);">Please Sign In</h2>
+    <p style="color: #78716c;">You need to be signed in to view your cart.</p>
+  </div>
+
+  <div id="cart-empty" class="hidden" style="padding: 120px 20px; text-align: center;">
+    <h2 style="font-family: var(--serif); font-size: 32px; color: #1c1917;">Your Cart is Empty</h2>
+    <p style="color: #78716c; margin-top: 12px;">Looks like you haven't added any treasures yet.</p>
+    <button data-route="shop" style="margin-top: 24px; padding: 14px 28px; background: #3d5a30; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">Explore Shop</button>
+  </div>
+
+  <div id="cart-error" class="hidden" style="padding: 100px 20px; text-align: center; color: #dc2626;">
+    <h2>Failed to load cart.</h2>
+  </div>
+
+  <div id="cart-content" class="cart-layout hidden">
     <div class="cart-main">
       <h1>Your Conscious Selection</h1>
-      <p>3 treasures curated for a more sustainable home.</p>
+      <p id="cart-subtitle">0 treasures curated for a more sustainable home.</p>
       
-      <article class="cart-item">
-        <img src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png">
-        <div class="cart-item-info"><h3>Nordic Oak Chair</h3><span>Excellent (Pre-owned)</span><button>Remove</button></div>
-        <div class="cart-item-price">$1,240</div>
-      </article>
-      <article class="cart-item">
-        <img src="assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png">
-        <div class="cart-item-info"><h3>Grib Toolbox Vase</h3><span>Pristine (Like New)</span><button>Remove</button></div>
-        <div class="cart-item-price">$85</div>
-      </article>
+      <div id="cart-items-container">
+        <!-- items injected here via cart.js -->
+      </div>
     </div>
     
     <aside class="summary-box">
       <h2>Summary</h2>
-      <div class="summary-row"><span>Subtotal</span><strong style="color:#1c1917;">$1,325.00</strong></div>
+      <div class="summary-row"><span>Subtotal</span><strong id="summary-subtotal" style="color:#1c1917;">$0.00</strong></div>
       <div class="summary-row"><span>Conscious Shipping</span><strong style="color:#3d5a30;">Free</strong></div>
-      <div class="summary-row"><span>Est. Carbon Offset</span><strong style="color:#3d5a30;">- $12.00</strong></div>
-      <div class="summary-row total"><span>Total</span><strong>$1,313.00</strong></div>
-      <button class="btn-green" type="button" data-route="checkout">Proceed to Checkout</button>
-      <p style="text-align:center; font-size:13px; color:#78716c; margin:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3d5a30" stroke-width="2" style="vertical-align:middle; margin-right:4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg> Your order is 100% carbon neutral.</p>
+      <div class="summary-row"><span>Est. Carbon Offset</span><strong id="summary-offset" style="color:#3d5a30;">-$0.00</strong></div>
+      <div class="summary-row total"><span>Total</span><strong id="summary-total">$0.00</strong></div>
+      <button class="btn-green" type="button" id="btn-checkout" data-route="checkout">Proceed to Checkout</button>
+      
+      <div class="eco-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        Eco-Friendly Fulfillment
+      </div>
     </aside>
   </div>
 </div>

@@ -16,16 +16,26 @@ export async function renderProductDetail() {
 
   try {
     const supabase = await getSupabaseClient();
-    const { data: product, error } = await supabase.from('products').select('*').eq('id', productId).single();
+    const { data: product, error } = await supabase.from('products').select(`
+      *,
+      profiles:seller_id (shop_name, full_name, avatar_url)
+    `).eq('id', productId).single();
     if (error || !product) throw new Error("Item tidak ditemukan.");
 
-    const safeImageUrl = sanitizeUrl(product.image_url);
-    productImages = [safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl, safeImageUrl];
+    const seller = product.profiles || {};
+    const safeMaker = sanitizeShortText(seller.shop_name || seller.full_name || product.maker || 'Elena Studio');
+    const safeSellerAvatar = sanitizeUrl(seller.avatar_url || 'assets/elena.png');
+
+    const mainImageUrl = sanitizeUrl(product.image_url);
+    const dbImageUrls = Array.isArray(product.image_urls) && product.image_urls.length > 0 
+      ? product.image_urls.map(u => sanitizeUrl(u)) 
+      : [mainImageUrl, mainImageUrl, mainImageUrl];
+    
+    productImages = dbImageUrls;
     
     const safeTitle = sanitizeShortText(product.title, "Untitled item");
     const safeCategory = sanitizeShortText(product.category || "Living Room");
     const safeCondition = sanitizeShortText(product.condition || "Excellent");
-    const safeMaker = sanitizeShortText(product.maker || 'Elena Studio');
     const safeDescription = sanitize(product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.');
     const safePrice = toSafeMoney(product.price);
 
@@ -99,7 +109,7 @@ export async function renderProductDetail() {
             <div class="seller-box">
               <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 48px; height: 48px; background: #e7e5e4; border-radius: 50%; overflow: hidden;">
-                  <img src="assets/elena.png" alt="${safeMaker}" style="width:100%; height:100%; object-fit:cover;">
+                  <img src="${safeSellerAvatar}" alt="${safeMaker}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div>
                   <div style="font-weight: 600; font-size: 15px; color: #1c1917;">${safeMaker}</div>

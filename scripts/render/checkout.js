@@ -11,7 +11,7 @@ async function checkoutCart() {
 
   const { data: cartItems, error: cartError } = await supabase
     .from("cart_items")
-    .select("id, quantity, products(id, title, price)")
+    .select("id, quantity, products(id, title, price, carbon_offset, stock)")
     .eq("user_id", user.id);
 
   if (cartError) throw cartError;
@@ -21,6 +21,11 @@ async function checkoutCart() {
     const quantity = clampInteger(item.quantity, 1, 99, 1);
     return sum + (toSafeNumber(item.products?.price) * quantity);
   }, 0);
+  const totalCarbonOffset = cartItems.reduce((sum, item) => {
+    const quantity = clampInteger(item.quantity, 1, 99, 1);
+    return sum + (toSafeNumber(item.products?.carbon_offset) * quantity);
+  }, 0);
+  
   const shipping = subtotal > 0 ? 50 : 0;
   const total = subtotal + shipping;
 
@@ -31,7 +36,7 @@ async function checkoutCart() {
       status: "pending",
       subtotal,
       shipping,
-      carbon_credit: 0,
+      carbon_credit: totalCarbonOffset,
       total
     })
     .select("id")
@@ -49,6 +54,30 @@ async function checkoutCart() {
 
   const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
   if (itemsError) throw itemsError;
+
+  // Deduct stock and set sold status if 0
+  for (const item of cartItems) {
+    const p = item.products;
+    if (p && p.id) {
+      const q = clampInteger(item.quantity, 1, 99, 1);
+      const newStock = Math.max(0, (toSafeNumber(p.stock, 1)) - q);
+      const newStatus = newStock === 0 ? 'sold' : 'active';
+      
+      await supabase.from("products").update({
+        stock: newStock,
+        status: newStatus
+      }).eq("id", p.id);
+    }
+  }
+
+  // Add impact points to user profile
+  if (totalCarbonOffset > 0) {
+    const points = Math.floor(totalCarbonOffset * 10);
+    const { data: prof } = await supabase.from("profiles").select("impact_score").eq("id", user.id).single();
+    if (prof) {
+      await supabase.from("profiles").update({ impact_score: (prof.impact_score || 0) + points }).eq("id", user.id);
+    }
+  }
 
   const { error: clearError } = await supabase.from("cart_items").delete().eq("user_id", user.id);
   if (clearError) throw clearError;

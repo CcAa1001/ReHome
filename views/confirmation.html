@@ -1,41 +1,130 @@
 <style>
-  .conf-wrapper { font-family: var(--sans, sans-serif); padding-bottom: 80px; }
-  .conf-layout { display: grid; grid-template-columns: 1fr 400px; gap: 64px; align-items: center; margin-bottom: 80px; }
-  .conf-left h1 { font-family: var(--serif, serif); font-size: 56px; color: #3d5a30; line-height: 1.1; margin-bottom: 16px; }
-  .conf-left p { font-size: 16px; color: #78716c; line-height: 1.6; margin-bottom: 32px; max-width: 500px; }
-  .btn-outline { background: white; border: 1px solid #d6d3d1; color: #1c1917; padding: 18px 32px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .conf-wrapper { font-family: var(--sans, sans-serif); padding-bottom: 80px; max-width: 1440px; margin: 0 auto; padding: 64px; }
+  .conf-header { text-align: center; margin-bottom: 64px; }
+  .conf-header .leaf-icon { color: #3d5a30; margin-bottom: 24px; display: flex; justify-content: center; }
+  .conf-header h1 { font-family: var(--serif, serif); font-size: 48px; color: #3d5a30; margin: 0 0 16px; }
+  .conf-header p { color: #78716c; font-size: 16px; margin: 0; }
 
-  .conf-card { background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; box-shadow: 0 12px 24px rgba(0,0,0,0.03); }
-  .conf-card span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; display: block; margin-bottom: 16px; }
-  .conf-card img { width: 100%; height: 240px; object-fit: cover; border-radius: 16px; margin-bottom: 24px; }
-  .conf-card h2 { font-size: 20px; font-weight: 700; margin: 0 0 8px; color: #1c1917; }
+  .conf-layout { display: grid; grid-template-columns: 1fr 400px; gap: 48px; margin-bottom: 80px; }
   
-  .journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; text-align: center; padding: 48px; background: #fbfaf9; border-radius: 24px; border: 1px solid #f0ede8; }
-  .journey-grid h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; color: #1c1917; }
-  .journey-grid p { font-size: 14px; color: #78716c; margin: 0; line-height: 1.6; }
+  .journey-box { background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 48px; display: flex; flex-direction: column; }
+  .journey-box h3 { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #78716c; margin: 0 0 40px; }
+  .journey-items { display: flex; flex-direction: column; gap: 40px; flex: 1; justify-content: center; }
+  .journey-item { display: flex; gap: 24px; align-items: flex-start; }
+  .journey-icon { width: 48px; height: 48px; border-radius: 50%; background: #fbfaf9; border: 1px solid #f0ede8; display: flex; align-items: center; justify-content: center; color: #3d5a30; flex-shrink: 0; }
+  .journey-text h4 { font-size: 18px; font-weight: 700; color: #1c1917; margin: 0 0 8px; }
+  .journey-text p { font-size: 15px; color: #78716c; margin: 0; line-height: 1.6; }
+
+  .conf-card { background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; }
+  .conf-card-header { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #78716c; margin-bottom: 24px; }
+  
+  .order-item-summary { display: flex; gap: 16px; margin-bottom: 24px; }
+  .order-item-summary img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
+  .order-item-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .order-item-title { font-size: 16px; font-weight: 700; color: #1c1917; margin-bottom: 4px; }
+  .order-item-price { font-size: 14px; color: #78716c; }
+
+  .conf-totals { border-top: 1px solid #e7e5e4; padding-top: 24px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .conf-row { display: flex; justify-content: space-between; font-size: 15px; color: #78716c; }
+  .conf-row.total { font-size: 20px; font-weight: 800; color: #1c1917; margin-top: 8px; }
+
+  .btn-track { width: 100%; background: #3d5a30; color: white; border: none; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 16px; transition: 0.2s; }
+  .btn-track:hover { background: #2f4525; }
+
+  .impact-badge { background: #fbfaf9; border: 1px solid #e7e5e4; border-radius: 12px; padding: 16px; text-align: center; color: #3d5a30; font-size: 13px; font-weight: 600; line-height: 1.5; }
+  
+  .recommendations-section h2 { font-family: var(--serif, serif); font-size: 32px; color: #3d5a30; margin: 0 0 40px; text-align: center; }
+  .recommendations-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  
+  .product-card { background: white; border: 1px solid #e7e5e4; border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.2s; text-decoration: none; display: block; color: inherit; }
+  .product-card:hover { border-color: #c5c8bc; box-shadow: 0 12px 24px rgba(0,0,0,0.04); transform: translateY(-2px); }
+  .product-img { width: 100%; height: 240px; object-fit: cover; }
+  .product-info { padding: 20px; }
+  .product-title { font-size: 16px; font-weight: 700; color: #1c1917; margin: 0 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-price { font-size: 15px; color: #78716c; font-weight: 500; }
 </style>
 
-<div class="page-shell conf-wrapper">
-  <div class="conf-layout">
-    <div class="conf-left">
-      <h1>Thank you for ReHoming</h1>
-      <p>Your items are on their way to a new home. By choosing pre-owned luxury, you've saved 14.5kg of carbon emissions today.</p>
-      <button class="btn-outline" type="button" data-route="profile">Track Your Journey</button>
+<div class="conf-wrapper">
+  <div class="conf-header">
+    <div class="leaf-icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+      </svg>
     </div>
-    
+    <h1>Thank you for ReHoming</h1>
+    <p>Your order has been confirmed and is being prepared for journey.</p>
+  </div>
+
+  <div class="conf-layout">
+    <div class="journey-box">
+      <h3>The Journey</h3>
+      <div class="journey-items">
+        <div class="journey-item">
+          <div class="journey-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          </div>
+          <div class="journey-text">
+            <h4>Carefully Packed</h4>
+            <p>100% plastic-free, compostable materials.</p>
+          </div>
+        </div>
+        <div class="journey-item">
+          <div class="journey-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <div class="journey-text">
+            <h4>Low-Impact Transit</h4>
+            <p>Optimized routes to minimize fuel consumption.</p>
+          </div>
+        </div>
+        <div class="journey-item">
+          <div class="journey-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div class="journey-text">
+            <h4>New Life</h4>
+            <p>Arriving at its destination to be loved again.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="conf-card">
-      <span>ORDER #RH-28941</span>
-      <img src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png">
-      <h2>Nordic Oak Chair & 1 more</h2>
-      <p style="font-size:14px; color:#78716c; margin-bottom:24px;">Gently used - Mid-Century</p>
-      <hr style="border:none; border-top:1px solid #e7e5e4; margin-bottom:24px;">
-      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:800; color:#1c1917;"><span>Total Paid</span><span>$1,325.00</span></div>
+      <div class="conf-card-header" id="order-number">ORDER #</div>
+      
+      <div id="order-item-summary">
+        <!-- Populated by JS -->
+      </div>
+      
+      <div class="conf-totals">
+        <div class="conf-row">
+          <span>Subtotal</span>
+          <span id="order-subtotal">...</span>
+        </div>
+        <div class="conf-row">
+          <span>Eco-Delivery</span>
+          <span>$0.00</span>
+        </div>
+        <div class="conf-row total">
+          <span>Total Paid</span>
+          <span id="order-total">...</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-track" data-route="profile">Track Your Journey</button>
+
+      <div class="impact-badge">
+        <span style="display:inline-block; margin-bottom:4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></span><br>
+        You've earned <span id="impact-points" style="font-weight: 800;">0</span> Impact Points for this circular purchase.
+      </div>
     </div>
   </div>
 
-  <div class="journey-grid">
-    <article><h3>Carefully Packed</h3><p>100% plastic-free, compostable materials.</p></article>
-    <article><h3>Low-Impact Transit</h3><p>Optimized routes to minimize fuel consumption.</p></article>
-    <article><h3>New Life</h3><p>Arriving at its destination to be loved again.</p></article>
+  <div class="recommendations-section">
+    <h2>Complete the Look</h2>
+    <div class="recommendations-grid" id="recommendations-grid">
+      <!-- Populated by JS -->
+    </div>
   </div>
 </div>

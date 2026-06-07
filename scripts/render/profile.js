@@ -81,23 +81,29 @@ export async function renderProfile() {
     // ==========================================
     // 2. INJECT DATA KE DOM
     // ==========================================
-    const displayName = profile.full_name || fullName;
+    const displayName = profile.shop_name || profile.full_name || fullName;
 
     const initialEl    = document.getElementById("profile-initial");
+    const avatarImgEl  = document.getElementById("profile-avatar-img");
     const nameDisplay  = document.getElementById("profile-name-display");
     const emailDisplay = document.getElementById("profile-email-display");
     const joinEl       = document.getElementById("profile-join-date");
 
-    if (initialEl)    initialEl.textContent    = displayName.charAt(0).toUpperCase();
+    if (profile.avatar_url && avatarImgEl) {
+      avatarImgEl.innerHTML = `<img src="${sanitize(profile.avatar_url)}" style="width:100%; height:100%; object-fit:cover;">`;
+    } else if (initialEl) {
+      initialEl.textContent = displayName.charAt(0).toUpperCase();
+    }
+    
     if (nameDisplay)  nameDisplay.textContent  = displayName;
     if (emailDisplay) emailDisplay.textContent = userEmail;
     if (joinEl)       joinEl.textContent       = `Member since ${joinDate}`;
 
     const allP = container.querySelectorAll("p");
-    const descDisplay = Array.from(allP).find(p => p.textContent.includes("Curator"));
+    const descDisplay = Array.from(allP).find(p => p.textContent.includes("Curator") || p.innerHTML.includes("profile-location"));
     if (descDisplay) {
       descDisplay.innerHTML =
-        `${sanitize(profile.description)} &bull; <span id="profile-location">${sanitize(profile.location)}</span>`;
+        `${sanitize(profile.description || "Curator & Sustainability Advocate")} &bull; <span id="profile-location">${sanitize(profile.location || "Earth")}</span>`;
     }
 
     const impactEl =
@@ -319,19 +325,49 @@ export async function renderProfile() {
 
     if (editBtn) {
       editBtn.addEventListener("click", async () => {
+        const newShop = prompt("Update your shop name:", profile.shop_name || profile.full_name);
         const newDesc = prompt("Update your description:", profile.description);
         const newLoc  = prompt("Update your location:",    profile.location);
-        if (newDesc !== null && newLoc !== null) {
+        if (newDesc !== null && newLoc !== null && newShop !== null) {
           const original = editBtn.textContent;
           editBtn.textContent = "Saving...";
           await supabase
             .from('profiles')
-            .update({ description: newDesc, location: newLoc })
+            .update({ description: newDesc, location: newLoc, shop_name: newShop })
             .eq('id', user.id);
           showToast("Profile Updated!");
           editBtn.textContent = original;
           renderProfile();
         }
+      });
+    }
+
+    const avatarUploadInput = document.getElementById('avatar-upload');
+    if (avatarUploadInput) {
+      avatarUploadInput.addEventListener('change', async (e) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        const file = e.target.files[0];
+        
+        showToast("Uploading avatar...");
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/avatar_${Date.now()}.${ext}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('product-images') // using the existing bucket for simplicity
+          .upload(path, file, { cacheControl: '3600', upsert: false });
+          
+        if (uploadError) {
+          showToast("Upload failed.");
+          return;
+        }
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(path);
+          
+        await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
+        showToast("Avatar updated!");
+        renderProfile();
       });
     }
 

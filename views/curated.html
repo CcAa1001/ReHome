@@ -114,7 +114,8 @@
         </div>
         <strong>Upload or drag photos</strong>
         <p>AI works best with clear, high-resolution shots<br>from multiple angles.</p>
-        <button type="button" class="btn-select">Select Files</button>
+        <button type="button" class="btn-select" onclick="document.getElementById('ai-photo-upload').click()">Select Files</button>
+        <input type="file" id="ai-photo-upload" accept="image/*" style="display: none;">
       </div>
 
       <div class="ai-field">
@@ -157,7 +158,7 @@
       </button>
     </article>
 
-    <div class="result-col" id="ai-result-panel" style="display: none; opacity: 0; transition: opacity 0.5s;">
+    <div class="result-col" id="ai-result-panel" style="display: flex; opacity: 1; transition: opacity 0.5s;">
 
       <div class="result-topbar">
         <div class="result-pill">
@@ -172,7 +173,7 @@
       <div class="price-block">
         <p class="price-caption">Estimated Fair Price</p>
         <div class="price-large">
-          <span class="price-number">$1,240</span>
+          <span class="price-number" id="ai-price-value">$0</span>
           <span class="price-currency">USD</span>
         </div>
       </div>

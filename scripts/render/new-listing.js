@@ -17,10 +17,13 @@ export async function renderNewListing() {
   const uploadArea = document.getElementById('nl-upload-area');
   const fileInput = document.getElementById('nl-file-input');
   const previewContainer = document.getElementById('nl-preview-row');
-  let selectedFile = null;
+  let selectedFiles = [];
 
   if (uploadArea && fileInput) {
-    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('click', (e) => {
+      if (e.target.closest('#nl-preview-row')) return;
+      fileInput.click();
+    });
 
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -36,40 +39,80 @@ export async function renderNewListing() {
       uploadArea.style.borderColor = '#c8c6c0';
       uploadArea.style.background = '#f5f4f1';
       if (e.dataTransfer.files.length > 0) {
-        selectedFile = e.dataTransfer.files[0];
-        showPreview(selectedFile);
+        addFiles(e.dataTransfer.files);
       }
     });
 
     fileInput.addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        selectedFile = e.target.files[0];
-        showPreview(selectedFile);
+        addFiles(e.target.files);
       }
     });
   }
 
-  function showPreview(file) {
-    if (!previewContainer) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewContainer.innerHTML = `
-        <div style="position: relative; display: inline-block;">
-          <img src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 12px; object-fit: cover;">
-          <button id="nl-remove-img" style="position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.6); color: white; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">&times;</button>
-        </div>`;
-      previewContainer.style.display = 'block';
-      if (uploadArea) uploadArea.style.display = 'none';
+  function addFiles(files) {
+    for (let i = 0; i < files.length; i++) {
+      if (selectedFiles.length >= 8) break;
+      selectedFiles.push(files[i]);
+    }
+    renderPreviews();
+  }
 
-      document.getElementById('nl-remove-img')?.addEventListener('click', () => {
-        selectedFile = null;
-        previewContainer.innerHTML = '';
-        previewContainer.style.display = 'none';
-        if (uploadArea) uploadArea.style.display = 'block';
-        fileInput.value = '';
+  function renderPreviews() {
+    if (!previewContainer) return;
+    previewContainer.innerHTML = '';
+    
+    const children = Array.from(uploadArea.children);
+    if (selectedFiles.length === 0) {
+      children.forEach(child => {
+        if (child.id !== 'nl-preview-row') child.style.display = '';
       });
-    };
-    reader.readAsDataURL(file);
+      return;
+    }
+    
+    // Hide default text but keep upload area visible for the preview row
+    children.forEach(child => {
+      if (child.id !== 'nl-preview-row') child.style.display = 'none';
+    });
+
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.display = 'inline-block';
+        div.innerHTML = `
+          <img src="${e.target.result}" class="nl-preview-thumb">
+          <button type="button" class="nl-remove-img" style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: #1c1917; color: white; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; z-index: 2; padding: 0;">&times;</button>
+        `;
+        previewContainer.appendChild(div);
+
+        div.querySelector('.nl-remove-img').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          selectedFiles.splice(index, 1);
+          renderPreviews();
+          if (selectedFiles.length === 0) fileInput.value = '';
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Add a button to add more images
+    if (selectedFiles.length < 8) {
+      const addMoreDiv = document.createElement('div');
+      addMoreDiv.className = 'nl-preview-thumb';
+      addMoreDiv.style.display = 'flex';
+      addMoreDiv.style.alignItems = 'center';
+      addMoreDiv.style.justifyContent = 'center';
+      addMoreDiv.style.background = '#eceae5';
+      addMoreDiv.style.cursor = 'pointer';
+      addMoreDiv.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+      addMoreDiv.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        fileInput.click();
+      });
+      previewContainer.appendChild(addMoreDiv);
+    }
   }
 
   // ─── Upload image to Supabase Storage ───
@@ -112,9 +155,11 @@ export async function renderNewListing() {
     const btns = form.querySelectorAll('button');
     btns.forEach(b => { b.disabled = true; b.style.opacity = '0.6'; });
 
-    let imageUrl = null;
-    if (selectedFile) {
-      imageUrl = await uploadImage(selectedFile);
+    let imageUrls = [];
+    if (selectedFiles.length > 0) {
+      const uploadPromises = selectedFiles.map(file => uploadImage(file));
+      const results = await Promise.all(uploadPromises);
+      imageUrls = results.filter(url => url !== null);
     }
 
     const record = {
@@ -123,12 +168,16 @@ export async function renderNewListing() {
       category: fd.get('category') || 'Furniture',
       condition: fd.get('condition') || 'Excellent',
       price,
+      stock: parseInt(fd.get('stock')) || 1,
       carbon_offset: parseFloat(fd.get('carbon_offset')) || 0,
       seller_id: user.id,
       status,
       currency: 'USD',
     };
-    if (imageUrl) record.image_url = imageUrl;
+    if (imageUrls.length > 0) {
+      record.image_url = imageUrls[0];
+      record.image_urls = imageUrls;
+    }
 
     const { error } = await supabase
       .from('products')
