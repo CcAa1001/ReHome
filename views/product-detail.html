@@ -38,38 +38,35 @@
 
 <div class="page-shell pd-wrapper">
   <div class="pd-layout">
-    <div class="pd-gallery">
-      <img class="pd-main-img" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png" alt="Curated Oak Lounge Chair">
-      <div class="pd-thumbs">
-        <img class="active" src="assets/figma-export/50c650dc19d53b235c064dcad7dc23f8b08e5668.png">
-        <img src="assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png">
-        <img src="assets/figma-export/44087ad14826697196b8166297cc11af65cda235.jpg">
+    <div class="pd-gallery" id="pd-gallery-container">
+      <img class="pd-main-img" id="pd-main-img" src="" alt="Loading...">
+      <div class="pd-thumbs" id="pd-thumbs-container">
       </div>
     </div>
     
     <div>
-      <div class="pd-breadcrumbs">Shop / Living Room / <span>Curated Oak Lounge Chair</span></div>
-      <span class="pd-eyebrow">Sustainably Sourced</span>
-      <h1 class="pd-title">Curated Oak Lounge Chair</h1>
-      <strong class="pd-price">$1,240.00</strong>
+      <div class="pd-breadcrumbs">Shop / <span id="pd-category-crumb">...</span> / <span id="pd-title-crumb">...</span></div>
+      <span class="pd-eyebrow" id="pd-category-tag">Loading</span>
+      <h1 class="pd-title" id="pd-title">...</h1>
+      <strong class="pd-price" id="pd-price">...</strong>
       
       <div class="pd-condition">
-        <span>Condition</span><strong>Excellent (Pre-owned)</strong><em>Refurbished</em>
+        <span>Condition</span><strong id="pd-condition">...</strong>
       </div>
       
-      <p class="pd-desc">A masterpiece of Scandinavian influence, this lounge chair features a solid white oak frame with hand-finished joinery. The upholstery is a sustainable blend of organic linen and wool, offering both durability and a soft tactile experience.</p>
+      <p class="pd-desc" id="pd-desc">Loading details...</p>
       
-      <div class="qty-row"><input type="number" value="1" min="1"><span>Only 2 in stock</span></div>
+      <div class="qty-row" id="pd-stock-container"><input type="number" id="pd-qty-input" value="1" min="1"><span id="pd-stock"></span></div>
       
       <button class="btn-dark" data-add-cart style="width: 100%;">Add to Cart</button>
       <button class="btn-outline" type="button">Make an Offer</button>
       
       <div class="pd-seller">
         <div style="display:flex; align-items:center; gap:16px;">
-          <img src="assets/figma-export/e3fe968146dbe8590ea5f2b06e789cf6b7e335f9.jpg" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
-          <div><strong style="display:block; font-size:15px;">Elena Studio</strong><span style="font-size:13px; color:#78716c;">4.9 (124 reviews)</span></div>
+          <div id="pd-seller-avatar" style="width:48px;height:48px;border-radius:50%;background:#e7e5e4;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#78716c"></div>
+          <div><strong style="display:block; font-size:15px;" id="pd-seller-name">...</strong><span style="font-size:13px; color:#78716c;" id="pd-seller-location">...</span></div>
         </div>
-        <button style="background:none; border:none; color:#526442; font-weight:700; cursor:pointer;">View Shop</button>
+        <button id="btn-view-seller" style="background:none; border:none; color:#526442; font-weight:700; cursor:pointer;">View Shop</button>
       </div>
     </div>
   </div>

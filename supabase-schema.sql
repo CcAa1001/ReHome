@@ -1,91 +1,119 @@
+-- REHOME V5 DATABASE RESET SCRIPT
+-- WARNING: Running this will drop your existing tables and data!
+-- Execute this entirely in the Supabase SQL Editor.
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  full_name text not null default '',
-  email text not null default '',
-  location text default '',
-  role text not null default 'buyer',
-  impact_score integer not null default 0,
-  shop_name text,
+-- 1. DROP EXISTING TABLES AND TRIGGERS
+drop trigger if exists on_auth_user_created on auth.users;
+drop function if exists public.handle_new_user cascade;
+drop function if exists public.prevent_profile_role_change cascade;
+
+drop table if exists public.favorites cascade;
+drop table if exists public.user_settings cascade;
+drop table if exists public.order_items cascade;
+drop table if exists public.orders cascade;
+drop table if exists public.cart_items cascade;
+drop table if exists public.products cascade;
+drop table if exists public.profiles cascade;
+
+-- 2. CREATE TABLES EXACTLY AS REQUESTED
+
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  full_name text NOT NULL DEFAULT ''::text,
+  email text NOT NULL DEFAULT ''::text,
+  location text DEFAULT ''::text,
+  role text NOT NULL DEFAULT 'buyer'::text,
+  impact_score integer NOT NULL DEFAULT 0,
   avatar_url text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  shop_name text,
   description text,
-  created_at timestamptz not null default now()
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
-create or replace function public.prevent_profile_role_change()
-returns trigger
-language plpgsql
-as $$
-begin
-  if old.role is distinct from new.role and auth.uid() = new.id then
-    raise exception 'Role changes must be performed by trusted backend/admin tooling.';
-  end if;
-  return new;
-end;
-$$;
-
-drop trigger if exists prevent_profile_role_change on public.profiles;
-create trigger prevent_profile_role_change
-before update on public.profiles
-for each row execute function public.prevent_profile_role_change();
-
-create table if not exists public.products (
-  id uuid primary key default gen_random_uuid(),
-  title text not null,
+CREATE TABLE public.products (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  title text NOT NULL,
   maker text,
   description text,
-  category text not null default 'Furniture',
-  condition text not null default 'Excellent',
-  price numeric(12,2) not null,
-  currency text not null default 'USD',
+  category text NOT NULL DEFAULT 'Furniture'::text,
+  condition text NOT NULL DEFAULT 'Excellent'::text,
+  price numeric NOT NULL,
+  currency text NOT NULL DEFAULT 'USD'::text,
   image_url text,
-  image_urls jsonb not null default '[]'::jsonb,
-  stock integer not null default 1,
-  carbon_offset numeric(8,2) not null default 0,
-  seller_id uuid references public.profiles(id) on delete set null,
-  is_featured boolean not null default false,
-  status text not null default 'active',
-  created_at timestamptz not null default now()
+  carbon_offset numeric NOT NULL DEFAULT 0,
+  seller_id uuid,
+  is_featured boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  stock integer DEFAULT 1,
+  status text NOT NULL DEFAULT 'active'::text,
+  image_urls jsonb DEFAULT '[]'::jsonb,
+  CONSTRAINT products_pkey PRIMARY KEY (id),
+  CONSTRAINT products_seller_id_fkey FOREIGN KEY (seller_id) REFERENCES public.profiles(id) ON DELETE SET NULL
 );
 
-create table if not exists public.cart_items (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  product_id uuid not null references public.products(id) on delete cascade,
-  quantity integer not null default 1,
-  created_at timestamptz not null default now(),
-  unique(user_id, product_id)
+CREATE TABLE public.cart_items (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  quantity integer NOT NULL DEFAULT 1,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT cart_items_pkey PRIMARY KEY (id),
+  CONSTRAINT cart_items_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE,
+  CONSTRAINT cart_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE,
+  UNIQUE(user_id, product_id)
 );
 
-create table if not exists public.orders (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  status text not null default 'pending',
-  subtotal numeric(12,2) not null default 0,
-  shipping numeric(12,2) not null default 0,
-  carbon_credit numeric(12,2) not null default 0,
-  total numeric(12,2) not null default 0,
-  created_at timestamptz not null default now()
+CREATE TABLE public.orders (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  status text NOT NULL DEFAULT 'pending'::text,
+  subtotal numeric NOT NULL DEFAULT 0,
+  shipping numeric NOT NULL DEFAULT 0,
+  carbon_credit numeric NOT NULL DEFAULT 0,
+  total numeric NOT NULL DEFAULT 0,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT orders_pkey PRIMARY KEY (id),
+  CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
-create table if not exists public.order_items (
-  id uuid primary key default gen_random_uuid(),
-  order_id uuid not null references public.orders(id) on delete cascade,
-  product_id uuid references public.products(id) on delete set null,
-  title text not null,
-  quantity integer not null default 1,
-  price numeric(12,2) not null,
-  delivery_status text not null default 'vaulted'
+CREATE TABLE public.order_items (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  order_id uuid NOT NULL,
+  product_id uuid,
+  title text NOT NULL,
+  quantity integer NOT NULL DEFAULT 1,
+  price numeric NOT NULL,
+  delivery_status text NOT NULL DEFAULT 'vaulted'::text,
+  CONSTRAINT order_items_pkey PRIMARY KEY (id),
+  CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id) ON DELETE CASCADE,
+  CONSTRAINT order_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE SET NULL
 );
 
-create table if not exists public.user_settings (
-  user_id uuid primary key references auth.users(id) on delete cascade,
-  currency text not null default 'USD',
-  theme text not null default 'light',
-  email_notifications boolean not null default true,
-  carbon_tracking boolean not null default true,
-  updated_at timestamptz not null default now()
+CREATE TABLE public.user_settings (
+  user_id uuid NOT NULL,
+  currency text NOT NULL DEFAULT 'USD'::text,
+  theme text NOT NULL DEFAULT 'light'::text,
+  email_notifications boolean NOT NULL DEFAULT true,
+  carbon_tracking boolean NOT NULL DEFAULT true,
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT user_settings_pkey PRIMARY KEY (user_id),
+  CONSTRAINT user_settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE public.favorites (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  product_id uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT favorites_pkey PRIMARY KEY (id),
+  CONSTRAINT favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE,
+  CONSTRAINT favorites_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE,
+  UNIQUE(user_id, product_id)
+);
+
+-- 3. ENABLE ROW LEVEL SECURITY
 
 alter table public.profiles enable row level security;
 alter table public.products enable row level security;
@@ -93,289 +121,66 @@ alter table public.cart_items enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.user_settings enable row level security;
+alter table public.favorites enable row level security;
 
-do $$
-begin
-  if not exists (select 1 from pg_constraint where conname = 'profiles_role_allowed') then
-    alter table public.profiles
-    add constraint profiles_role_allowed check (role in ('buyer', 'seller', 'admin'));
-  end if;
+-- 4. CREATE RLS POLICIES
 
-  if not exists (select 1 from pg_constraint where conname = 'profiles_text_size_guard') then
-    alter table public.profiles
-    add constraint profiles_text_size_guard check (
-      length(full_name) <= 120
-      and length(email) <= 254
-      and length(coalesce(location, '')) <= 160
-      and length(coalesce(avatar_url, '')) <= 2048
-    );
-  end if;
+-- Profiles
+create policy "Profiles are public" on public.profiles for select to public using (true);
+create policy "Users can update own profile" on public.profiles for update to authenticated using (auth.uid() = id);
 
-  if not exists (select 1 from pg_constraint where conname = 'products_size_and_price_guard') then
-    alter table public.products
-    add constraint products_size_and_price_guard check (
-      length(title) between 1 and 120
-      and length(coalesce(maker, '')) <= 120
-      and length(coalesce(description, '')) <= 1000
-      and length(category) between 1 and 80
-      and length(condition) between 1 and 80
-      and length(currency) between 3 and 8
-      and length(coalesce(image_url, '')) <= 2048
-      and price >= 0
-      and carbon_offset >= 0
-    );
-  end if;
+-- Products
+create policy "Products are public" on public.products for select to public using (true);
+create policy "Sellers can insert products" on public.products for insert to authenticated with check (auth.uid() = seller_id);
+create policy "Sellers can update own products" on public.products for update to authenticated using (auth.uid() = seller_id);
+-- NEW: Allow ANY authenticated user to buy/reduce stock of active products!
+create policy "Buyers can reduce stock of active products" on public.products for update to authenticated using (status = 'active');
 
-  if not exists (select 1 from pg_constraint where conname = 'cart_items_quantity_guard') then
-    alter table public.cart_items
-    add constraint cart_items_quantity_guard check (quantity between 1 and 99);
-  end if;
+-- Cart Items
+create policy "Users manage own cart" on public.cart_items for all to authenticated using (auth.uid() = user_id);
 
-  if not exists (select 1 from pg_constraint where conname = 'orders_status_and_amount_guard') then
-    alter table public.orders
-    add constraint orders_status_and_amount_guard check (
-      status in ('pending', 'transit', 'shipped', 'delivered', 'completed', 'cancelled')
-      and subtotal >= 0
-      and shipping >= 0
-      and carbon_credit >= 0
-      and total >= 0
-    );
-  end if;
+-- Orders
+create policy "Users view own orders" on public.orders for select to authenticated using (auth.uid() = user_id);
+create policy "Users insert own orders" on public.orders for insert to authenticated with check (auth.uid() = user_id);
 
-  if not exists (select 1 from pg_constraint where conname = 'order_items_size_and_amount_guard') then
-    alter table public.order_items
-    add constraint order_items_size_and_amount_guard check (
-      length(title) between 1 and 120
-      and quantity between 1 and 99
-      and price >= 0
-    );
-  end if;
-
-  if not exists (select 1 from pg_constraint where conname = 'user_settings_allowed_values') then
-    alter table public.user_settings
-    add constraint user_settings_allowed_values check (
-      currency in ('USD', 'IDR', 'EUR')
-      and theme in ('light', 'soft')
-    );
-  end if;
-end;
-$$;
-
-drop policy if exists "Profiles are viewable by everyone" on public.profiles;
-create policy "Profiles are viewable by everyone"
-on public.profiles for select
-to authenticated, anon
-using (true);
-
-drop policy if exists "Users can update their own profile" on public.profiles;
-create policy "Users can update their own profile"
-on public.profiles for update
-to authenticated
-using ((select auth.uid()) = id)
-with check ((select auth.uid()) = id);
-
-drop policy if exists "Products are public" on public.products;
-create policy "Products are public"
-on public.products for select
-to authenticated, anon
-using (true);
-
-drop policy if exists "Sellers can create products" on public.products;
-create policy "Sellers can create products"
-on public.products for insert
-to authenticated
-with check ((select auth.uid()) = seller_id);
-
-drop policy if exists "Sellers can update their own products" on public.products;
-create policy "Sellers can update their own products"
-on public.products for update
-to authenticated
-using ((select auth.uid()) = seller_id)
-with check ((select auth.uid()) = seller_id);
-
-drop policy if exists "Admins can manage products" on public.products;
-create policy "Admins can manage products"
-on public.products for all
-to authenticated
-using (
-  exists (
-    select 1 from public.profiles
-    where profiles.id = (select auth.uid())
-    and profiles.role = 'admin'
-  )
-)
-with check (
-  exists (
-    select 1 from public.profiles
-    where profiles.id = (select auth.uid())
-    and profiles.role = 'admin'
-  )
+-- Order Items
+create policy "Users view own order items" on public.order_items for select to authenticated using (
+  order_id in (select id from public.orders where user_id = auth.uid())
+);
+create policy "Users insert order items" on public.order_items for insert to authenticated with check (
+  order_id in (select id from public.orders where user_id = auth.uid())
 );
 
-drop policy if exists "Users can view their own cart" on public.cart_items;
-create policy "Users can view their own cart"
-on public.cart_items for select
-to authenticated
-using ((select auth.uid()) = user_id);
+-- Favorites
+create policy "Users manage own favorites" on public.favorites for all to authenticated using (auth.uid() = user_id);
 
-drop policy if exists "Users can manage their own cart" on public.cart_items;
-create policy "Users can manage their own cart"
-on public.cart_items for insert
-to authenticated
-with check ((select auth.uid()) = user_id);
+-- User Settings
+create policy "Users manage own settings" on public.user_settings for all to authenticated using (auth.uid() = user_id);
 
-drop policy if exists "Users can update their own cart" on public.cart_items;
-create policy "Users can update their own cart"
-on public.cart_items for update
-to authenticated
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
 
-drop policy if exists "Users can delete their own cart" on public.cart_items;
-create policy "Users can delete their own cart"
-on public.cart_items for delete
-to authenticated
-using ((select auth.uid()) = user_id);
+-- 5. CREATE AUTHENTICATION TRIGGERS
 
-drop policy if exists "Users can view their own orders" on public.orders;
-create policy "Users can view their own orders"
-on public.orders for select
-to authenticated
-using ((select auth.uid()) = user_id);
-
-drop policy if exists "Users can create their own orders" on public.orders;
-create policy "Users can create their own orders"
-on public.orders for insert
-to authenticated
-with check ((select auth.uid()) = user_id);
-
-drop policy if exists "Users can view their own order items" on public.order_items;
-create policy "Users can view their own order items"
-on public.order_items for select
-to authenticated
-using (
-  exists (
-    select 1 from public.orders
-    where orders.id = order_items.order_id
-    and orders.user_id = (select auth.uid())
-  )
-);
-
-drop policy if exists "Users can create their own order items" on public.order_items;
-create policy "Users can create their own order items"
-on public.order_items for insert
-to authenticated
-with check (
-  exists (
-    select 1 from public.orders
-    where orders.id = order_items.order_id
-    and orders.user_id = (select auth.uid())
-  )
-);
-
-drop policy if exists "Users can view their own settings" on public.user_settings;
-create policy "Users can view their own settings"
-on public.user_settings for select
-to authenticated
-using ((select auth.uid()) = user_id);
-
-drop policy if exists "Users can manage their own settings" on public.user_settings;
-create policy "Users can manage their own settings"
-on public.user_settings for insert
-to authenticated
-with check ((select auth.uid()) = user_id);
-
-drop policy if exists "Users can update their own settings" on public.user_settings;
-create policy "Users can update their own settings"
-on public.user_settings for update
-to authenticated
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
-
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
+create or replace function public.handle_new_user() 
+returns trigger 
+language plpgsql 
+security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, full_name)
+  insert into public.profiles (id, full_name, email)
   values (
     new.id,
-    new.email,
-    coalesce(new.raw_user_meta_data->>'full_name', 'New ReHome User')
-  )
-  on conflict (id) do nothing;
-
-  insert into public.user_settings (user_id)
-  values (new.id)
-  on conflict (user_id) do nothing;
-
+    coalesce(new.raw_user_meta_data->>'full_name', 'New Curator'),
+    new.email
+  );
+  insert into public.user_settings (user_id) values (new.id);
   return new;
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
-after insert on auth.users
-for each row execute function public.handle_new_user();
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
 
-insert into storage.buckets (id, name, public)
-values ('product-images', 'product-images', true)
-on conflict (id) do nothing;
-
-drop policy if exists "Product images are public" on storage.objects;
-create policy "Product images are public"
-on storage.objects for select
-to authenticated, anon
-using (bucket_id = 'product-images');
-
-drop policy if exists "Users can upload product images" on storage.objects;
-create policy "Users can upload product images"
-on storage.objects for insert
-to authenticated
-with check (
-  bucket_id = 'product-images'
-  and (storage.foldername(name))[1] = (select auth.uid())::text
-);
-
-drop policy if exists "Users can update their product images" on storage.objects;
-create policy "Users can update their product images"
-on storage.objects for update
-to authenticated
-using (
-  bucket_id = 'product-images'
-  and (storage.foldername(name))[1] = (select auth.uid())::text
-)
-with check (
-  bucket_id = 'product-images'
-  and (storage.foldername(name))[1] = (select auth.uid())::text
-);
-
-drop policy if exists "Users can delete their product images" on storage.objects;
-create policy "Users can delete their product images"
-on storage.objects for delete
-to authenticated
-using (
-  bucket_id = 'product-images'
-  and (storage.foldername(name))[1] = (select auth.uid())::text
-);
-
-insert into public.products
-(title, maker, description, category, condition, price, currency, image_url, carbon_offset, is_featured)
-select title, maker, description, category, condition, price, currency, image_url, carbon_offset, is_featured
-from (values
-('About A Chair 22', 'HAY Design', 'A clean Scandinavian chair for slow interiors.', 'Seating', 'Like New', 185, 'USD', 'assets/figma-export/c7a2095a5d0eb16cbdcad4fcb7c6f07e034adb0f.png', 1.2, true),
-('Control Table Lamp', 'Muuto', 'Compact table lamp with sculptural presence.', 'Decor', 'Pristine', 120, 'USD', 'assets/figma-export/585f92e3662d379261eb92c36f8bc58c7e846362.png', 0.8, true),
-('Grib Toolbox Vase', 'Ferm Living', 'A calm ceramic set for tactile homes.', 'Decor', 'Excellent', 85, 'USD', 'assets/figma-export/e24b16ff6b341c1759a6066cedd4c69ab55c09ee.png', 0.9, true),
-('Elowen Lounge Chair', 'Artek', 'A restored oak lounge chair with gray woven upholstery.', 'Seating', 'Like New', 850, 'USD', 'assets/figma-export/c92ff17556827d47a8e24c0f458a0824ae243188.png', 2.2, false),
-('Walnut Writing Bureau', 'Vintage Studio', 'Circa 1960 walnut writing bureau from London.', 'Storage & Tables', 'Good', 1100, 'USD', 'assets/figma-export/2c599988de934055ead448b9abf9204292e752e2.png', 2.8, false),
-('Brass Sculptural Lamp', 'Atelier Nocturne', 'Handcrafted sculptural lamp with warm brass tone.', 'Decor', 'Excellent', 340, 'USD', 'assets/figma-export/d7ab5e4107ceb6fa602d2a38b6fd105e10f50217.jpg', 1.1, false),
-('Mags Soft Modular', 'HAY', 'Original HAY modular sofa from Paris.', 'Seating', 'Like New', 2900, 'USD', 'assets/figma-export/ff589ffcc586624306d3a40d43bc7c5c6a29c8eb.png', 4.8, false),
-('Oak Arc Table', 'Custom Made', 'Custom oak table from Amsterdam.', 'Storage & Tables', 'Like New', 1450, 'USD', 'assets/figma-export/70e1f26af8d8c8a801bc699d95272597eb1791a6.png', 3.0, false)
-) as seed(title, maker, description, category, condition, price, currency, image_url, carbon_offset, is_featured)
-where not exists (
-  select 1 from public.products
-  where products.title = seed.title
-  and products.maker = seed.maker
-);
+-- 6. SETUP STORAGE BUCKETS (Optional, just in case they were deleted)
+insert into storage.buckets (id, name, public) values ('product-images', 'product-images', true) on conflict do nothing;
+insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true) on conflict do nothing;

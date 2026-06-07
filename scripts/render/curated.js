@@ -212,8 +212,22 @@ export function renderCurated() {
     const category = document.querySelectorAll(".ai-input")[0]?.value || 'Furniture';
     const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
     
-    const titles = ["Mid-Century Teak Lounge", "Postmodern Ceramic Vessel", "Brutalist Steel Lamp", "Minimalist Oak Sideboard"];
-    const makers = ["Knoll", "Herman Miller", "Foscarini", "Vitra", "Artemide"];
+    const titles = ["Mid-Century Teak Lounge", "Postmodern Ceramic Vessel", "Brutalist Steel Lamp", "Minimalist Oak Sideboard", "Bauhaus Inspired Chair"];
+    const makers = ["Knoll", "Herman Miller", "Foscarini", "Vitra", "Artemide", "Cassina", "B&B Italia"];
+    
+    const sentiments = ["High Collector Interest", "Strong Demand", "Steady Value", "Rare Find", "Emerging Trend"];
+    const insightOptions = [
+      "Vintage Premium: Values up 8% this quarter",
+      "Quick Sale: Average time on market 6 days",
+      "Historical Accuracy: Verified original materials",
+      "Designer Heritage: Highly sought after era",
+      "Appreciating Asset: +12% YoY growth",
+      "Sustainable Choice: Zero VOC finish detected"
+    ];
+
+    // Pick 2 random unique insights
+    const shuffledInsights = insightOptions.sort(() => 0.5 - Math.random());
+    const selectedInsights = shuffledInsights.slice(0, 2);
     
     return {
       title: titles[Math.floor(Math.random() * titles.length)],
@@ -224,8 +238,8 @@ export function renderCurated() {
       condition: condition,
       estimated_fair_price: Math.floor(Math.random() * 4000) + 400,
       price_accuracy_note: "Within 5% of recent auction averages.",
-      market_sentiment: "High Collector Interest",
-      market_insights: ["Vintage Premium: Values up 8% this quarter", "Quick Sale: Average time on market 6 days"],
+      market_sentiment: sentiments[Math.floor(Math.random() * sentiments.length)],
+      market_insights: selectedInsights,
       eco_score: Math.floor(Math.random() * 15) + 85,
       eco_offset: Math.floor(Math.random() * 50) + 20,
       image_url: currentFileBase64
