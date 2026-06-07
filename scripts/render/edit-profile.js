@@ -30,9 +30,14 @@ export async function renderEditProfile() {
     const shopnameInput = document.getElementById("edit-shopname");
     const locationInput = document.getElementById("edit-location");
     const descInput = document.getElementById("edit-description");
+    const geminiInput = document.getElementById("edit-gemini-key");
     const saveBtn = document.getElementById("edit-save-btn");
 
     let currentAvatarUrl = null;
+    
+    if (geminiInput) {
+      geminiInput.value = localStorage.getItem('rehome_gemini_key') || '';
+    }
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -111,6 +116,14 @@ export async function renderEditProfile() {
 
         if (currentAvatarUrl) {
           updates.avatar_url = currentAvatarUrl;
+        }
+
+        if (geminiInput) {
+          if (geminiInput.value.trim()) {
+            localStorage.setItem('rehome_gemini_key', geminiInput.value.trim());
+          } else {
+            localStorage.removeItem('rehome_gemini_key');
+          }
         }
 
         const { error: updateError } = await supabase

@@ -84,6 +84,12 @@
   .approach-icon { width: 60px; height: 60px; background: #f0ede8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #78716c; margin-bottom: 20px; }
   .approach-card h3 { font-size: 16px; font-weight: 700; margin: 0 0 10px; color: #1c1917; }
   .approach-card p { font-size: 14px; color: #78716c; line-height: 1.65; margin: 0; }
+
+  .scan-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 14px; overflow: hidden; }
+  .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #6aab72; box-shadow: 0 0 16px 2px #6aab72; animation: scan 2s linear infinite; }
+  @keyframes scan { 0% { top: 0; } 50% { top: calc(100% - 4px); } 100% { top: 0; } }
+  .scan-text { color: white; font-weight: 700; font-size: 15px; position: relative; z-index: 11; text-align: center; margin-top: 20px; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
 </style>
 
 <div class="page-shell curated-wrapper">
@@ -104,7 +110,7 @@
         Analyze Item
       </div>
 
-      <div class="upload-box">
+      <div class="upload-box" id="ai-upload-box" style="position: relative;">
         <div class="upload-icon-wrap">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2">
             <polyline points="16 16 12 12 8 16"></polyline>
@@ -116,6 +122,14 @@
         <p>AI works best with clear, high-resolution shots<br>from multiple angles.</p>
         <button type="button" class="btn-select" onclick="document.getElementById('ai-photo-upload').click()">Select Files</button>
         <input type="file" id="ai-photo-upload" accept="image/*" style="display: none;">
+        
+        <img id="ai-image-preview" src="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 14px; display: none;">
+        
+        <div class="scan-overlay" id="ai-scan-overlay">
+          <div class="scan-line"></div>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6aab72" stroke-width="2" style="position: relative; z-index: 11; margin-bottom: 12px;"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <div class="scan-text" id="ai-scan-text">Analyzing geometric structures...</div>
+        </div>
       </div>
 
       <div class="ai-field">
@@ -148,17 +162,22 @@
         </div>
       </div>
 
-      <button class="btn-green-full" type="button" data-action="valuation">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="btn-green-full" type="button" id="btn-get-valuation" style="opacity: 0.5; pointer-events: none;">
+        <svg id="btn-valuation-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
           <path d="M2 17l10 5 10-5"></path>
           <path d="M2 12l10 5 10-5"></path>
         </svg>
-        Get AI Valuation
+        <span id="btn-valuation-text">Upload image to scan</span>
       </button>
+
+      <div id="gemini-badge" style="display: none; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; font-size: 13px; font-weight: 700; color: #6aab72;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        *Using Real Gemini 1.5 Flash
+      </div>
     </article>
 
-    <div class="result-col" id="ai-result-panel" style="display: flex; opacity: 1; transition: opacity 0.5s;">
+    <div class="result-col" id="ai-result-panel" style="display: flex; opacity: 0.5; filter: blur(6px); pointer-events: none; transition: opacity 0.5s, filter 0.5s;">
 
       <div class="result-topbar">
         <div class="result-pill">
