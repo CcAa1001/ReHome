@@ -93,6 +93,28 @@ export function renderCurated() {
         // Update DOM
         document.getElementById("ai-price-value").textContent = "$" + generatedData.price.toLocaleString();
         
+        if (document.getElementById("ai-price-accuracy-title")) {
+          document.getElementById("ai-price-accuracy-title").textContent = generatedData.estimated_fair_price ? "Fair Price: $" + generatedData.estimated_fair_price.toLocaleString() : "Excellent Fair Price";
+          document.getElementById("ai-price-accuracy-desc").textContent = generatedData.price_accuracy_note || "Within 3% of market average.";
+        }
+        if (document.getElementById("ai-market-sentiment")) {
+          document.getElementById("ai-market-sentiment").textContent = generatedData.market_sentiment || "Strong Demand";
+        }
+        if (document.getElementById("ai-insight-1-title") && generatedData.market_insights?.length > 0) {
+          const parts = generatedData.market_insights[0].split(":");
+          document.getElementById("ai-insight-1-title").textContent = parts[0] || "Appreciating Value";
+          document.getElementById("ai-insight-1-desc").textContent = parts[1] || "+12% vs last year";
+        }
+        if (document.getElementById("ai-insight-2-title") && generatedData.market_insights?.length > 1) {
+          const parts = generatedData.market_insights[1].split(":");
+          document.getElementById("ai-insight-2-title").textContent = parts[0] || "Fast Turnover";
+          document.getElementById("ai-insight-2-desc").textContent = parts[1] || "Avg. 4 days to sell";
+        }
+        if (document.getElementById("ai-eco-score")) {
+          document.getElementById("ai-eco-score").textContent = "Eco-Check Score: " + (generatedData.eco_score || 98) + "/100";
+          document.getElementById("ai-eco-offset").textContent = "Reselling this item offsets " + (generatedData.eco_offset || 45) + "kg of CO2.";
+        }
+        
         resultPanel.style.filter = "blur(0)";
         resultPanel.style.opacity = "1";
         resultPanel.style.pointerEvents = "auto";
@@ -149,7 +171,13 @@ export function renderCurated() {
       "description": "A sophisticated 2-sentence description of the item and its design legacy.",
       "maker": "Designer or Brand",
       "category": "${category}",
-      "condition": "${condition}"
+      "condition": "${condition}",
+      "estimated_fair_price": 1200,
+      "price_accuracy_note": "A short note like 'Within 3% of market average'",
+      "market_sentiment": "Short sentiment phrase like 'Strong Demand' or 'Steady'",
+      "market_insights": ["Insight 1 Title: Insight 1 Description", "Insight 2 Title: Insight 2 Description"],
+      "eco_score": 95,
+      "eco_offset": 45
     }`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${key}`, {
@@ -194,6 +222,12 @@ export function renderCurated() {
       maker: makers[Math.floor(Math.random() * makers.length)],
       category: category,
       condition: condition,
+      estimated_fair_price: Math.floor(Math.random() * 4000) + 400,
+      price_accuracy_note: "Within 5% of recent auction averages.",
+      market_sentiment: "High Collector Interest",
+      market_insights: ["Vintage Premium: Values up 8% this quarter", "Quick Sale: Average time on market 6 days"],
+      eco_score: Math.floor(Math.random() * 15) + 85,
+      eco_offset: Math.floor(Math.random() * 50) + 20,
       image_url: currentFileBase64
     };
   }

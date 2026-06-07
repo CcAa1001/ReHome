@@ -3,6 +3,7 @@ import { getSupabaseClient } from "../supabaseClient.js";
 import { navigate } from "../router.js";
 import { logoutUser } from "../auth.js";
 import { showToast } from "../ui.js";
+import { toSafeNumber } from "../security.js";
 
 // ─── Helper: sanitize string untuk mencegah XSS ───
 function sanitize(str) {

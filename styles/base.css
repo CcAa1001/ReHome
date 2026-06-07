@@ -368,9 +368,23 @@ select.sort-select, .sort-select {
 
 
 nav, header, .app-header {
-  border-bottom: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
   border-top: none !important;
-  box-shadow: 0 8px 30px rgba(82, 100, 66, 0.12) !important;
-  position: relative;
-  z-index: 100;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
+  background: rgba(251, 249, 248, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.prod-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.prod-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 12px 30px rgba(82, 100, 66, 0.15) !important;
 }
