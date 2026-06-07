@@ -29,13 +29,13 @@
 </style>
 
 <div class="page-shell co-wrapper">
-  <div class="co-layout">
+  <div class="co-layout" id="checkout-content">
     <div>
       <div class="co-steps"><span class="done">✓ Shipping</span><span class="active">2 Payment</span><span>3 Confirmation</span></div>
       
       <div class="co-card">
         <div class="co-card-head"><h2>Shipping Information</h2><button>Edit</button></div>
-        <p>Vivian Curator<br>Strøget 42, Floor 3<br>Copenhagen, 1160 Denmark<br>+45 12 34 56 78</p>
+        <p id="co-shipping-info">Loading...</p>
       </div>
 
       <h2 style="font-size:24px; font-weight:700; margin-bottom:24px;">Choose Payment Method</h2>
@@ -48,17 +48,22 @@
         </label>
       </div>
 
-      <button class="btn-green" type="button" data-route="confirmation">Place Order Securely</button>
+      <button class="btn-green" type="button" id="btn-submit-checkout">Place Order Securely</button>
     </div>
     
     <aside class="summary-box">
       <h2 style="font-family:var(--serif, serif); font-size:24px; margin:0 0 24px;">Order Summary</h2>
-      <div class="summary-item"><span>Nordic Oak Chair</span>$1,240</div>
-      <div class="summary-item"><span>Grib Toolbox Vase</span>$85</div>
+      <div id="co-summary-items"></div>
       <hr style="border:none; border-top:1px solid #e7e5e4; margin:24px 0;">
-      <div class="summary-item"><span>Subtotal</span>$1,325</div>
-      <div class="summary-item"><span>Eco-Delivery</span>$0</div>
-      <div class="summary-item" style="font-size:20px; font-weight:800; color:#1c1917; margin-top:24px;"><span>Total</span>$1,325</div>
+      <div class="summary-item"><span>Subtotal</span><span id="co-subtotal"></span></div>
+      <div class="summary-item"><span>Eco-Delivery</span><span id="co-shipping"></span></div>
+      <div class="summary-item" style="font-size:20px; font-weight:800; color:#1c1917; margin-top:24px;"><span>Total</span><span id="co-total"></span></div>
     </aside>
+  </div>
+  
+  <div id="checkout-empty-state" style="text-align: center; padding: 100px 0; display: none;">
+    <h2 style="font-size: 24px; margin-bottom: 16px;">Your cart is empty.</h2>
+    <p style="color: #78716c; margin-bottom: 24px;">Add some items to your cart before checking out.</p>
+    <button data-route="shop" style="padding: 14px 28px; background: #3d5a30; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">Explore Shop</button>
   </div>
 </div>

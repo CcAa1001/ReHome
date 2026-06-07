@@ -3,9 +3,6 @@ import { getSupabaseClient } from "../supabaseClient.js";
 import { navigate, setRouteParams } from "../router.js";
 import { showToast } from "../ui.js";
 
-// ==========================================
-// MESIN PEMBERSIH ANTI-HACKER (XSS SANITIZER)
-// ==========================================
 function sanitize(str) {
   if (!str) return '';
   return String(str).replace(/[&<>'"]/g, tag => ({
@@ -152,9 +149,6 @@ function renderPage(catalog, countEl) {
     });
   });
 
-  // ==============================================================
-  // KLIK FAVORIT (SINKRONISASI KE DATABASE)
-  // ==============================================================
   catalog.querySelectorAll(".btn-favorite").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation(); 

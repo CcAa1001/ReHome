@@ -54,9 +54,6 @@ export async function renderProfile() {
     const userEmail = user.email || "user@example.com";
     const joinDate = new Date(user.created_at).getFullYear();
 
-    // ==========================================
-    // 1. AMBIL / BUAT DATA PROFIL DARI DATABASE
-    // ==========================================
     let { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -78,9 +75,6 @@ export async function renderProfile() {
       profile = newProfile || {};
     }
 
-    // ==========================================
-    // 2. INJECT DATA KE DOM
-    // ==========================================
     const displayName = profile.shop_name || profile.full_name || fullName;
 
     const initialEl    = document.getElementById("profile-initial");
@@ -113,9 +107,6 @@ export async function renderProfile() {
       impactEl.textContent = (profile.impact_score || 0).toLocaleString();
     }
 
-    // ==========================================
-    // 3. PURCHASE HISTORY
-    // ==========================================
     const { data: orders, error: ordersError } = await supabase
       .from('orders')
       .select(`
@@ -216,9 +207,6 @@ export async function renderProfile() {
       }
     }
 
-    // ==========================================
-    // 4. SELLING HISTORY
-    // ==========================================
     const { data: sellerProducts, error: sellerError } = await supabase
       .from('products')
       .select(`
@@ -228,6 +216,7 @@ export async function renderProfile() {
         image_url,
         created_at,
         stock,
+        status,
         order_items (
           id,
           quantity
@@ -238,10 +227,13 @@ export async function renderProfile() {
 
     if (sellerError) console.error('Selling history error:', sellerError);
 
-    // Render tab
+    const activeListings = (sellerProducts || []).filter(p => p.status !== 'draft');
+    const draftListings = (sellerProducts || []).filter(p => p.status === 'draft');
+
+    // Render Selling tab
     const tabSelling = document.getElementById("tab-selling");
     if (tabSelling) {
-      if (!sellerProducts || sellerProducts.length === 0) {
+      if (activeListings.length === 0) {
         tabSelling.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;">
             <div style="font-size:40px;margin-bottom:12px;">🏷️</div>
@@ -251,7 +243,7 @@ export async function renderProfile() {
       } else {
         tabSelling.innerHTML = `
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">
-            ${sellerProducts.map(p => {
+            ${activeListings.map(p => {
               const totalSold = (p.order_items || []).reduce((sum, oi) => sum + (oi.quantity || 0), 0);
               const inStock = p.stock !== null ? p.stock : '—';
               const soldBadge = totalSold > 0
@@ -297,9 +289,32 @@ export async function renderProfile() {
       }
     }
 
-    // ==========================================
-    // 5. SAVED ITEMS
-    // ==========================================
+    // Render Drafts tab
+    const draftsGrid = document.getElementById("profile-drafts-grid");
+    if (draftsGrid) {
+      if (draftListings.length === 0) {
+        draftsGrid.parentElement.innerHTML = `
+          <div style="text-align:center;padding:48px 0;color:#78716c;background:white;border-radius:12px;border:1px solid #e7e5e4;">
+            <div style="font-size:40px;margin-bottom:12px;">📝</div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No drafts</div>
+            <div style="font-size:14px;">Items you save as draft will appear here.</div>
+          </div>`;
+      } else {
+        draftsGrid.innerHTML = draftListings.map(p => `
+          <div style="background:white;border-radius:14px;border:1px dashed #c8c6c0;overflow:hidden;opacity:0.8;transition:0.2s;cursor:pointer;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+            <div style="aspect-ratio:4/3;background:#f5f5f4;position:relative;">
+              ${p.image_url ? `<img src="${p.image_url}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a8a29e;">No Image</div>`}
+              <div style="position:absolute;top:10px;right:10px;background:white;font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">DRAFT</div>
+            </div>
+            <div style="padding:16px;">
+              <h4 style="margin:0 0 4px;font-size:15px;font-weight:700;color:#1c1917;">${sanitize(p.title || 'Untitled Draft')}</h4>
+              <p style="margin:0;font-size:14px;color:#78716c;">$${toSafeNumber(p.price).toLocaleString()}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
     const { data: favorites, error: favError } = await supabase
       .from('favorites')
       .select('product_id, products(*)')
@@ -343,9 +358,6 @@ export async function renderProfile() {
       }
     }
 
-    // ==========================================
-    // 6. EDIT PROFILE
-    // ==========================================
     const editBtn = Array.from(container.querySelectorAll("button"))
       .find(b => b.textContent.trim().includes("Edit Profile"));
 
@@ -355,9 +367,6 @@ export async function renderProfile() {
       });
     }
 
-    // ==========================================
-    // 7. NAVIGASI TOMBOL HEADER
-    // ==========================================
     const btnNavs = document.querySelectorAll('button[data-route]');
     btnNavs.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -366,9 +375,6 @@ export async function renderProfile() {
       });
     });
 
-    // ==========================================
-    // 8. LOGIKA TAB
-    // ==========================================
     const tabs     = document.querySelectorAll('.profile-tab');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -395,9 +401,6 @@ export async function renderProfile() {
       });
     });
 
-    // ==========================================
-    // 9. CARD CLICK NAVIGATION
-    // ==========================================
     const setupCardNav = async (selector) => {
       document.querySelectorAll(selector).forEach(card => {
         card.addEventListener('click', async (e) => {
@@ -412,9 +415,6 @@ export async function renderProfile() {
     setupCardNav('.selling-item-card');
     setupCardNav('.saved-item-card');
 
-    // ==========================================
-    // 10. PREFERENCES — dari user_settings (BUKAN profiles)
-    // ==========================================
     let { data: settings } = await supabase
       .from('user_settings')
       .select('*')
@@ -456,9 +456,6 @@ export async function renderProfile() {
       }
     }
 
-    // ==========================================
-    // 10. LOGOUT
-    // ==========================================
     const logoutBtn = document.getElementById("profile-logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async () => {
@@ -470,9 +467,6 @@ export async function renderProfile() {
       });
     }
 
-    // ==========================================
-    // 9. VAULT BUTTON BINDINGS
-    // ==========================================
     document.querySelectorAll('.btn-deliver-vault').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();

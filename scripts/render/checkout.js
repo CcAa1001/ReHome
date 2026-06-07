@@ -83,32 +83,94 @@ async function checkoutCart() {
   if (clearError) throw clearError;
 }
 
-export function renderCheckout() {
-  bindCheckout();
-}
+export async function renderCheckout() {
+  const content = document.getElementById("checkout-content");
+  const emptyState = document.getElementById("checkout-empty-state");
+  const submitBtn = document.getElementById("btn-submit-checkout");
+  const summaryBox = document.getElementById("co-summary-items");
 
-export function bindCheckout() {
-  const button = document.querySelector("[data-checkout-submit]") || document.querySelector(".btn-green");
-  if (!button || button.dataset.checkoutBound === "true") return;
-
-  button.dataset.checkoutBound = "true";
-  button.removeAttribute("data-route");
-  button.addEventListener("click", async () => {
-    const originalText = button.textContent;
-
-    button.disabled = true;
-    button.textContent = "Processing...";
-
-    try {
-      await checkoutCart();
-      state.publish("cartUpdated", []);
-      showToast("Order placed successfully!");
-      navigate("confirmation");
-    } catch (error) {
-      showToast(error.message || "Checkout failed. Please try again.");
-    } finally {
-      button.disabled = false;
-      button.textContent = originalText;
+  try {
+    const supabase = await getSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      if (content) content.style.display = "none";
+      if (emptyState) {
+        emptyState.style.display = "block";
+        emptyState.querySelector("h2").textContent = "Please sign in";
+        emptyState.querySelector("p").textContent = "You need to be signed in to checkout.";
+      }
+      return;
     }
-  });
+
+    // Profile for shipping info
+    const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    const shippingEl = document.getElementById("co-shipping-info");
+    if (shippingEl) {
+      shippingEl.innerHTML = `${profile?.full_name || "User"}<br>${profile?.location || "No address provided"}`;
+    }
+
+    // Cart items
+    const { data: cartItems } = await supabase
+      .from("cart_items")
+      .select("id, quantity, products(id, title, price)")
+      .eq("user_id", user.id);
+
+    if (!cartItems || cartItems.length === 0) {
+      if (content) content.style.display = "none";
+      if (emptyState) emptyState.style.display = "block";
+      return;
+    }
+
+    if (content) content.style.display = "grid";
+    if (emptyState) emptyState.style.display = "none";
+
+    let subtotal = 0;
+    if (summaryBox) summaryBox.innerHTML = "";
+    
+    cartItems.forEach(item => {
+      const p = item.products;
+      if (!p) return;
+      const q = clampInteger(item.quantity, 1, 99, 1);
+      const price = toSafeNumber(p.price) * q;
+      subtotal += price;
+      
+      if (summaryBox) {
+        const div = document.createElement("div");
+        div.className = "summary-item";
+        div.innerHTML = `<span>${p.title} ${q > 1 ? 'x'+q : ''}</span>$${price.toLocaleString()}`;
+        summaryBox.appendChild(div);
+      }
+    });
+
+    const shipping = subtotal > 0 ? 50 : 0;
+    const total = subtotal + shipping;
+
+    const elSub = document.getElementById("co-subtotal");
+    const elShip = document.getElementById("co-shipping");
+    const elTot = document.getElementById("co-total");
+
+    if (elSub) elSub.textContent = "$" + subtotal.toLocaleString();
+    if (elShip) elShip.textContent = shipping === 0 ? "Free" : "$" + shipping;
+    if (elTot) elTot.textContent = "$" + total.toLocaleString();
+
+    if (submitBtn && submitBtn.dataset.checkoutBound !== "true") {
+      submitBtn.dataset.checkoutBound = "true";
+      submitBtn.addEventListener("click", async () => {
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Processing...";
+        try {
+          await checkoutCart();
+          navigate("confirmation");
+        } catch (err) {
+          showToast(err.message || "Failed to checkout.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
+    }
+
+  } catch (error) {
+    showToast("Error loading checkout data.");
+  }
 }

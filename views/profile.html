@@ -71,6 +71,7 @@
       <div style="display: flex; gap: 0; border-bottom: 1px solid #e7e5e4; margin-bottom: 32px; overflow-x: auto;">
         <button class="profile-tab active" data-tab="purchase" style="padding: 0 4px 14px; margin-right: 28px; font-weight: 700; font-size: 15px; color: #1c1917; border: none; background: transparent; border-bottom: 2px solid #3d5a30; cursor: pointer; white-space: nowrap;">Purchase History</button>
         <button class="profile-tab" data-tab="selling" style="padding: 0 4px 14px; margin-right: 28px; font-weight: 600; font-size: 15px; color: #78716c; border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;">Selling History</button>
+        <button class="profile-tab" data-tab="drafts" style="padding: 0 4px 14px; margin-right: 28px; font-weight: 600; font-size: 15px; color: #78716c; border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;">Drafts</button>
         <button class="profile-tab" data-tab="saved" style="padding: 0 4px 14px; margin-right: 28px; font-weight: 600; font-size: 15px; color: #78716c; border: none; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;">
           Saved Items
           <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; background: #e7e5e4; border-radius: 99px; font-size: 11px; font-weight: 700; color: #57534e; margin-left: 6px;">12</span>
@@ -141,6 +142,12 @@
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" stroke-width="2" style="margin-bottom: 16px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
           <h3 style="margin: 0 0 8px; font-size: 18px; color: #1c1917;">No Saved Items</h3>
           <p style="color: #78716c; margin: 0;">Items you save will appear here.</p>
+        </div>
+      </div>
+
+      <div id="tab-drafts" class="tab-content" style="display: none;">
+        <div id="profile-drafts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Drafts dynamically inserted here -->
         </div>
       </div>
 
