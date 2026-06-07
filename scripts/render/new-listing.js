@@ -13,6 +13,27 @@ export async function renderNewListing() {
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) { navigate("home"); return; }
 
+  // ─── Pre-fill if reselling ───
+  let resellData = null;
+  try {
+    const rawData = localStorage.getItem('rehome_resell_data');
+    if (rawData) {
+      resellData = JSON.parse(rawData);
+      localStorage.removeItem('rehome_resell_data'); // clear it
+      
+      const form = document.getElementById('new-listing-form');
+      if (form) {
+        if (resellData.title) { const el = form.querySelector('[name="title"]'); if (el) el.value = resellData.title; }
+        if (resellData.description) { const el = form.querySelector('[name="description"]'); if (el) el.value = resellData.description; }
+        if (resellData.price) { const el = form.querySelector('[name="price"]'); if (el) el.value = resellData.price; }
+        if (resellData.category) { const el = form.querySelector('[name="category"]'); if (el) el.value = resellData.category; }
+        if (resellData.condition) { const el = form.querySelector('[name="condition"]'); if (el) el.value = resellData.condition; }
+      }
+    }
+  } catch (err) {
+    console.error("Error reading resell data:", err);
+  }
+
   // ─── Bind file upload ───
   const uploadArea = document.getElementById('nl-upload-area');
   const fileInput = document.getElementById('nl-file-input');
@@ -189,6 +210,9 @@ export async function renderNewListing() {
       showToast("Failed to create listing: " + error.message);
       console.error('Insert error:', error);
     } else {
+      if (resellData && resellData.order_item_id && status === 'active') {
+         await supabase.from('order_items').update({ delivery_status: 'resold' }).eq('id', resellData.order_item_id);
+      }
       showToast(status === 'draft' ? "Draft saved!" : "Listing published!");
       navigate('sell');
     }

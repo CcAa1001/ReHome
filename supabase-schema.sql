@@ -8,6 +8,7 @@ create table if not exists public.profiles (
   impact_score integer not null default 0,
   shop_name text,
   avatar_url text,
+  description text,
   created_at timestamptz not null default now()
 );
 
@@ -73,7 +74,8 @@ create table if not exists public.order_items (
   product_id uuid references public.products(id) on delete set null,
   title text not null,
   quantity integer not null default 1,
-  price numeric(12,2) not null
+  price numeric(12,2) not null,
+  delivery_status text not null default 'vaulted'
 );
 
 create table if not exists public.user_settings (

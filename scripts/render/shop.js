@@ -285,6 +285,13 @@ function bindShopControls(catalog, countEl) {
     el.addEventListener("change", () => applyFilters(catalog, countEl));
   });
   document.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { el.classList.toggle("active"); applyFilters(catalog, countEl); }));
+
+  const loadMoreBtn = document.querySelector('.load-more-btn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', () => {
+      showToast("All available treasures are already loaded!");
+    });
+  }
 }
 
 function applyFilters(catalog, countEl) {

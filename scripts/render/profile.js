@@ -129,7 +129,8 @@ export async function renderProfile() {
           quantity,
           price,
           product_id,
-          products (image_url)
+          delivery_status,
+          products (image_url, description, category, condition, maker)
         )
       `)
       .eq('user_id', user.id)
@@ -151,15 +152,37 @@ export async function renderProfile() {
         tabPurchases.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">` + 
           orders.flatMap(order => {
             return (order.order_items || []).map(item => {
-              const statusDisplay = order.status === 'pending' ? 'Pending' : order.status === 'delivered' ? 'Delivered' : order.status;
-              const statusColor = order.status === 'delivered' ? '#15803d' : '#854d0e';
-              const statusBg = order.status === 'delivered' ? '#f0faf5' : '#fef9c3';
+              const deliveryStatus = item.delivery_status || 'delivered';
+              const isVaulted = deliveryStatus === 'vaulted';
+              
+              const statusDisplay = deliveryStatus;
+              const statusColor = deliveryStatus === 'delivered' ? '#15803d' : deliveryStatus === 'vaulted' ? '#854d0e' : '#1e40af';
+              const statusBg = deliveryStatus === 'delivered' ? '#f0faf5' : deliveryStatus === 'vaulted' ? '#fef9c3' : '#dbeafe';
               const imgUrl = item.products?.image_url || '';
               
+              let actionsHtml = '';
+              if (isVaulted) {
+                const productData = {
+                   title: item.title,
+                   price: item.price,
+                   image_url: imgUrl,
+                   description: item.products?.description || '',
+                   category: item.products?.category || '',
+                   condition: item.products?.condition || '',
+                   maker: item.products?.maker || ''
+                };
+                
+                actionsHtml = `
+                  <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button class="btn-deliver-vault" data-item-id="${item.id}" style="flex: 1; padding: 8px; background: #3d5a30; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Deliver</button>
+                    <button class="btn-resell-vault" data-item-id="${item.id}" data-product='${sanitize(JSON.stringify(productData))}' style="flex: 1; padding: 8px; background: white; color: #1c1917; border: 1px solid #d6d3d1; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Resell</button>
+                  </div>
+                `;
+              }
+              
               return `
-                <div style="background:white;border:1px solid #e7e5e4;border-radius:12px;
-                            overflow:hidden;cursor:pointer;"
-                     onclick="window.location.hash='product-detail?productId=${item.product_id}'">
+                <div class="purchase-item-card" data-product-id="${item.product_id}" style="background:white;border:1px solid #e7e5e4;border-radius:12px;
+                            overflow:hidden;cursor:pointer;">
                   <div style="position:relative;">
                     <img src="${sanitize(imgUrl)}"
                          style="width:100%;aspect-ratio:4/3;object-fit:cover;"
@@ -185,6 +208,7 @@ export async function renderProfile() {
                     <div style="color:#a8a29e;font-size:11px;margin-top:4px;">
                       Order #${sanitize(order.id.slice(0, 8).toUpperCase())} &bull; ${formatDate(order.created_at)}
                     </div>
+                    ${actionsHtml}
                   </div>
                 </div>`;
             });
@@ -241,9 +265,8 @@ export async function renderProfile() {
                    </span>`;
 
               return `
-                <div style="background:white;border:1px solid #e7e5e4;border-radius:12px;
-                            overflow:hidden;cursor:pointer;"
-                     onclick="window.location.hash='product-detail?productId=${p.id}'">
+                <div class="selling-item-card" data-product-id="${p.id}" style="background:white;border:1px solid #e7e5e4;border-radius:12px;
+                            overflow:hidden;cursor:pointer;">
                   <div style="position:relative;">
                     <img src="${sanitize(p.image_url || '')}"
                          style="width:100%;aspect-ratio:4/3;object-fit:cover;"
@@ -305,9 +328,8 @@ export async function renderProfile() {
             const p = f.products;
             if (!p) return '';
             return `
-              <div style="background:white;border-radius:12px;border:1px solid #e7e5e4;
-                          padding:16px;cursor:pointer;"
-                   onclick="window.location.hash='product-detail?productId=${p.id}'">
+              <div class="saved-item-card" data-product-id="${p.id}" style="background:white;border-radius:12px;border:1px solid #e7e5e4;
+                          padding:16px;cursor:pointer;">
                 <img src="${sanitize(p.image_url || '')}"
                      style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;margin-bottom:12px;"
                      onerror="this.style.background='#f5f5f4';this.removeAttribute('src')">
@@ -374,7 +396,24 @@ export async function renderProfile() {
     });
 
     // ==========================================
-    // 9. PREFERENCES — dari user_settings (BUKAN profiles)
+    // 9. CARD CLICK NAVIGATION
+    // ==========================================
+    const setupCardNav = async (selector) => {
+      document.querySelectorAll(selector).forEach(card => {
+        card.addEventListener('click', async (e) => {
+          if (e.target.tagName === 'BUTTON') return;
+          const { setRouteParams, navigate } = await import('../router.js');
+          setRouteParams({ productId: card.dataset.productId });
+          navigate('product-detail');
+        });
+      });
+    };
+    setupCardNav('.purchase-item-card');
+    setupCardNav('.selling-item-card');
+    setupCardNav('.saved-item-card');
+
+    // ==========================================
+    // 10. PREFERENCES — dari user_settings (BUKAN profiles)
     // ==========================================
     let { data: settings } = await supabase
       .from('user_settings')
@@ -431,7 +470,44 @@ export async function renderProfile() {
       });
     }
 
+    // ==========================================
+    // 9. VAULT BUTTON BINDINGS
+    // ==========================================
+    document.querySelectorAll('.btn-deliver-vault').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        const itemId = btn.dataset.itemId;
+        try {
+          const { error } = await supabase.from('order_items').update({ delivery_status: 'delivered' }).eq('id', itemId);
+          if (error) throw error;
+          showToast("Delivery requested! The item is on its way.");
+          renderProfile(); // re-render to update UI
+        } catch (err) {
+          showToast("Failed to request delivery.");
+          btn.disabled = false;
+          btn.textContent = 'Deliver';
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-resell-vault').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const itemId = btn.dataset.itemId;
+        const productData = JSON.parse(btn.dataset.product || '{}');
+        
+        // Store product data in localStorage for new-listing to pick up
+        localStorage.setItem('rehome_resell_data', JSON.stringify({ ...productData, order_item_id: itemId }));
+        
+        showToast("Setting up your resell listing...");
+        navigate("new-listing");
+      });
+    });
+
   } catch (err) {
-    console.error("Error memuat halaman profil:", err);
+    console.error("Gagal memuat profil:", err);
+    container.innerHTML = `<div style="padding:100px;text-align:center;"><h2>Gagal memuat profil.</h2><p>${sanitize(err.message)}</p></div>`;
   }
 }
