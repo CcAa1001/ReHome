@@ -298,6 +298,56 @@ export async function renderProfile() {
       }
     }
 
+    // Render My Offers
+    const { data: myOffers, error: myOffersErr } = await supabase
+      .from('offers')
+      .select('*, products(title, price, image_url)')
+      .eq('buyer_id', user.id)
+      .order('created_at', { ascending: false });
+
+    const offersList = document.getElementById("profile-offers-list");
+    if (offersList) {
+      if (myOffersErr) {
+        console.error("Error fetching my offers", myOffersErr);
+      } else if (!myOffers || myOffers.length === 0) {
+        offersList.innerHTML = `
+          <div style="text-align:center;padding:48px 0;color:#78716c;background:white;border-radius:12px;border:1px solid #e7e5e4;">
+            <div style="font-size:40px;margin-bottom:12px;">💬</div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No offers made</div>
+            <div style="font-size:14px;">Offers you send to sellers will appear here.</div>
+          </div>
+        `;
+      } else {
+        offersList.innerHTML = myOffers.map(offer => {
+          const productTitle = offer.products?.title || 'Unknown Item';
+          const productPrice = Number(offer.products?.price || 0);
+          const offerPrice = Number(offer.amount || 0);
+          const imgUrl = offer.products?.image_url || '';
+          
+          const statusMap = {
+            pending: { bg: '#fef9c3', color: '#854d0e', label: 'Pending' },
+            accepted: { bg: '#dcfce7', color: '#166534', label: 'Accepted (Added to Cart)' },
+            rejected: { bg: '#fecaca', color: '#991b1b', label: 'Rejected' },
+          };
+          const st = statusMap[offer.status] || statusMap.pending;
+
+          return `
+            <div style="background:white;border:1px solid #e7e5e4;border-radius:12px;padding:20px;display:flex;align-items:center;gap:20px;">
+              <img src="${sanitize(imgUrl)}" style="width:64px;height:64px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'">
+              <div style="flex:1;">
+                <h4 style="margin:0 0 4px;font-size:15px;color:#1c1917;">${sanitize(productTitle)}</h4>
+                <div style="font-size:14px;color:#78716c;margin-bottom:8px;">You offered: <strong style="color:#3d5a30;">$${offerPrice.toLocaleString()}</strong> (Listed: $${productPrice.toLocaleString()})</div>
+                <div style="font-size:12px;color:#a8a29e;">Sent on ${formatDate(offer.created_at)}</div>
+              </div>
+              <div>
+                <span style="background:${st.bg};color:${st.color};padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;">${st.label}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
     // Render Drafts tab
     const draftsGrid = document.getElementById("profile-drafts-grid");
     if (draftsGrid) {
