@@ -49,7 +49,8 @@ export async function navigate(route) {
       const renderFunctionName = "render" + route.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
       if (module[renderFunctionName]) module[renderFunctionName]();
     } catch (e) {
-      console.warn(`Info: Tidak ada file JS khusus untuk ${route}.js, tapi HTML aman.`);
+      alert(`Router failed to import ${route}.js: ` + e.message);
+      console.error(e);
     }
 
   } catch (error) {
