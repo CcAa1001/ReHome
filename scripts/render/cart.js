@@ -117,6 +117,12 @@ export async function renderCart() {
 
           let newQty = isPlus ? item.quantity + 1 : item.quantity - 1;
           if (newQty < 1) newQty = 1;
+          
+          const maxStock = toSafeNumber(item.products?.stock, 1);
+          if (newQty > maxStock) {
+            showToast(`Hanya tersisa ${maxStock} stok!`);
+            return;
+          }
           if (newQty === item.quantity) return;
 
           e.target.disabled = true;

@@ -29,6 +29,17 @@ export async function renderNewListing() {
         if (resellData.category) { const el = form.querySelector('[name="category"]'); if (el) el.value = resellData.category; }
         if (resellData.condition) { const el = form.querySelector('[name="condition"]'); if (el) el.value = resellData.condition; }
       }
+      
+      if (resellData.image_url) {
+        const previewContainer = document.getElementById('nl-preview-row');
+        const uploadArea = document.getElementById('nl-upload-area');
+        if (previewContainer && uploadArea) {
+          Array.from(uploadArea.children).forEach(child => {
+            if (child.id !== 'nl-preview-row') child.style.display = 'none';
+          });
+          previewContainer.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${resellData.image_url}" class="nl-preview-thumb"></div>`;
+        }
+      }
     }
   } catch (err) {
     console.error("Error reading resell data:", err);
@@ -181,6 +192,8 @@ export async function renderNewListing() {
       const uploadPromises = selectedFiles.map(file => uploadImage(file));
       const results = await Promise.all(uploadPromises);
       imageUrls = results.filter(url => url !== null);
+    } else if (resellData && resellData.image_url) {
+      imageUrls = [resellData.image_url];
     }
 
     const record = {

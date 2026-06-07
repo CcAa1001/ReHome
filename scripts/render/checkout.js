@@ -161,6 +161,7 @@ export async function renderCheckout() {
         submitBtn.textContent = "Processing...";
         try {
           await checkoutCart();
+          if (window.updateGlobalCartBadge) await window.updateGlobalCartBadge();
           navigate("confirmation");
         } catch (err) {
           showToast(err.message || "Failed to checkout.");
