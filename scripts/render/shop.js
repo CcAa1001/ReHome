@@ -88,7 +88,9 @@ function renderPage(catalog, countEl) {
     const safeCondition = sanitize(p.condition || "Excellent");
     const qty = cartMap[p.id] || 0;
     let cartControls = "";
-    if (qty > 0) {
+    if (currentUser && p.seller_id === currentUser.id) {
+      cartControls = `<div style="margin-top:12px; padding:8px 16px; background:#f5f5f4; color:#78716c; border-radius:8px; font-weight:600; text-align:center; font-size: 14px;">Your Listing</div>`;
+    } else if (qty > 0) {
       cartControls = `
         <div class="cart-controls" style="display:flex; align-items:center; gap:12px; margin-top:12px;">
           <button class="btn-qty-minus" data-id="${p.id}" style="flex:1; padding:6px 12px; border:1px solid rgba(197, 200, 188, 0.5); border-radius:8px; background:white; cursor:pointer; font-weight:700; color:#1c1917;">-</button>

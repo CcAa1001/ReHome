@@ -11,7 +11,7 @@ async function checkoutCart() {
 
   const { data: cartItems, error: cartError } = await supabase
     .from("cart_items")
-    .select("id, quantity, products(id, title, price, carbon_offset, stock)")
+    .select("id, quantity, products(id, title, price, carbon_offset, stock, seller_id)")
     .eq("user_id", user.id);
 
   if (cartError) throw cartError;
@@ -44,13 +44,18 @@ async function checkoutCart() {
 
   if (orderError) throw orderError;
 
-  const orderItems = cartItems.map((item) => ({
-    order_id: order.id,
-    product_id: item.products?.id,
-    title: sanitizeShortText(item.products?.title, "Untitled item"),
-    quantity: clampInteger(item.quantity, 1, 99, 1),
-    price: toSafeNumber(item.products?.price)
-  }));
+  const orderItems = cartItems.map((item) => {
+    if (item.products?.seller_id === user.id) {
+      throw new Error(`You cannot purchase your own item: ${item.products.title}`);
+    }
+    return {
+      order_id: order.id,
+      product_id: item.products?.id,
+      title: sanitizeShortText(item.products?.title, "Untitled item"),
+      quantity: clampInteger(item.quantity, 1, 99, 1),
+      price: toSafeNumber(item.products?.price)
+    };
+  });
 
   const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
   if (itemsError) throw itemsError;
