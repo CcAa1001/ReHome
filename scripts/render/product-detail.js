@@ -48,11 +48,13 @@ export async function renderProductDetail() {
     const safeDescription = sanitize(product.description || 'A masterpiece of influence, this item features solid craftsmanship. The material is a sustainable blend offering both durability and a soft tactile experience.');
     const safePrice = toSafeMoney(product.price);
 
-    const stockTersedia = clampInteger(product.stock ?? 1, 1, 999, 1);
+    const stockTersedia = clampInteger(product.stock ?? 1, 0, 999, 1);
     const isActiveClass = favoriteIds.includes(product.id) ? "active" : "";
 
     let cartButtonHtml = '';
-    if (user && user.id === product.seller_id) {
+    if (product.status === 'sold' || stockTersedia <= 0) {
+       cartButtonHtml = `<div style="width: 100%; padding: 16px; background-color: #f5f5f4; color: #78716c; border-radius: 12px; font-size: 16px; font-weight: 600; text-align: center;">Out of Stock</div>`;
+    } else if (user && user.id === product.seller_id) {
        cartButtonHtml = `<div style="width: 100%; padding: 16px; background-color: #f5f5f4; color: #78716c; border-radius: 12px; font-size: 16px; font-weight: 600; text-align: center;">You own this item</div>`;
     } else {
        cartButtonHtml = `

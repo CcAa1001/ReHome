@@ -28,6 +28,13 @@ export async function renderNewListing() {
         if (resellData.price) { const el = form.querySelector('[name="price"]'); if (el) el.value = resellData.price; }
         if (resellData.category) { const el = form.querySelector('[name="category"]'); if (el) el.value = resellData.category; }
         if (resellData.condition) { const el = form.querySelector('[name="condition"]'); if (el) el.value = resellData.condition; }
+        if (resellData.quantity) {
+          const el = form.querySelector('[name="stock"]');
+          if (el) {
+            el.value = resellData.quantity;
+            el.max = resellData.quantity;
+          }
+        }
       }
       
       if (resellData.image_url) {
@@ -173,6 +180,7 @@ export async function renderNewListing() {
     const fd = new FormData(form);
     const title = fd.get('title')?.trim();
     const price = parseFloat(fd.get('price'));
+    const stockVal = parseInt(fd.get('stock')) || 1;
 
     if (!title || title.length < 2) {
       showToast("Please enter a valid title.");
@@ -180,6 +188,11 @@ export async function renderNewListing() {
     }
     if (isNaN(price) || price < 0) {
       showToast("Please enter a valid price.");
+      return;
+    }
+    
+    if (resellData && resellData.quantity && stockVal > resellData.quantity) {
+      showToast(`You can only resell up to ${resellData.quantity} items.`);
       return;
     }
 
@@ -202,7 +215,7 @@ export async function renderNewListing() {
       category: fd.get('category') || 'Furniture',
       condition: fd.get('condition') || 'Excellent',
       price,
-      stock: parseInt(fd.get('stock')) || 1,
+      stock: stockVal,
       carbon_offset: parseFloat(fd.get('carbon_offset')) || 0,
       seller_id: user.id,
       status,

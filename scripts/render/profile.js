@@ -143,7 +143,9 @@ export async function renderProfile() {
       } else {
         tabPurchases.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;">` + 
           orders.flatMap(order => {
-            return (order.order_items || []).map(item => {
+            return (order.order_items || [])
+              .filter(item => item.delivery_status !== 'resold')
+              .map(item => {
               const deliveryStatus = item.delivery_status || 'delivered';
               const isVaulted = deliveryStatus === 'vaulted';
               
@@ -161,7 +163,8 @@ export async function renderProfile() {
                    description: item.products?.description || '',
                    category: item.products?.category || '',
                    condition: item.products?.condition || '',
-                   maker: item.products?.maker || ''
+                   maker: item.products?.maker || '',
+                   quantity: item.quantity
                 };
                 
                 actionsHtml = `
