@@ -2,10 +2,12 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1px solid rgba(6, 78, 59, 0.08);
-  background: rgba(251, 249, 248, 0.88);
-  box-shadow: 0 8px 30px rgba(156, 175, 136, 0.14);
-  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(6, 78, 59, 0.05);
+  background: rgba(251, 249, 248, 0.75);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition: all 0.3s ease;
 }
 
 .nav-shell {
