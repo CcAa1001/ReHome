@@ -1,70 +1,69 @@
 <div class="page-shell sustain-page">
-  <div style="max-width: 1000px; margin: 0 auto; padding-bottom: 80px;">
-    
-    <header style="text-align: center; margin-bottom: 48px;">
-      <h1 style="font-family: var(--serif); font-size: 42px; margin: 0 0 12px; color: var(--sage-dark);">Your Environmental Impact</h1>
-      <p style="color: #78716c; font-size: 18px; max-width: 600px; margin: 0 auto;">Every item you buy or sell pre-loved extends its lifecycle and directly reduces carbon emissions.</p>
-    </header>
+  <div class="section-heading" style="flex-direction: column; align-items: center; text-align: center; margin-bottom: 48px;">
+    <h2>Your Environmental Impact</h2>
+    <p class="muted" style="max-width: 600px; margin-top: 12px;">Every item you buy or sell pre-loved extends its lifecycle and directly reduces carbon emissions.</p>
+  </div>
 
-    <!-- Impact Dial & Primary Stats -->
-    <section style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 64px;">
-      <!-- Main Dial -->
-      <div style="background: white; border-radius: 24px; padding: 48px 32px; text-align: center; border: 1px solid rgba(6, 78, 59, 0.08); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--grad-sage); filter: blur(80px); opacity: 0.1;"></div>
-        
-        <h2 style="font-family: var(--sans); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--sage); margin: 0 0 32px;">Total Carbon Offset</h2>
-        
-        <div style="position: relative; width: 240px; height: 240px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: conic-gradient(var(--sage) 0%, var(--sage) var(--impact-pct, 0%), #f0f4ea var(--impact-pct, 0%), #f0f4ea 100%);">
-          <div style="width: 200px; height: 200px; background: white; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 4px 12px rgba(0,0,0,0.04);">
-            <span id="sustain-total-kg" style="font-size: 48px; font-weight: 800; color: var(--sage-dark); line-height: 1;">0</span>
-            <span style="font-size: 16px; font-weight: 600; color: #78716c; margin-top: 4px;">kg CO₂e</span>
-          </div>
-        </div>
-        <p style="margin: 32px 0 0; color: #57534e; font-weight: 500;">You are <span id="sustain-top-pct" style="color: var(--sage); font-weight: 700;">Top 10%</span> of eco-contributors!</p>
-      </div>
-
-      <!-- Equivalencies -->
-      <div style="display: flex; flex-direction: column; gap: 24px;">
-        <div style="background: white; border-radius: 24px; padding: 32px; border: 1px solid rgba(6, 78, 59, 0.08); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 24px;">
-          <div style="width: 64px; height: 64px; border-radius: 16px; background: #dcfce7; display: flex; align-items: center; justify-content: center; font-size: 32px;">🌳</div>
-          <div>
-            <h3 style="margin: 0 0 4px; font-size: 20px; color: var(--ink);">Trees Planted</h3>
-            <p style="margin: 0; color: #78716c;">Equivalent to planting <strong id="sustain-trees" style="color: var(--sage-dark); font-size: 24px;">0</strong> trees grown for 10 years.</p>
-          </div>
-        </div>
-        
-        <div style="background: white; border-radius: 24px; padding: 32px; border: 1px solid rgba(6, 78, 59, 0.08); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 24px;">
-          <div style="width: 64px; height: 64px; border-radius: 16px; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 32px;">🚗</div>
-          <div>
-            <h3 style="margin: 0 0 4px; font-size: 20px; color: var(--ink);">Miles Driven</h3>
-            <p style="margin: 0; color: #78716c;">Saved the emissions of driving <strong id="sustain-miles" style="color: #0369a1; font-size: 24px;">0</strong> miles.</p>
-          </div>
-        </div>
-
-        <div style="background: white; border-radius: 24px; padding: 32px; border: 1px solid rgba(6, 78, 59, 0.08); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 24px;">
-          <div style="width: 64px; height: 64px; border-radius: 16px; background: #fef08a; display: flex; align-items: center; justify-content: center; font-size: 32px;">⚡</div>
-          <div>
-            <h3 style="margin: 0 0 4px; font-size: 20px; color: var(--ink);">Energy Saved</h3>
-            <p style="margin: 0; color: #78716c;">Powered an average home for <strong id="sustain-days" style="color: #a16207; font-size: 24px;">0</strong> days.</p>
-          </div>
+  <!-- Impact Dial & Primary Stats -->
+  <div class="split-page" style="margin-bottom: 64px;">
+    <!-- Main Dial -->
+    <div class="summary-card" style="padding: 48px 32px; text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--grad-sage); filter: blur(80px); opacity: 0.1;"></div>
+      
+      <h3 style="font-size: 14px; letter-spacing: 2px; color: var(--sage); margin: 0 0 32px; text-transform: uppercase;">Total Carbon Offset</h3>
+      
+      <div style="position: relative; width: 240px; height: 240px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: conic-gradient(var(--sage) 0%, var(--sage) var(--impact-pct, 0%), #f0f4ea var(--impact-pct, 0%), #f0f4ea 100%);">
+        <div style="width: 200px; height: 200px; background: white; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 4px 12px rgba(0,0,0,0.04);">
+          <span id="sustain-total-kg" style="font-size: 48px; font-weight: 800; color: var(--sage-dark); line-height: 1;">0</span>
+          <span style="font-size: 16px; font-weight: 600; color: #78716c; margin-top: 4px;">kg CO₂e</span>
         </div>
       </div>
-    </section>
+      <p style="margin: 32px 0 0; color: #57534e; font-weight: 500;">You are <span id="sustain-top-pct" class="text-link">Top 10%</span> of eco-contributors!</p>
+    </div>
 
-    <!-- Leaderboard -->
-    <section style="background: white; border-radius: 24px; padding: 40px; border: 1px solid rgba(6, 78, 59, 0.08); box-shadow: var(--shadow-lg);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px;">
+    <!-- Equivalencies -->
+    <div style="display: flex; flex-direction: column; gap: 24px; justify-content: center;">
+      <div class="history-card" style="padding: 32px; border-radius: 16px; display: flex; align-items: center; gap: 24px;">
+        <div class="round-icon" style="width: 64px; height: 64px; border-radius: 16px; font-size: 32px; background: rgba(156, 175, 136, 0.15);">🌳</div>
         <div>
-          <h2 style="font-family: var(--serif); font-size: 28px; margin: 0 0 8px; color: var(--ink);">Impact Leaderboard</h2>
-          <p style="margin: 0; color: #78716c;">Top contributors making circular living a reality.</p>
+          <h3 style="margin: 0 0 4px; font-size: 20px;">Trees Planted</h3>
+          <p style="margin: 0; color: var(--muted);">Equivalent to planting <strong id="sustain-trees" style="color: var(--sage-dark); font-size: 20px;">0</strong> trees.</p>
         </div>
-        <div style="background: #f5f5f4; padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 700; color: #57534e;">This Month</div>
       </div>
       
-      <div id="sustain-leaderboard" style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="text-align: center; padding: 40px; color: #a8a29e;">Loading leaderboard...</div>
+      <div class="history-card" style="padding: 32px; border-radius: 16px; display: flex; align-items: center; gap: 24px;">
+        <div class="round-icon" style="width: 64px; height: 64px; border-radius: 16px; font-size: 32px; background: rgba(156, 175, 136, 0.15);">🚗</div>
+        <div>
+          <h3 style="margin: 0 0 4px; font-size: 20px;">Miles Driven</h3>
+          <p style="margin: 0; color: var(--muted);">Saved the emissions of driving <strong id="sustain-miles" style="color: var(--sage-dark); font-size: 20px;">0</strong> miles.</p>
+        </div>
       </div>
-    </section>
 
+      <div class="history-card" style="padding: 32px; border-radius: 16px; display: flex; align-items: center; gap: 24px;">
+        <div class="round-icon" style="width: 64px; height: 64px; border-radius: 16px; font-size: 32px; background: rgba(156, 175, 136, 0.15);">⚡</div>
+        <div>
+          <h3 style="margin: 0 0 4px; font-size: 20px;">Energy Saved</h3>
+          <p style="margin: 0; color: var(--muted);">Powered an average home for <strong id="sustain-days" style="color: var(--sage-dark); font-size: 20px;">0</strong> days.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="summary-card" style="padding: 40px;">
+    <div class="section-heading" style="margin-bottom: 32px;">
+      <div>
+        <h2>Impact Leaderboard</h2>
+        <p class="muted" style="margin: 4px 0 0;">Top contributors making circular living a reality.</p>
+      </div>
+      <span class="pill">This Month</span>
+    </div>
+    
+    <div id="sustain-leaderboard" style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="empty-state">
+        <span class="empty-icon">⏳</span>
+        <h3>Loading leaderboard...</h3>
+      </div>
+    </div>
   </div>
 </div>
