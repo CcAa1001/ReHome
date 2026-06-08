@@ -78,14 +78,14 @@ export async function renderSustain() {
     if (leaderboardEl && topUsers) {
       const mockImpacts = [1240, 890, 750]; // Mocked top impacts
       leaderboardEl.innerHTML = topUsers.map((user, idx) => `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: ${idx === 0 ? '#f0f4ea' : 'white'}; border: 1px solid rgba(6, 78, 59, 0.08); border-radius: 16px; box-shadow: var(--shadow-sm);">
+        <div style="background: ${idx === 0 ? '#fdf8f3' : 'white'}; border: 1px solid ${idx === 0 ? '#ede8df' : '#e7e5e4'}; border-radius: 16px; padding: 16px 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="font-size: 20px; font-weight: 800; color: ${idx === 0 ? '#b4875b' : '#a8a29e'}; width: 24px; text-align: center;">#${idx + 1}</div>
-            <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop'}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-weight: 700; color: var(--ink); font-size: 16px;">${user.full_name || 'Eco Warrior'}</div>
+            <div style="font-size: 20px; font-weight: 700; color: ${idx === 0 ? '#92683a' : '#a8a29e'}; width: 24px; text-align: center;">#${idx + 1}</div>
+            <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop'}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+            <div style="font-weight: 700; color: #1c1917; font-size: 16px;">${user.full_name || 'Eco Warrior'}</div>
           </div>
           <div style="text-align: right;">
-            <div style="font-weight: 800; color: var(--sage-dark); font-size: 18px;">${mockImpacts[idx]} <span style="font-size: 12px; color: #78716c;">kg CO₂e</span></div>
+            <div style="font-weight: 700; color: #3d5a30; font-size: 18px;">${mockImpacts[idx]} <span style="font-size: 13px; color: #78716c;">kg CO₂e</span></div>
           </div>
         </div>
       `).join('');
