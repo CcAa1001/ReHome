@@ -137,7 +137,7 @@ export function renderCurated() {
         btnValuation.disabled = false;
         btnValuation.style.opacity = "1";
         btnText.textContent = "Get AI Valuation";
-        showToast(err.message || "Valuation failed.");
+        showToast("AI Error: " + (err.message || "Valuation failed."));
       }
     });
   }

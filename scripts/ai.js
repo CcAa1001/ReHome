@@ -17,6 +17,10 @@ export async function callGeminiAPI(key, base64Image, categoryHint = 'Furniture'
 
   console.log("Using model:", targetModel);
 
+  let mimeType = "image/jpeg";
+  if (base64Image.startsWith("data:")) {
+    mimeType = base64Image.split(";")[0].split(":")[1];
+  }
   const base64Data = base64Image.includes(',') ? base64Image.split(',')[1] : base64Image;
 
   const prompt = `You are an expert luxury furniture appraiser. Analyze this image. 
@@ -44,7 +48,7 @@ export async function callGeminiAPI(key, base64Image, categoryHint = 'Furniture'
       contents: [{
         parts: [
           { text: prompt },
-          { inlineData: { mimeType: "image/jpeg", data: base64Data } }
+          { inlineData: { mimeType: mimeType, data: base64Data } }
         ]
       }]
     })

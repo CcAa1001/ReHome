@@ -192,7 +192,7 @@ export async function renderNewListing() {
       showToast("AI Auto-fill complete!");
     } catch (err) {
       console.error("AI Scan Error:", err);
-      showToast("AI Auto-fill failed.");
+      showToast("AI Error: " + (err.message || "Auto-fill failed."));
     } finally {
       clearInterval(interval);
       if (overlay) {
