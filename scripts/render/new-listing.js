@@ -29,7 +29,12 @@ export async function renderNewListing() {
         const setSelectValue = (name, val) => {
           const el = form.querySelector(`[name="${name}"]`);
           if (!el || !val) return;
-          const match = Array.from(el.options).find(o => o.text.toLowerCase() === val.toLowerCase() || o.value.toLowerCase() === val.toLowerCase());
+          const searchVal = val.toLowerCase();
+          const options = Array.from(el.options);
+          let match = options.find(o => o.text.toLowerCase() === searchVal || o.value.toLowerCase() === searchVal);
+          if (!match) {
+            match = options.find(o => searchVal.includes(o.text.toLowerCase()) || searchVal.includes(o.value.toLowerCase()));
+          }
           if (match) el.value = match.value;
         };
 
@@ -156,7 +161,12 @@ export async function renderNewListing() {
         const setSelectValue = (name, val) => {
           const el = form.querySelector(`[name="${name}"]`);
           if (!el || !val) return;
-          const match = Array.from(el.options).find(o => o.text.toLowerCase() === val.toLowerCase() || o.value.toLowerCase() === val.toLowerCase());
+          const searchVal = val.toLowerCase();
+          const options = Array.from(el.options);
+          let match = options.find(o => o.text.toLowerCase() === searchVal || o.value.toLowerCase() === searchVal);
+          if (!match) {
+            match = options.find(o => searchVal.includes(o.text.toLowerCase()) || searchVal.includes(o.value.toLowerCase()));
+          }
           if (match) el.value = match.value;
         };
 
