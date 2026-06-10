@@ -297,17 +297,45 @@ export async function renderNewListing() {
     }
     
     // Price Boundary Validation
-    if (aiBasePrice !== null) {
+    if (aiBasePrice !== null && price !== aiBasePrice) {
       const minP = Math.floor(aiBasePrice * 0.75);
       const maxP = Math.floor(aiBasePrice * 1.25);
-      if (price < minP || price > maxP) {
-        showToast(`Price must be between $${minP.toLocaleString()} and $${maxP.toLocaleString()} based on AI appraisal.`, 'error');
-        return;
-      }
-      if (price !== aiBasePrice) {
-        if (!confirm(`You are setting a price different from the AI suggestion ($${aiBasePrice.toLocaleString()}). Are you sure you want to list it at $${price.toLocaleString()}?`)) {
-          return;
+      
+      const modal = document.getElementById('nl-price-modal');
+      const modalText = document.getElementById('nl-price-modal-text');
+      const content = document.getElementById('nl-price-modal-content');
+      const btnCancel = document.getElementById('btn-modal-cancel');
+      const btnConfirm = document.getElementById('btn-modal-confirm');
+      
+      if (modal && modalText && btnCancel && btnConfirm) {
+        if (price < minP || price > maxP) {
+          modalText.textContent = `You are setting a price that is more than 25% different from the AI's fair market value ($${aiBasePrice.toLocaleString()}). Are you absolutely sure you want to list it at $${price.toLocaleString()}?`;
+        } else {
+          modalText.textContent = `You are setting a price different from the AI suggestion ($${aiBasePrice.toLocaleString()}). Are you sure you want to list it at $${price.toLocaleString()}?`;
         }
+        
+        const confirmed = await new Promise((resolve) => {
+          modal.style.display = 'flex';
+          setTimeout(() => { modal.style.opacity = '1'; content.style.transform = 'translateY(0)'; }, 10);
+          
+          const close = (res) => {
+            modal.style.opacity = '0';
+            content.style.transform = 'translateY(20px)';
+            setTimeout(() => { modal.style.display = 'none'; }, 200);
+            
+            btnCancel.removeEventListener('click', onCancel);
+            btnConfirm.removeEventListener('click', onConfirm);
+            resolve(res);
+          };
+          
+          const onCancel = () => close(false);
+          const onConfirm = () => close(true);
+          
+          btnCancel.addEventListener('click', onCancel);
+          btnConfirm.addEventListener('click', onConfirm);
+        });
+        
+        if (!confirmed) return;
       }
     }
 
