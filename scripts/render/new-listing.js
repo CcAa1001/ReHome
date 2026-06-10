@@ -30,7 +30,7 @@ export async function renderNewListing() {
           const el = form.querySelector(`[name="${name}"]`);
           if (!el || !val) return;
           const searchVal = val.toLowerCase();
-          const options = Array.from(el.options);
+          const options = Array.from(el.options).filter(o => o.value);
           let match = options.find(o => o.text.toLowerCase() === searchVal || o.value.toLowerCase() === searchVal);
           if (!match) {
             match = options.find(o => searchVal.includes(o.text.toLowerCase()) || searchVal.includes(o.value.toLowerCase()));
@@ -151,7 +151,7 @@ export async function renderNewListing() {
       if (apiKey) {
         generatedData = await callGeminiAPI(apiKey, base64Data);
       } else {
-        await new Promise(r => setTimeout(r, 3500));
+        await new Promise(r => setTimeout(r, 1000));
         generatedData = generateMockAIData();
       }
 
@@ -162,7 +162,7 @@ export async function renderNewListing() {
           const el = form.querySelector(`[name="${name}"]`);
           if (!el || !val) return;
           const searchVal = val.toLowerCase();
-          const options = Array.from(el.options);
+          const options = Array.from(el.options).filter(o => o.value);
           let match = options.find(o => o.text.toLowerCase() === searchVal || o.value.toLowerCase() === searchVal);
           if (!match) {
             match = options.find(o => searchVal.includes(o.text.toLowerCase()) || searchVal.includes(o.value.toLowerCase()));

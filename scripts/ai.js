@@ -60,11 +60,14 @@ export async function callGeminiAPI(key, base64Image, categoryHint = 'Furniture'
   
   if (!rawText) throw new Error("No response text from Gemini");
 
+  // Clean markdown and trailing commas
   rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+  rawText = rawText.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'); // Remove trailing commas
   
   try {
     return JSON.parse(rawText);
   } catch (e) {
+    console.error("Gemini raw output:", rawText);
     throw new Error("Failed to parse Gemini response as JSON");
   }
 }

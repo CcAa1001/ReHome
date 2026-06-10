@@ -86,7 +86,7 @@ export function renderCurated() {
           const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
           generatedData = await callGeminiAPI(apiKey, currentFileBase64, category, condition);
         } else {
-          await new Promise(r => setTimeout(r, 3500));
+          await new Promise(r => setTimeout(r, 1000));
           generatedData = generateMockAIData();
         }
         generatedData.image_url = currentFileBase64;
