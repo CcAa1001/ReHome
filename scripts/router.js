@@ -49,8 +49,9 @@ export async function navigate(route) {
       const renderFunctionName = "render" + route.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
       if (module[renderFunctionName]) module[renderFunctionName]();
     } catch (e) {
-      alert(`Router failed to import ${route}.js: ` + e.message);
-      console.error(e);
+      if (!e.message.includes("Failed to fetch dynamically imported module")) {
+        console.error(`Router error executing ${route}.js:`, e);
+      }
     }
 
   } catch (error) {
