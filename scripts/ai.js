@@ -41,17 +41,29 @@ export async function callGeminiAPI(key, base64Image, categoryHint = 'Furniture'
     "eco_offset": 45
   }`;
 
+  const requestBody = {
+    contents: [{
+      parts: [
+        { text: prompt },
+        { inlineData: { mimeType: mimeType, data: base64Data } }
+      ]
+    }],
+    safetySettings: [
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+    ]
+  };
+
+  if (targetModel.includes("1.5")) {
+    requestBody.generationConfig = { responseMimeType: "application/json" };
+  }
+
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${key}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: prompt },
-          { inlineData: { mimeType: mimeType, data: base64Data } }
-        ]
-      }]
-    })
+    body: JSON.stringify(requestBody)
   });
 
   if (!response.ok) {
@@ -60,9 +72,19 @@ export async function callGeminiAPI(key, base64Image, categoryHint = 'Furniture'
   }
 
   const data = await response.json();
+  
+  if (data.promptFeedback && data.promptFeedback.blockReason) {
+    throw new Error("Image blocked by safety filter: " + data.promptFeedback.blockReason);
+  }
+
   let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
   
-  if (!rawText) throw new Error("No response text from Gemini");
+  if (!rawText) {
+    if (data.candidates?.[0]?.finishReason) {
+      throw new Error("Gemini blocked response: " + data.candidates[0].finishReason);
+    }
+    throw new Error("No response text from Gemini");
+  }
 
   // Clean markdown and trailing commas
   rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
