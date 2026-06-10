@@ -89,6 +89,7 @@ export function renderCurated() {
           await new Promise(r => setTimeout(r, 3500));
           generatedData = generateMockAIData();
         }
+        generatedData.image_url = currentFileBase64;
 
         clearInterval(interval);
         scanOverlay.style.display = "none";

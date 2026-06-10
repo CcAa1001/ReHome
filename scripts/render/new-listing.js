@@ -26,11 +26,20 @@ export async function renderNewListing() {
       
       const form = document.getElementById('new-listing-form');
       if (form) {
+        const setSelectValue = (name, val) => {
+          const el = form.querySelector(`[name="${name}"]`);
+          if (!el || !val) return;
+          const match = Array.from(el.options).find(o => o.text.toLowerCase() === val.toLowerCase() || o.value.toLowerCase() === val.toLowerCase());
+          if (match) el.value = match.value;
+        };
+
         if (resellData.title) { const el = form.querySelector('[name="title"]'); if (el) el.value = resellData.title; }
         if (resellData.description) { const el = form.querySelector('[name="description"]'); if (el) el.value = resellData.description; }
         if (resellData.price) { const el = form.querySelector('[name="price"]'); if (el) el.value = resellData.price; }
-        if (resellData.category) { const el = form.querySelector('[name="category"]'); if (el) el.value = resellData.category; }
-        if (resellData.condition) { const el = form.querySelector('[name="condition"]'); if (el) el.value = resellData.condition; }
+        if (resellData.eco_offset) { const el = form.querySelector('[name="carbon_offset"]'); if (el) el.value = resellData.eco_offset; }
+        setSelectValue('category', resellData.category);
+        setSelectValue('condition', resellData.condition);
+
         if (resellData.quantity) {
           const el = form.querySelector('[name="stock"]');
           if (el) {
@@ -144,10 +153,17 @@ export async function renderNewListing() {
       // Populate form
       const form = document.getElementById('new-listing-form');
       if (form) {
+        const setSelectValue = (name, val) => {
+          const el = form.querySelector(`[name="${name}"]`);
+          if (!el || !val) return;
+          const match = Array.from(el.options).find(o => o.text.toLowerCase() === val.toLowerCase() || o.value.toLowerCase() === val.toLowerCase());
+          if (match) el.value = match.value;
+        };
+
         if (generatedData.title) form.querySelector('[name="title"]').value = generatedData.title;
         if (generatedData.description) form.querySelector('[name="description"]').value = generatedData.description;
-        if (generatedData.category) form.querySelector('[name="category"]').value = generatedData.category;
-        if (generatedData.condition) form.querySelector('[name="condition"]').value = generatedData.condition;
+        setSelectValue('category', generatedData.category);
+        setSelectValue('condition', generatedData.condition);
         if (generatedData.eco_offset) form.querySelector('[name="carbon_offset"]').value = generatedData.eco_offset;
         
         if (generatedData.price) {
