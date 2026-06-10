@@ -1,5 +1,6 @@
 import { navigate } from "../router.js";
 import { showToast } from "../ui.js";
+import { callGeminiAPI, generateMockAIData } from "../ai.js";
 
 export function renderCurated() {
   const uploadInput = document.getElementById("ai-photo-upload");
@@ -81,10 +82,12 @@ export function renderCurated() {
 
       try {
         if (apiKey) {
-          generatedData = await callGeminiAPI(apiKey, currentFileBase64);
+          const category = document.querySelectorAll(".ai-input")[0]?.value || 'Furniture';
+          const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
+          generatedData = await callGeminiAPI(apiKey, currentFileBase64, category, condition);
         } else {
           await new Promise(r => setTimeout(r, 3500));
-          generatedData = generateMockData();
+          generatedData = generateMockAIData();
         }
 
         clearInterval(interval);
@@ -121,7 +124,7 @@ export function renderCurated() {
 
         btnValuation.disabled = false;
         btnValuation.style.opacity = "1";
-        btnText.textContent = "List Item Now";
+        btnText.textContent = "Sell this Item";
         btnIcon.innerHTML = `<path d="M12 5v14M5 12h14"></path>`; // Plus icon
         isScanComplete = true;
 
@@ -136,113 +139,5 @@ export function renderCurated() {
         showToast(err.message || "Valuation failed.");
       }
     });
-  }
-
-  async function callGeminiAPI(key, base64Image) {
-    // Check available models first to avoid 404s depending on the user's region/key
-    let targetModel = "gemini-1.5-flash";
-    try {
-      const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-      if (modelsRes.ok) {
-        const modelsData = await modelsRes.json();
-        const availableModels = modelsData.models.map(m => m.name);
-        console.log("Available Gemini models:", availableModels);
-        if (availableModels.includes("models/gemini-1.5-flash")) targetModel = "gemini-1.5-flash";
-        else if (availableModels.includes("models/gemini-1.5-pro")) targetModel = "gemini-1.5-pro";
-        else if (availableModels.includes("models/gemini-1.0-pro-vision-latest")) targetModel = "gemini-1.0-pro-vision-latest";
-        else if (availableModels.length > 0) targetModel = availableModels[0].replace("models/", "");
-      }
-    } catch (e) {
-      console.warn("Could not fetch models list, defaulting to gemini-1.5-flash");
-    }
-
-    console.log("Using model:", targetModel);
-
-    const base64Data = base64Image.split(',')[1];
-    const category = document.querySelectorAll(".ai-input")[0]?.value || 'Furniture';
-    const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
-
-    const prompt = `You are an expert luxury furniture appraiser. Analyze this image. 
-    Category: ${category}. Condition: ${condition}. 
-    Return ONLY a raw JSON object with no markdown formatting. The JSON must have these exact keys:
-    {
-      "title": "A short, elegant title for the item",
-      "price": 1250,
-      "description": "A sophisticated 2-sentence description of the item and its design legacy.",
-      "maker": "Designer or Brand",
-      "category": "${category}",
-      "condition": "${condition}",
-      "estimated_fair_price": 1200,
-      "price_accuracy_note": "A short note like 'Within 3% of market average'",
-      "market_sentiment": "Short sentiment phrase like 'Strong Demand' or 'Steady'",
-      "market_insights": ["Insight 1 Title: Insight 1 Description", "Insight 2 Title: Insight 2 Description"],
-      "eco_score": 95,
-      "eco_offset": 45
-    }`;
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${key}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: prompt },
-            { inlineData: { mimeType: "image/jpeg", data: base64Data } }
-          ]
-        }]
-      })
-    });
-
-    if (!response.ok) {
-       const err = await response.json();
-       throw new Error("Gemini API Error: " + (err.error?.message || "Unknown error"));
-    }
-
-    const data = await response.json();
-    const text = data.candidates[0].content.parts[0].text;
-    
-    // Clean markdown
-    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(cleanText);
-    parsed.image_url = base64Image;
-    return parsed;
-  }
-
-  function generateMockData() {
-    const category = document.querySelectorAll(".ai-input")[0]?.value || 'Furniture';
-    const condition = document.querySelectorAll(".ai-input")[1]?.value || 'Good';
-    
-    const titles = ["Mid-Century Teak Lounge", "Postmodern Ceramic Vessel", "Brutalist Steel Lamp", "Minimalist Oak Sideboard", "Bauhaus Inspired Chair"];
-    const makers = ["Knoll", "Herman Miller", "Foscarini", "Vitra", "Artemide", "Cassina", "B&B Italia"];
-    
-    const sentiments = ["High Collector Interest", "Strong Demand", "Steady Value", "Rare Find", "Emerging Trend"];
-    const insightOptions = [
-      "Vintage Premium: Values up 8% this quarter",
-      "Quick Sale: Average time on market 6 days",
-      "Historical Accuracy: Verified original materials",
-      "Designer Heritage: Highly sought after era",
-      "Appreciating Asset: +12% YoY growth",
-      "Sustainable Choice: Zero VOC finish detected"
-    ];
-
-    // Pick 2 random unique insights
-    const shuffledInsights = insightOptions.sort(() => 0.5 - Math.random());
-    const selectedInsights = shuffledInsights.slice(0, 2);
-    
-    return {
-      title: titles[Math.floor(Math.random() * titles.length)],
-      price: Math.floor(Math.random() * 4000) + 500,
-      description: "A stunning example of enduring design. This piece combines exceptional craftsmanship with timeless aesthetic appeal, perfect for the modern collector.",
-      maker: makers[Math.floor(Math.random() * makers.length)],
-      category: category,
-      condition: condition,
-      estimated_fair_price: Math.floor(Math.random() * 4000) + 400,
-      price_accuracy_note: "Within 5% of recent auction averages.",
-      market_sentiment: sentiments[Math.floor(Math.random() * sentiments.length)],
-      market_insights: selectedInsights,
-      eco_score: Math.floor(Math.random() * 15) + 85,
-      eco_offset: Math.floor(Math.random() * 50) + 20,
-      image_url: currentFileBase64
-    };
   }
 }

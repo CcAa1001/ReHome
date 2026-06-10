@@ -2,6 +2,7 @@
 import { getSupabaseClient } from "../supabaseClient.js";
 import { navigate } from "../router.js";
 import { showToast } from "../ui.js";
+import { callGeminiAPI, generateMockAIData } from "../ai.js";
 
 export async function renderNewListing() {
   const container = document.getElementById("router-view");
@@ -12,6 +13,8 @@ export async function renderNewListing() {
 
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) { navigate("home"); return; }
+
+  let aiBasePrice = null;
 
   // ─── Pre-fill if reselling ───
   let resellData = null;
@@ -90,11 +93,87 @@ export async function renderNewListing() {
   }
 
   function addFiles(files) {
+    const wasEmpty = selectedFiles.length === 0;
     for (let i = 0; i < files.length; i++) {
       if (selectedFiles.length >= 8) break;
       selectedFiles.push(files[i]);
     }
     renderPreviews();
+
+    if (wasEmpty && selectedFiles.length > 0 && !resellData) {
+      const form = document.getElementById('new-listing-form');
+      if (form && !form.querySelector('[name="title"]').value) {
+        runAIScan(selectedFiles[0]);
+      }
+    }
+  }
+
+  async function runAIScan(file) {
+    const overlay = document.getElementById('nl-ai-scan-overlay');
+    const scanText = document.getElementById('nl-ai-scan-text');
+    const apiKey = localStorage.getItem("rehome_gemini_key");
+
+    if (overlay) {
+      overlay.style.display = 'flex';
+      // Small delay to allow display:flex to apply before fading in
+      setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+    }
+
+    const steps = ["Analyzing item geometry...", "Cross-referencing global auctions...", "Calculating material quality...", "Computing Earth Credit..."];
+    let stepIdx = 0;
+    const interval = setInterval(() => {
+      stepIdx = (stepIdx + 1) % steps.length;
+      if (scanText) scanText.textContent = steps[stepIdx];
+    }, 800);
+
+    try {
+      const reader = new FileReader();
+      const base64Data = await new Promise((resolve) => {
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+
+      let generatedData;
+      if (apiKey) {
+        generatedData = await callGeminiAPI(apiKey, base64Data);
+      } else {
+        await new Promise(r => setTimeout(r, 3500));
+        generatedData = generateMockAIData();
+      }
+
+      // Populate form
+      const form = document.getElementById('new-listing-form');
+      if (form) {
+        if (generatedData.title) form.querySelector('[name="title"]').value = generatedData.title;
+        if (generatedData.description) form.querySelector('[name="description"]').value = generatedData.description;
+        if (generatedData.category) form.querySelector('[name="category"]').value = generatedData.category;
+        if (generatedData.condition) form.querySelector('[name="condition"]').value = generatedData.condition;
+        if (generatedData.eco_offset) form.querySelector('[name="carbon_offset"]').value = generatedData.eco_offset;
+        
+        if (generatedData.price) {
+          form.querySelector('[name="price"]').value = generatedData.price;
+          aiBasePrice = generatedData.price;
+          
+          const hint = document.getElementById('nl-ai-hint');
+          if (hint) {
+            const minP = Math.floor(aiBasePrice * 0.75);
+            const maxP = Math.floor(aiBasePrice * 1.25);
+            hint.innerHTML = `AI suggested price: <strong>$${aiBasePrice.toLocaleString()}</strong>. You can adjust between <strong>$${minP.toLocaleString()}</strong> and <strong>$${maxP.toLocaleString()}</strong>.`;
+            hint.style.display = 'block';
+          }
+        }
+      }
+      showToast("AI Auto-fill complete!");
+    } catch (err) {
+      console.error("AI Scan Error:", err);
+      showToast("AI Auto-fill failed.");
+    } finally {
+      clearInterval(interval);
+      if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      }
+    }
   }
 
   function renderPreviews() {
@@ -191,6 +270,21 @@ export async function renderNewListing() {
       return;
     }
     
+    // Price Boundary Validation
+    if (aiBasePrice !== null) {
+      const minP = Math.floor(aiBasePrice * 0.75);
+      const maxP = Math.floor(aiBasePrice * 1.25);
+      if (price < minP || price > maxP) {
+        showToast(`Price must be between $${minP.toLocaleString()} and $${maxP.toLocaleString()} based on AI appraisal.`, 'error');
+        return;
+      }
+      if (price !== aiBasePrice) {
+        if (!confirm(`You are setting a price different from the AI suggestion ($${aiBasePrice.toLocaleString()}). Are you sure you want to list it at $${price.toLocaleString()}?`)) {
+          return;
+        }
+      }
+    }
+
     if (resellData && resellData.quantity && stockVal > resellData.quantity) {
       showToast(`You can only resell up to ${resellData.quantity} items.`);
       return;
