@@ -60,15 +60,7 @@ export async function renderSustain() {
     if (milesEl) milesEl.textContent = miles.toLocaleString();
     if (daysEl) daysEl.textContent = days.toLocaleString();
 
-    // Set the dial percentage (cap at 100% for 1000kg goal)
-    const pct = Math.min(100, (totalCarbon / 1000) * 100);
-    const dial = document.querySelector('[style*="conic-gradient"]');
-    if (dial) {
-      dial.style.background = `conic-gradient(var(--sage) 0%, var(--sage) ${pct}%, #f0f4ea ${pct}%, #f0f4ea 100%)`;
-    }
-
-    // 3. Fetch Leaderboard (mocking by fetching top 3 profiles by some random sorting or actual if we have an aggregate)
-    // Since we don't have an aggregated column in profiles, we will just fetch 3 profiles and mock their impact for the demo.
+    // 3. Fetch Leaderboard
     const { data: topUsers } = await supabase
       .from('profiles')
       .select('full_name, avatar_url')
@@ -76,16 +68,20 @@ export async function renderSustain() {
 
     const leaderboardEl = document.getElementById('sustain-leaderboard');
     if (leaderboardEl && topUsers) {
-      const mockImpacts = [1240, 890, 750]; // Mocked top impacts
+      const mockImpacts = [1240, 890, 750]; 
       leaderboardEl.innerHTML = topUsers.map((user, idx) => `
-        <div style="background: ${idx === 0 ? '#fdf8f3' : 'white'}; border: 1px solid ${idx === 0 ? '#ede8df' : '#e7e5e4'}; border-radius: 16px; padding: 16px 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="font-size: 20px; font-weight: 700; color: ${idx === 0 ? '#92683a' : '#a8a29e'}; width: 24px; text-align: center;">#${idx + 1}</div>
-            <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop'}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
-            <div style="font-weight: 700; color: #1c1917; font-size: 16px;">${user.full_name || 'Eco Warrior'}</div>
+        <div class="lb-item rank-${idx + 1}">
+          <div class="lb-rank">#${idx + 1}</div>
+          <div class="lb-avatar">
+            <img src="${user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop'}" onerror="this.style.display='none'">
           </div>
-          <div style="text-align: right;">
-            <div style="font-weight: 700; color: #3d5a30; font-size: 18px;">${mockImpacts[idx]} <span style="font-size: 13px; color: #78716c;">kg CO₂e</span></div>
+          <div class="lb-user-info">
+            <h4 class="lb-name">${user.full_name || 'Eco Warrior'}</h4>
+            <div class="lb-location">Global Contributor</div>
+          </div>
+          <div class="lb-score">
+            <div class="lb-score-val">${mockImpacts[idx].toLocaleString()}</div>
+            <div class="lb-score-label">kg CO₂e</div>
           </div>
         </div>
       `).join('');

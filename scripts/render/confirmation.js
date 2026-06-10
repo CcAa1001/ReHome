@@ -48,10 +48,12 @@ export async function renderConfirmation() {
         const titleText = moreCount > 0 ? `${safeTitle} & ${moreCount} more` : safeTitle;
 
         summaryContainer.innerHTML = `
-          <img src="${safeImage}" alt="${safeTitle}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px; background: #fbfaf9;">
-          <div class="order-item-details">
-            <div class="order-item-title">${titleText}</div>
-            <div class="order-item-price">${safeCondition}</div>
+          <div class="rc-item">
+            <img src="${safeImage}" alt="${safeTitle}" class="rc-item-img">
+            <div class="rc-item-details">
+              <div class="rc-item-title">${titleText}</div>
+              <div class="rc-item-price">${safeCondition}</div>
+            </div>
           </div>
         `;
       }

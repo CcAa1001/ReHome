@@ -141,8 +141,8 @@ export async function renderProfile() {
       if (!orders || orders.length === 0) {
         tabPurchases.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;">
-            <div style="font-size:40px;margin-bottom:12px;">🛍️</div>
-            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No purchases yet</div>
+            <div style="margin-bottom:16px;color:#c8c6c0;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;color:#1c1917;">No purchases yet</div>
             <div style="font-size:14px;">Your order history will appear here.</div>
           </div>`;
       } else {
@@ -245,8 +245,8 @@ export async function renderProfile() {
       if (activeListings.length === 0) {
         tabSelling.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;">
-            <div style="font-size:40px;margin-bottom:12px;">🏷️</div>
-            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No listings yet</div>
+            <div style="margin-bottom:16px;color:#c8c6c0;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;color:#1c1917;">No listings yet</div>
             <div style="font-size:14px;">Items you sell will appear here.</div>
           </div>`;
       } else {
@@ -312,8 +312,8 @@ export async function renderProfile() {
       } else if (!myOffers || myOffers.length === 0) {
         offersList.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;background:white;border-radius:12px;border:1px solid #e7e5e4;">
-            <div style="font-size:40px;margin-bottom:12px;">💬</div>
-            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No offers made</div>
+            <div style="margin-bottom:16px;color:#c8c6c0;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;color:#1c1917;">No offers made</div>
             <div style="font-size:14px;">Offers you send to sellers will appear here.</div>
           </div>
         `;
@@ -354,8 +354,8 @@ export async function renderProfile() {
       if (draftListings.length === 0) {
         draftsGrid.parentElement.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;background:white;border-radius:12px;border:1px solid #e7e5e4;">
-            <div style="font-size:40px;margin-bottom:12px;">📝</div>
-            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No drafts</div>
+            <div style="margin-bottom:16px;color:#c8c6c0;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;color:#1c1917;">No drafts</div>
             <div style="font-size:14px;">Items you save as draft will appear here.</div>
           </div>`;
       } else {
@@ -391,8 +391,8 @@ export async function renderProfile() {
       if (favCount === 0) {
         tabSaved.innerHTML = `
           <div style="text-align:center;padding:48px 0;color:#78716c;">
-            <div style="font-size:40px;margin-bottom:12px;">🤍</div>
-            <div style="font-weight:600;font-size:16px;margin-bottom:4px;">No saved items</div>
+            <div style="margin-bottom:16px;color:#c8c6c0;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+            <div style="font-weight:600;font-size:16px;margin-bottom:4px;color:#1c1917;">No saved items</div>
             <div style="font-size:14px;">Items you heart will appear here.</div>
           </div>`;
       } else {
